@@ -1,11 +1,11 @@
 name: Generate JS Doc
 on: 
   push:
-  branches:
-    - GitHub-Actions
+    branches:
+        - GitHub-Actions
 jobs:
-  ESLint:
-    runs-on: [macos-latest, ubuntu-latest, windows-latest]
+  JSDocs:
+    runs-on: ubuntu-latest
     steps:
       - name: JSDoc Action
         uses: andstor/jsdoc-action@v1.2.1
