@@ -7,14 +7,25 @@ jobs:
   DocGenerator:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+        - name: Checkout code
         uses: actions/checkout@v2
-      - name: Install modules
+        - name: Install modules
         run: npm install
 
-      - name: Type Doc Action (Build)
+        - name: Type Doc Action (Build)
         uses: erikyo/tsdoc-action@v1
         with:
             source_dir: ./src/*
             output_dir: ./docs
             front_page: README.md
+
+        - name: Commit and Push Docs
+        run: |
+            git config --local user.name "github-actions[bot]"
+            git config --local user.email "github-actions[bot]@users.noreply.github.com"
+            git add ./docs
+            git commit -m "Generate documentation"
+            git push
+        env:
+            # GITHUB_TOKEN is provided automatically by GitHub Actions, so you don't need to add it explicitly.
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
