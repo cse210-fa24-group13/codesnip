@@ -1,10 +1,18 @@
+| Field             | Description                                                                                                              |
+|-------------------|--------------------------------------------------------------------------------------------------------------------------|
+| **Status**        | `accepted `                                            |
+| **Date**          | `2024-11-01`                                                                       |
+| **Decision-Makers** | `everyone in groups`                                                                            |
+| **Consulted**     | `everyone in groups` |
+| **Informed**      | `everyone in groups`                    |
+
 # Greenfield vs. Brownfield for Code Snippet Manager Project
 
   
 
 ## Context and Problem Statement
 
-Our project aims to develop a code snippet management platform tailored to the needs of modern developers. The goal is to create a centralized, user-friendly tool that allows developers to organize, access, reuse, and share their code snippets efficiently, boosting productivity.
+Developers often create reusable code snippets for common programming tasks. These snippets are extremely useful, but can often be disorganized, difficult to locate, or scattered across multiple systems and tools. Building upon an existing code snippet management VSCode extension, our goal is to create a user-friendly platform that allows developers to efficiently organize, access, reuse, and share their code snippets with others, enhancing productivity.
 
 We initially considered developing this solution as a greenfield project, starting from scratch to tailor every feature to our specifications.
 
