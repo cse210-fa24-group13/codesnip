@@ -19,7 +19,7 @@ jobs:
             recurse: true
             output_dir: ./out
             source_dir: ./src
-            config_file: ./src/jsdoc.json
+            config_file: jsdoc.json
             template: minami
             front_page: README.md
 
