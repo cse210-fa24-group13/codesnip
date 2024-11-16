@@ -9,14 +9,18 @@ jobs:
     steps:
         - name: Checkout code
           uses: actions/checkout@v2
+          
         - name: Install modules
           run: npm install
 
-        - name: Type Doc Action (Build)
-          uses: erikyo/tsdoc-action@v1
+        - name: JSDoc Action (Build)
+          uses: andstor/jsdoc-action@v1
           with:
-            source_dir: ./src/*
-            output_dir: ./docs
+            recurse: true
+            output_dir: ./out
+            source_dir: ./src
+            config_file: ./src/jsdoc.json
+            template: minami
             front_page: README.md
 
         - name: Commit and Push Docs
