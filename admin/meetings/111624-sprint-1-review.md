@@ -21,7 +21,7 @@ Goal achievement status: Partially achieved - need to try out code quality tool 
 
 ### Completed items:
 
-![alt text](image.png)
+![alt text](111624-sprint-1-done.png)
 
 ### Incomplete items:
 
