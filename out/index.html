@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Home - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#activate">activate</a></span></li>
+</nav>
+
+<div id="main">
+    
+
+    
+
+
+
+    
+
+
+
+
+
+
+
+
+
+    
+
+
+    <section class="readme">
+        <article><p><img src="https://img.shields.io/visual-studio-marketplace/v/tahabasri.snippets.svg?style=flat-square" alt="Visual Studio Marketplace Version">
+<img src="https://img.shields.io/visual-studio-marketplace/i/tahabasri.snippets.svg?style=flat-square" alt="Visual Studio Marketplace Installs">
+<img src="https://img.shields.io/visual-studio-marketplace/d/tahabasri.snippets.svg?style=flat-square" alt="Visual Studio Marketplace Downloads">
+<img src="https://img.shields.io/visual-studio-marketplace/r/tahabasri.snippets.svg?style=flat-square" alt="Visual Studio Marketplace Rating">
+<img src="https://img.shields.io/github/stars/tahabasri/snippets" alt="GitHub Repo stars">
+<img src="https://img.shields.io/github/actions/workflow/status/tahabasri/snippets/unit-tests.yml" alt="GitHub Workflow Status (with event)">
+<img src="https://img.shields.io/badge/license-MIT-orange.svg?style=flat-square" alt="The MIT License"></p>
+<h1>Snippets — Supercharge Snippets in VS Code</h1>
+<p>Code snippets are valuable additions for anyone looking to save time during development. They simplify the process of entering repetitive code, such as loops, complex HTML structures or reusable methods.</p>
+<p>Visual Studio Code already provides robust support for snippets, including their appearance in IntelliSense, tab-completion, and a dedicated snippet picker <code>(Insert Snippet in the Command Palette)</code>. This extension takes snippets to another level by introducing new features that enhance code snippet management.</p>
+<h2>Getting Started</h2>
+<p>Install <strong>Snippets</strong> by one of the following options:</p>
+<ul>
+<li>clicking <code>Install</code> on the banner above</li>
+<li>searching for <code>Snippets</code> from the Extensions side bar in VS Code</li>
+<li>typing <code>ext install tahabasri.snippets</code> from the Command Palette in VS Code</li>
+</ul>
+<hr>
+<p><a href="#features">Features</a> | <a href="#faq">FAQ</a> | <a href="#known-issues">Known Issues</a> | <a href="#release-notes">Release Notes</a> | <a href="#feedback">Feedback</a> | <a href="#credits">Credits</a></p>
+<h2>Features</h2>
+<p>Boost your productivity with a set of powerful features that enhance snippet management:</p>
+<ul>
+<li><a href="#create">Create</a> — Create Snippets easily with few clicks.</li>
+<li><a href="#open">Open</a> — Open Snippets quickly from anywhere in VS Code.</li>
+<li><a href="#search">Search</a> — Find your Snippet in 2 seconds, or less...</li>
+<li><a href="#manage">Manage</a> — Organize your snippets freely, with no forced order, beyond editing and deleting.</li>
+<li><a href="#customize">Customize</a> — Personalize your Snippets to match your style.</li>
+<li><a href="#sync">Sync</a> — Various options for synchronizing your snippets across multiple devices and users.</li>
+<li><a href="#boost">Boost</a> — Supercharge your snippets to make them more developer-friendly.</li>
+</ul>
+<h2>Create</h2>
+<h3>Create Snippet from open editor</h3>
+<p><img src="https://raw.githubusercontent.com/tahabasri/snippets/main/images/features/01-new-snippet.gif" 
+alt="Create Snippet"></p>
+<h3>Create Snippet directly from the clipboard</h3>
+<p><img src="https://raw.githubusercontent.com/tahabasri/snippets/main/images/features/02-new-snippet-clipboard.gif" 
+alt="Create Snippet from Clipboard"></p>
+<h3>Create Snippet manually</h3>
+<p><img src="https://raw.githubusercontent.com/tahabasri/snippets/main/images/features/03-new-snippet-manual.gif" 
+alt="Create Snippet Manually"></p>
+<h2>Open</h2>
+<h3>Open Snippet with a single click</h3>
+<p><img src="https://raw.githubusercontent.com/tahabasri/snippets/main/images/features/05-open-snippet-click.gif" 
+alt="Open Snippet"></p>
+<h3>Drop Snippet directly into the editor</h3>
+<blockquote>
+<p>You may need to hold <code>Shift</code> key while dragging to correctly drop the item in the editor.</p>
+</blockquote>
+<p><img src="https://raw.githubusercontent.com/tahabasri/snippets/main/images/features/063-drag-and-drop-into-editor.gif" 
+alt="Open Snippet"></p>
+<h3>Copy Snippet to Clipboard</h3>
+<p><img src="https://raw.githubusercontent.com/tahabasri/snippets/main/images/features/10-copy-to-clipboard.jpg" 
+alt="Copy Snippet to Clipboard"></p>
+<h3>Insert Snippet directly into Terminal</h3>
+<p><img src="https://raw.githubusercontent.com/tahabasri/snippets/main/images/features/08-open-snippet-terminal.gif" 
+alt="Open Snippet in Terminal"></p>
+<h2>Search</h2>
+<h3>Use IntelliSense to quickly access all your Snippets</h3>
+<blockquote>
+<p>You can set a special key to trigger IntelliSense from the extension settings. Default key is <code>&gt;</code>. More about <strong>IntelliSense</strong> <a href="https://code.visualstudio.com/docs/editor/intellisense">here</a>.</p>
+</blockquote>
+<p><img src="https://raw.githubusercontent.com/tahabasri/snippets/main/images/features/051-open-snippet-suggestion.gif" 
+alt="Open Snippet using Suggestions"></p>
+<h3>Search for Snippets using Command Palette</h3>
+<p><img src="https://raw.githubusercontent.com/tahabasri/snippets/main/images/features/07-open-snippet-palette.gif" 
+alt="Open Snippets from Command Palette"></p>
+<p>You can also search directly into the Snippets view similarly to the File Explorer.</p>
+<p><img src="https://raw.githubusercontent.com/tahabasri/snippets/main/images/features/11-native-search.jpg" 
+alt="Native Search"></p>
+<h3>Preview Snippets before insertion</h3>
+<p><img src="https://raw.githubusercontent.com/tahabasri/snippets/main/images/features/006-preview.gif" 
+alt="Preview Snippets"></p>
+<h2>Manage</h2>
+<h3>Drag and drop Snippets from one folder to another</h3>
+<p><img src="https://raw.githubusercontent.com/tahabasri/snippets/main/images/features/056-drag-and-drop.gif" 
+alt="Drag and Drop Snippets"></p>
+<h3>Reorder Snippets using Up and Down actions</h3>
+<p><img src="https://raw.githubusercontent.com/tahabasri/snippets/main/images/features/04-snippets-reorder.gif" 
+alt="Reorder Snippets"></p>
+<h3>Sort alphabetically a Snippets folder or all your Snippets</h3>
+<p><img src="https://raw.githubusercontent.com/tahabasri/snippets/main/images/features/047-sort-snippets.gif" 
+alt="Reorder Snippets"></p>
+<h2>Customize</h2>
+<h3>Set icons for your folders</h3>
+<p><img src="https://raw.githubusercontent.com/tahabasri/snippets/main/images/features/051-folder-icons.gif" 
+alt="Set Folder Icon"></p>
+<h3>Add a description to your Snippet</h3>
+<blockquote>
+<p>Descriptions show when hovering on top of a Snippet and in IntelliSense.</p>
+</blockquote>
+<p><img src="https://raw.githubusercontent.com/tahabasri/snippets/main/images/features/064-description.gif" 
+alt="Set Snippet Description"></p>
+<h3>Add a prefix to your Snippet</h3>
+<blockquote>
+<p>When displaying Snippets using IntelliSense, custom prefix will be used instead of the original Snippet label. A prefix is a recommended shortcut for Snippets with long labels.</p>
+</blockquote>
+<p><img src="https://raw.githubusercontent.com/tahabasri/snippets/main/images/features/042-prefix.gif" 
+alt="Set Snippet Prefix"></p>
+<h3>Prefix all your Snippets</h3>
+<p>You can set a prefix for all your snippets to distinguish them from other VS Code snippets.</p>
+<ul>
+<li>set a keyword for the setting <code>Snippets: Global Prefix</code> e.g <code>snipp</code></li>
+<li>suggestions coming from your custom Snippets will be prefixed in IntelliSense</li>
+</ul>
+<blockquote>
+<p>An <a href="#add-a-prefix-to-your-snippet">explicit prefix</a> in a single Snippet will override Global Prefix settings.</p>
+<p>For example, if the global prefix in your settings is set to <code>foo</code>, and a custom snippet is explicitly prefixed with <code>boo</code>, the latter will be displayed in IntelliSense as <code>boo</code>. All other snippets with no explicit prefix will be displayed as <code>foo</code>.</p>
+</blockquote>
+<p><img src="https://raw.githubusercontent.com/tahabasri/snippets/main/images/features/12-global-prefix.jpg" 
+alt="Global Prefix"></p>
+<h2>Sync</h2>
+<h3>Import and Export Snippets using JSON files</h3>
+<p><img src="https://raw.githubusercontent.com/tahabasri/snippets/main/images/features/13-import-export.jpg" 
+alt="Import and Export Snippets"></p>
+<h3>Sync Snippets between multiple devices</h3>
+<blockquote>
+<p><strong>⚠ Experimental feature:</strong> feel free to <a href="https://github.com/tahabasri/snippets/issues/new?labels=bug">file a bug</a> as this is still an experimental change.</p>
+</blockquote>
+<p>Starting with version 2.0 and up, <em>Snippets</em> supports backup using <strong>VS Code Settings Sync</strong> feature. Your snippets will be saved alongside your VS Code data no matter your operating system.</p>
+<p>Check the <a href="https://code.visualstudio.com/docs/editor/settings-sync">docs</a> to know more about <strong>Settings Sync</strong> feature and how to use it.</p>
+<h3>Sync your Snippets with a Version Control System</h3>
+<p>A large number of users utilize a VCS (e.g Git) and may need to associate a set of snippets with a specific project (e.g sharing project-specific snippets with team members). This can be achieved by enabling the <code>snippets.useWorkspaceFolder</code> setting. Once this option is enabled, the extension will read/write snippets to/from the <code>.vscode/snippets.json</code> file if it's available (the extension will prompt you to create the file the first time you enable this option).</p>
+<blockquote>
+<p>Note: Workspace snippets are excluded from synchronization via <strong>Settings Sync</strong>. You will be responsible for backing up the <code>.vscode/snippets.json</code> file using your favorite VSC.</p>
+</blockquote>
+<h2>Boost</h2>
+<h3>Bind Snippets to Programming Languages</h3>
+<p>Snippets created from a language specific editor/file will keep reference of the programming language used. The same Snippet will be suggested only in editors/files of same programming language.</p>
+<blockquote>
+<p>A Snippet bound to a programming language will get an icon for that particular language natively.</p>
+</blockquote>
+<p><img src="https://raw.githubusercontent.com/tahabasri/snippets/main/images/features/038-language-scope.gif" 
+alt="Bind Snippets to Languages"></p>
+<p>You can explicitly set a programming language by appending the language file extension to the Snippet name at the creation prompt.</p>
+<p><img src="https://raw.githubusercontent.com/tahabasri/snippets/main/images/features/038-language-scope-by-name.gif" 
+alt="Manually Bind Snippets to Languages"></p>
+<h3>Resolve Snippet Syntax</h3>
+<blockquote>
+<p>Learn more about the Snippet syntax <a href="https://code.visualstudio.com/docs/editor/userdefinedsnippets#_snippet-syntax">here</a>.</p>
+<p>Option to <strong>Resolve Snippet Syntax</strong> is disabled by default for new Snippets, you may need to edit the Snippet to enable it.</p>
+</blockquote>
+<p><img src="https://raw.githubusercontent.com/tahabasri/snippets/main/images/features/06-open-intelligent-snippet.gif" 
+alt="Open Snippet with Variables"></p>
+<p><strong>Enjoy!</strong></p>
+<h2>FAQ</h2>
+<h3>Q: Is there a limit on the number of snippets/folders I can create?</h3>
+<p><strong>A: There is no limit; your disk space is the only limitation.</strong></p>
+<h3>Q: I'm feeling overwhelmed by multiple snippets. How can I better organize them?</h3>
+<p><strong>A: Check this <a href="#manage">section</a> for available organizational features</strong></p>
+<h3>Q: Clicking &quot;Request to Initialize File&quot; does nothing. What should I do?</h3>
+<p><strong>A: If you're attempting to initialize the snippets file for a new <a href="#sync-your-snippets-with-a-version-control-system">workspace</a> and nothing happens, ensure that the path to your current folder open in VS Code has the correct file permissions.</strong></p>
+<h2>Known Issues</h2>
+<h3>Troubleshoot Snippets</h3>
+<ul>
+<li>The new &quot;Troubleshoot Snippets&quot; option helps fix common issues, including:
+<ul>
+<li>Old snippets not appearing.</li>
+<li>Moving snippets not working.</li>
+<li>New snippets disappearing.</li>
+</ul>
+</li>
+</ul>
+<p>These issues often arise when two conflicting features, moving snippets and syncing them simultaneously, are in use. Fortunately, no snippets should be permanently lost. They are all stored locally, but inconsistencies in the database can make the snippets temporarily invisible.</p>
+<p><img src="https://raw.githubusercontent.com/tahabasri/snippets/main/images/issues/068-troubleshoot-snippets.gif" 
+alt="Fix Snippets"></p>
+<h3>Files Permissions on Windows</h3>
+<p>You may encounter some inconsistencies when dealing with snippets on Windows. The first thing to check is whether all related VS Code files are accessible and if any folder permissions are affecting accessibility.</p>
+<h2>Release Notes</h2>
+<p>Check the <a href="CHANGELOG.md">CHANGELOG</a> for full release notes.</p>
+<h2>Feedback</h2>
+<ul>
+<li><a href="https://github.com/tahabasri/snippets/issues/new?labels=enhancement">Request a feature</a>.</li>
+<li><a href="https://github.com/tahabasri/snippets/issues/new?labels=bug">File a bug</a>.</li>
+</ul>
+<h3>Credits</h3>
+<ul>
+<li><span>GitHub Repo Social Preview Background Photo by <a href="https://unsplash.com/@jjying?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">JJ Ying</a> on <a href="https://unsplash.com/?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span></li>
+</ul></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.7</a> on Sat Nov 16 2024 19:16:10 GMT+0000 (Coordinated Universal Time) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
