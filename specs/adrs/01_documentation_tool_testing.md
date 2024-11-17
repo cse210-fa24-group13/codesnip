@@ -3,8 +3,8 @@
 | **Status**        | `accepted `                                            |
 | **Date**          | `2024-11-16`                                                                       |
 | **Decision-Makers** | `Angus and Kshitij`                                                                            |
-| **Consulted**     | `everyone in groups` |
-| **Informed**      | `everyone in groups`                    |
+| **Consulted**     | `Dylan (TA)` |
+| **Informed**      | `Team members`                    |
 
 # ADR: Choosing a Documentation Tool for the Project
 
@@ -45,7 +45,6 @@ TypeDoc is a documentation generator designed specifically for TypeScript. It us
 #### Pros:
 - **TypeScript-first**: TypeDoc provides rich support for TypeScript, fully understanding and leveraging TypeScript’s type system. It generates more detailed and accurate documentation for TypeScript code.
 - **Rich output**: The generated documentation is typically cleaner and more polished than JSDoc, with support for modern JavaScript/TypeScript features.
-- **Supports JSDoc**: TypeDoc can also parse JSDoc comments in JavaScript files, so it can be used for documenting both TypeScript and JavaScript codebases.
 
 #### Cons:
 - **Primarily designed for TypeScript**: While TypeDoc can work with JavaScript, it’s designed with TypeScript in mind. For JavaScript projects, it may not be as seamless as JSDoc.
@@ -78,3 +77,8 @@ Best for projects where the appearance of the documentation is a priority, or fo
 
 ### **JSDoc AND Better Docs**  
 We need a solution that works for both JavaScript and TypeScript, as our project includes both types of files. Since JSDoc has limited support with TypeScript and TypeDoc has limited support for JavaScript, we’ve decided to use Better Docs. Since Better Docs is built on JSDoc, we will also be using JSDoc for our annotations.
+
+## Decision V2
+
+### **TypeDoc**
+After discussion with Dylan (TA), we decided that it was too risky to use BetterDocs since it is relatively new and could be unstable. This brought about the discussion of whether or not it is even worth using a hybrid of Javascript and Typescript in our project to which we decided that we can try only using Typescript. Consequently, the decision was made to use TypeDoc for our documentation tool since it is more stable than BetterDoc and well suited for Typescript.
