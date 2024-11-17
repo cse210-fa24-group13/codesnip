@@ -58,7 +58,7 @@ Goal achievement status: Partially achieved - need to try out code quality tool 
     - Understand how to recompile VSCode extension on local: https://github.com/cse210-fa24-group13/codesnip/issues/26
 
 
-## Next Steps and Action Items (10 minutes)
+## Next Steps and Action Items
 
 ### Key decisions:
 
