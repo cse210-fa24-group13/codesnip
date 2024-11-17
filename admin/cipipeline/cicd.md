@@ -12,3 +12,6 @@ We have already set up a process. When people make a pull request, other team me
 - Unit tests via automation (ex. Jest, Tape, Ava, Cypress, Mocha/Chai, etc.)
 
 Mocha is set up in the original project for unit tests. However, the test case step is failing when we try to push our documents. We need to figure out what happened.
+
+
+![alt text](cicd.drawio.png)
