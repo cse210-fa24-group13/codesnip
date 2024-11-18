@@ -666,7 +666,9 @@
 		"test-watch": "tsc -watch -p ./",
 		"pretest": "npm run test-compile && npm run lint",
 		"lint": "eslint src --ext ts",
-		"test": "node ./out/test/runTest.js"
+		"test": "node ./out/test/runTest.js",
+		"docs": "npx typedoc --entryPointStrategy expand --entryPoints --out docs src "
+
 	},
 	"devDependencies": {
 		"@types/glob": "^7.1.3",

@@ -13,11 +13,7 @@ jobs:
           run: npm install
 
         - name: Type Doc Action (Build)
-          uses: erikyo/tsdoc-action@v1
-          with:
-            source_dir: ./src/*
-            output_dir: ./docs
-            entryPointStrategy: "expand"
+          run: npm run docs
 
         - name: Commit and Push Docs
           run: |
