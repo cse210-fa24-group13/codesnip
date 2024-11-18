@@ -4,7 +4,7 @@
 
 ### Code Analysis & Style Workflow:  
 
-- **ESLint**: Analysis is set up in the GitHub workflow and is automatically triggered on Pull Request creation.
+- **ESLint**: ESLint is set up to analyze code for potential errors and is automatically triggered on creating a Pull Request.
 - **CodeClimate**: We are in process of setting up CodeClimate which is the code quality tool.
 
 ### Unit Testing Workflow  
@@ -34,11 +34,11 @@ We have not yet decided how to proceed on the end-to-end testing. We will be wor
 ## Planned Enhancements
 
 ### Short-term Goals (Planned in Sprint 2 & 3)
-- Add a workflow stage to generate the build artifacts that can be used to install the VSCode extension locally.
+- Add a workflow to generate the build artifacts that can be used to install the VSCode extension locally.
 - Identify if e2e (end-to-end) and pixel testing would be required for our application.
 
 ### Long-term Objectives
-- Deployment stage that would publish the artifacts to VSCode Marketplace.
+- Add a deployment workflow that would publish the artifacts to VSCode Marketplace.
 
 ## In-Progress Developments
 
