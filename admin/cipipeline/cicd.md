@@ -1,17 +1,49 @@
-# CI/CD pipeline
-- Linting and code style enforcement (may happen in pipeline and/or in editor)
+## CI/CD Pipeline Progress Report
 
-We decided to use ESLint for linting and Prettier for code style. ESLint is flexible, every single rule is a plugin and you can add more at runtime. 
-ESLint analysis is already set up in the GitHub workflow in the existing project.
+## Current Status
+
+### Code Analysis & Style Workflow:  
+
+- **ESLint**: Analysis is set up in the GitHub workflow and is automatically triggered on Pull Request creation.
+- **CodeClimate**: We are in process of setting up CodeClimate which is the code quality tool.
+
+### Unit Testing Workflow  
+- **Unit Testing**: Mocha set up is working, the Unit Testing Workflow runs whenever a pull request is created.
+- **E2E Testing**: 
+We have not yet decided how to proceed on the end-to-end testing. We will be working on it in Sprint 3.
+
+### Documentation Workflow
+- **Documentation**: TypeDoc (Through [typedoc-action](https://github.com/TypeStrong/typedoc-action)) that generates the documentation.
+
+### Code Review Workflow
+
+- Pull requests with mandatory team review and approval. 
+- Atleast 2 reviewers should be added to every pull request. 
+- Code can be merged to main only when all the workflows pass.
+
+### CI/CD Process
+- **Build Process**: No Build stage currently. We will be adding this in the Sprint 2.
+- **Deployment**: We plan to host our web application directly on GitHub Pages to start with.
 
 
-- Code quality via human review (ex. pull requests)
-
-We have already set up a process. When people make a pull request, other team members are required to review the code and leave comments. We'll not merge the pull request until everyone agrees with the contents.
-
-- Unit tests via automation (ex. Jest, Tape, Ava, Cypress, Mocha/Chai, etc.)
-
-Mocha is set up in the original project for unit tests. However, the test case step is failing when we try to push our documents. We need to figure out what happened.
-
+## Pipeline
 
 ![alt text](cicd.drawio.png)
+
+
+## 2. Planned Enhancements
+
+### Short-term Goals (Planned in Sprint 2 & 3)
+- Add a workflow stage to generate the build artifacts that can be used to install the VSCode extension locally.
+- Identify if e2e (end-to-end) and pixel testing would be required for our application.
+
+### Long-term Objectives
+- Deployment stage that would publish the artifacts to VSCode Marketplace.
+
+## 3. In-Progress Developments
+
+- Working on setting up CodeClimate with GitHub Actions so that the reports are generated in CodeClimate.
+
+## 4. Performance Metrics
+
+- **Improvement Areas**: Once we have the complete CI/CD pipeline in place, we want to also document the key performance metrics like Average Build Time, Deployment Frequency, Time to deploy.
