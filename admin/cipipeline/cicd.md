@@ -31,7 +31,7 @@ We have not yet decided how to proceed on the end-to-end testing. We will be wor
 ![alt text](cicd.drawio.png)
 
 
-## 2. Planned Enhancements
+## Planned Enhancements
 
 ### Short-term Goals (Planned in Sprint 2 & 3)
 - Add a workflow stage to generate the build artifacts that can be used to install the VSCode extension locally.
@@ -40,10 +40,10 @@ We have not yet decided how to proceed on the end-to-end testing. We will be wor
 ### Long-term Objectives
 - Deployment stage that would publish the artifacts to VSCode Marketplace.
 
-## 3. In-Progress Developments
+## In-Progress Developments
 
 - Working on setting up CodeClimate with GitHub Actions so that the reports are generated in CodeClimate.
 
-## 4. Performance Metrics
+## Performance Metrics
 
 - **Improvement Areas**: Once we have the complete CI/CD pipeline in place, we want to also document the key performance metrics like Average Build Time, Deployment Frequency, Time to deploy.
