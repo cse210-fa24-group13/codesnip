@@ -28,7 +28,7 @@ jobs:
           with:
             publish_branch: gh-pages  # GitHub Pages branch
             publish_dir: ./docs       # Directory with generated docs
-            github_token: ${{ secrets.GITHUB_TOKEN }}
+            github_token: ${{ secrets.GITHUB_TOKEN }} #secret token for authentication
             
     env:
         # GITHUB_TOKEN is provided automatically by GitHub Actions, so you don't need to add it explicitly.
