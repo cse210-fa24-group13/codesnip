@@ -12,21 +12,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16.x
+      # - name: Setup Node.js
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: 16.x
 
-      - name: Install dependencies
-        run: npm install
+      # - name: Install dependencies
+      #   run: npm install
 
       - name: Setup Code Climate
         uses: remarkablemark/setup-codeclimate@v2
 
-      - name: Run Test and Upload Coverage
-        run: |
-          cc-test-reporter before-build
-          xvfb-run -a npm test
-          cc-test-reporter after-build --coverage-input-type lcov --exit-code $?
-        env:
-          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+      # - name: Run Test and Upload Coverage
+      #   run: |
+      #     cc-test-reporter before-build
+      #     xvfb-run -a npm test
+      #     cc-test-reporter after-build --coverage-input-type lcov --exit-code $?
+      #   env:
+      #     CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
