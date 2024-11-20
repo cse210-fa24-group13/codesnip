@@ -22,6 +22,12 @@ jobs:
             git add ./docs
             git commit -m "Generate documentation"
             git push
+
+        - name: Deploy to GitHub Pages
+          uses: peaceiris/actions-gh-pages@v3
+          with:
+            publish_branch: gh-pages  # GitHub Pages branch
+            publish_dir: ./docs       # Directory with generated docs
     env:
         # GITHUB_TOKEN is provided automatically by GitHub Actions, so you don't need to add it explicitly.
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
