@@ -16,11 +16,10 @@ export default [{
     },
 
     rules: {
-        "@typescript-eslint/naming-convention": "warn",
-        //"@typescript-eslint/semi": "warn",
+        "@typescript-eslint/naming-convention": "warn",    
         curly: "warn",
         eqeqeq: "warn",
         "no-throw-literal": "warn",
-        semi: "off",
+        semi: "warn",
     },
 }];
