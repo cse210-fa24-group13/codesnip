@@ -415,11 +415,39 @@ export function activate(context: vscode.ExtensionContext) {
         async (snippet) => handleCommand(async () => vscode.env.clipboard.writeText(snippet.value))
     ));
 
+
+    context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.commonOpenFirstPage,
+        async () => handleCommand(() => openFirstWebview(context))
+    ));
+
+    // Function to open the first webview (First Page)
+    function openFirstWebview(context: vscode.ExtensionContext) {
+        const panel = vscode.window.createWebviewPanel(
+            'webviewFirstPage', // Identifies the webview panel (type)
+            'First Webview Page', // Title
+            vscode.ViewColumn.One, // Where to show the webview (first editor group)
+            {
+                enableScripts: true, // Allow JavaScript in the webview
+            }
+        );
+
+        // Set HTML content for the first page
+        panel.webview.html = `
+            <html>
+                <body>
+                    <h1>Welcome</h1>
+                </body>
+            </html>
+        `;
+    }
+    
+
     //** COMMAND : ADD SNIPPET **/
 
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.commonAddSnippet,
         async _ => handleCommand(() => commands.commonAddSnippet(allLanguages, snippetsProvider, wsSnippetsProvider, workspaceSnippetsAvailable))
     ));
+    
 
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.globalAddSnippet,
         async (node) => handleCommand(() => commands.addSnippet(allLanguages, snippetsExplorer, snippetsProvider, node))
