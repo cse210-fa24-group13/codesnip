@@ -20,12 +20,14 @@ jobs:
           run: |
             git config --local user.name "github-actions[bot]"
             git config --local user.email "github-actions[bot]@users.noreply.github.com"
+            git stash --include-untracked
             git fetch origin gh-pages
             git checkout gh-pages
+            git stash pop || echo "No stashed changes to apply"
             git merge origin/gh-pages --no-edit
             git add ./docs
             git commit -m "Generated documentation"
-            git push origin HEAD:gh-pages
+            git push origin gh-pages
 
         - name: Deploy to GitHub Pages
           uses: peaceiris/actions-gh-pages@v3
