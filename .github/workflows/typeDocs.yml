@@ -2,26 +2,27 @@ name: Generate Type Doc
 on: 
   push:
     branches:
-        - main
+        - GitHub-Actions
 jobs:
   DocGenerator:
     runs-on: ubuntu-latest
     steps:
         - name: Checkout code
           uses: actions/checkout@v2
+
         - name: Install modules
           run: npm install
 
-        - name: Type Doc Action (Build)
+        - name: Generate Documentation
           run: npm run docs
 
-        - name: Commit and Push Docs
+        - name: Commit and Push Docs to gh-pages
           run: |
             git config --local user.name "github-actions[bot]"
             git config --local user.email "github-actions[bot]@users.noreply.github.com"
             git add ./docs
-            git commit -m "Generate documentation"
-            git push
+            git commit -m "Generated documentation"
+            git push origin HEAD:gh-pages
 
         - name: Deploy to GitHub Pages
           uses: peaceiris/actions-gh-pages@v3
