@@ -2,7 +2,7 @@ name: Generate Type Doc
 on: 
   push:
     branches:
-        - GitHub-Actions
+        - main
 jobs:
   DocGenerator:
     runs-on: ubuntu-latest
