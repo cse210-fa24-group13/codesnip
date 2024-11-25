@@ -20,6 +20,9 @@ jobs:
           run: |
             git config --local user.name "github-actions[bot]"
             git config --local user.email "github-actions[bot]@users.noreply.github.com"
+            git fetch origin gh-pages
+            git checkout gh-pages
+            git merge origin/gh-pages --no-edit
             git add ./docs
             git commit -m "Generated documentation"
             git push origin HEAD:gh-pages
