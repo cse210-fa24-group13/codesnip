@@ -5,7 +5,8 @@ import { UIUtility } from "../utility/uiUtility";
 import { EditSnippet } from '../views/editSnippet';
 import { Labels } from "./labels";
 import { StringUtility } from '../utility/stringUtility';
-
+import axios from 'axios';
+import * as path from 'path';
 
 export const enum CommandsConsts {
 	miscRequestWSConfig = "miscCmd.requestWSConfig",
@@ -44,6 +45,84 @@ export const enum CommandsConsts {
 	wsFixSnippets = "wsSnippetsCmd.fixSnippets",
 	wsSortSnippets = "wsSnippetsCmd.sortSnippets",
 	wsSortAllSnippets = "wsSnippetsCmd.sortAllSnippets",
+}
+
+export async function shareSnippetToGist(
+    snippetsExplorer: vscode.TreeView<Snippet>, 
+    snippetsProvider: SnippetsProvider, 
+    node: Snippet | undefined
+) {
+    let snippetToShare: Snippet | undefined;
+
+    if (snippetsExplorer.selection.length === 0 && !node) {
+        vscode.window.showWarningMessage("No snippet selected to share.");
+        return;
+    } else {
+        snippetToShare = node ? node : snippetsExplorer.selection[0];
+    }
+
+    if (!snippetToShare.value || snippetToShare.value.trim() === "") {
+        vscode.window.showWarningMessage("Selected snippet has no content to share.");
+        return;
+    }
+
+    const description = await vscode.window.showInputBox({
+        prompt: "Enter a description for the Gist",
+        placeHolder: "Snippet shared via VSCode Snippet Manager"
+    });
+
+    if (!description) {
+        vscode.window.showWarningMessage("No description provided. Sharing canceled.");
+        return;
+    }
+
+    const isPublic = await vscode.window.showQuickPick(["Public", "Private"], {
+        canPickMany: false,
+        placeHolder: "Should the Gist be public or private?"
+    });
+
+    if (!isPublic) {
+        vscode.window.showWarningMessage("No visibility option selected. Sharing canceled.");
+        return;
+    }
+
+    const gistPayload = {
+        description,
+        public: isPublic === "Public",
+        files: {
+            [snippetToShare.label]: {
+                content: snippetToShare.value
+            }
+        }
+    };
+
+    try {
+        const githubToken = await vscode.window.showInputBox({
+            prompt: "Enter your GitHub Personal Access Token",
+            placeHolder: "Token required to share the snippet",
+            password: true
+        });
+
+        if (!githubToken) {
+            vscode.window.showWarningMessage("No GitHub token provided. Sharing canceled.");
+            return;
+        }
+
+        const response = await axios.post("https://api.github.com/gists", gistPayload, {
+            headers: {
+                Authorization: `token ${githubToken}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (response.data && response.data.html_url) {
+            vscode.window.showInformationMessage(`Snippet shared successfully! View it at ${response.data.html_url}`);
+        } else {
+            vscode.window.showErrorMessage("Failed to share snippet: Unexpected response format.");
+        }
+    } catch (error: any) {
+        vscode.window.showErrorMessage(`Error sharing snippet: ${error?.response?.data?.message || error.message || "Unknown error"}`);
+    }
 }
 
 export async function commonAddSnippet(allLanguages: any[], snippetsProvider: SnippetsProvider, 
