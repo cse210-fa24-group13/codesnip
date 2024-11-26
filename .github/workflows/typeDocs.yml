@@ -21,7 +21,7 @@ jobs:
             git config --local user.name "github-actions[bot]"
             git config --local user.email "github-actions[bot]@users.noreply.github.com"
             git rm -rf .  # Remove everything in the working directory
-            git reset -- ./docs  # Restore docs folder from the previous commit
+            git reset -- ./docs/*  # Restore docs folder from the previous commit
             git add ./docs/*
             git commit -m "Generated documentation"
             git push origin HEAD:gh-pages --force
