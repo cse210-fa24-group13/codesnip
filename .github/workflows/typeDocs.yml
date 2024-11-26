@@ -1,8 +1,8 @@
-name: Generate Type Doc
+name: Generate Documenation for the code
 on: 
   push:
     branches:
-        - GitHub-Actions
+        - main
 jobs:
   DocGenerator:
     runs-on: ubuntu-latest
