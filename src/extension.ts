@@ -1,3 +1,4 @@
+import { AuthService } from './service/authService';
 import fs = require('fs');
 import * as vscode from 'vscode';
 import * as path from 'path';
@@ -81,7 +82,20 @@ export function activate(context: vscode.ExtensionContext) {
         new NewRelease(context);
         context.globalState.update(releaseChangelogId, true);
     }
-
+    context.subscriptions.push(
+        vscode.commands.registerCommand('snippets.authenticateGitHub', async () => {
+            try {
+                const session = await AuthService.getGitHubSession();
+                vscode.window.showInformationMessage(
+                    `Signed in to GitHub as ${session.account.label}`
+                );
+            } catch (err) {
+                vscode.window.showErrorMessage(
+                    'Failed to authenticate with GitHub'
+                );
+            }
+        })
+    );
     //** upgrade from 1.x to 2.x **//
     let oldSnippetsPath: string = vscode.workspace.getConfiguration('snippets').get('snippetsLocation')
         || path.join(context.globalStorageUri.fsPath, "data.json");
