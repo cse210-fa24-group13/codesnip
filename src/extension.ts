@@ -416,30 +416,64 @@ export function activate(context: vscode.ExtensionContext) {
     ));
 
 
-    context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.commonOpenFirstPage,
-        async () => handleCommand(() => openFirstWebview(context))
+    context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.commonOpenPage,
+        async () => handleCommand(() => openPage(context))
     ));
 
-    // Function to open the first webview (First Page)
-    function openFirstWebview(context: vscode.ExtensionContext) {
+    function openPage(context: vscode.ExtensionContext) {
         const panel = vscode.window.createWebviewPanel(
             'webviewFirstPage', // Identifies the webview panel (type)
-            'First Webview Page', // Title
+            'Snippets Page', // Title
             vscode.ViewColumn.One, // Where to show the webview (first editor group)
             {
                 enableScripts: true, // Allow JavaScript in the webview
             }
         );
-
-        // Set HTML content for the first page
+    
+        // Get all snippets
+        const snippets = snippetService.getAllSnippets(); // Assumes `getAllSnippets` returns an array of snippets
+        let snippetsHtml = '';
+    
+        // Generate HTML list of snippets
+        snippets.forEach((snippet, index) => {
+            snippetsHtml += `
+                <li>
+                    <strong>${index + 1}. ${snippet.label}</strong><br/>
+                    <code>${snippet.value}</code>
+                </li>
+            `;
+        });
+    
+        // Set HTML content for the snippets page
         panel.webview.html = `
             <html>
+                <head>
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            padding: 20px;
+                        }
+                        ul {
+                            list-style-type: none;
+                            padding: 0;
+                        }
+                        li {
+                            margin-bottom: 20px;
+                            border-bottom: 1px solid #ddd;
+                            padding-bottom: 10px;
+                        }
+                    </style>
+                </head>
                 <body>
-                    <h1>Welcome</h1>
+                    <h1>Available Snippets</h1>
+                    <ul>
+                        ${snippetsHtml}
+                    </ul>
                 </body>
             </html>
         `;
     }
+    
     
 
     //** COMMAND : ADD SNIPPET **/

@@ -45,7 +45,7 @@
 		"viewsWelcome": [
 			{
 				"view": "snippetsExplorer",
-				"contents": "In order to use snippets, save some code here.\n[Open Webpage](command:extension.openFirstPage)\n[Add Snippet](command:globalSnippetsCmd.addSnippet)\n[Add Snippet Folder](command:globalSnippetsCmd.addSnippetFolder)\n[Import Snippets](command:globalSnippetsCmd.importSnippets)\nTo learn more about how to use snippets [read the docs](https://github.com/tahabasri/snippets/blob/main/README.md)."
+				"contents": "In order to use snippets, save some code here.\n[Add Snippet](command:globalSnippetsCmd.addSnippet)\n[Add Snippet Folder](command:globalSnippetsCmd.addSnippetFolder)\n[Import Snippets](command:globalSnippetsCmd.importSnippets)\nTo learn more about how to use snippets [read the docs](https://github.com/tahabasri/snippets/blob/main/README.md)."
 			},
 			{
 				"view": "wsSnippetsExplorer",
@@ -60,7 +60,7 @@
 		],
 		"commands": [
 			{
-				"command": "extension.openFirstPage",
+				"command": "extension.openPage",
 				"title": "Open First Webview Page"
 			  },
 			{
@@ -72,6 +72,12 @@
 				"title": "Refresh Snippets",
 				"category": "Snippets",
 				"icon": "$(refresh)"
+			},
+			{
+				"command": "extension.openPage",
+				"title": "See all snippet",
+				"category": "Snippets",
+				"icon": "$(file-code)"
 			},
 			{
 				"command": "globalSnippetsCmd.openSnippet",
@@ -398,6 +404,11 @@
 					"command": "globalSnippetsCmd.sortAllSnippets",
 					"when": "view == snippetsExplorer",
 					"group": "navigation@4"
+				},
+				{
+					"command": "extension.openPage",
+					"when": "view == snippetsExplorer",
+					"group": "navigation@5"
 				},
 				{
 					"command": "globalSnippetsCmd.addSnippetFromClipboard",

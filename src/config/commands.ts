@@ -9,7 +9,7 @@ import { StringUtility } from '../utility/stringUtility';
 
 export const enum CommandsConsts {
 	miscRequestWSConfig = "miscCmd.requestWSConfig",
-	commonOpenFirstPage = "extension.openFirstPage",
+	commonOpenPage = "extension.openPage",
 	// common commands across global & ws
 	commonOpenSnippet = "globalSnippetsCmd.openSnippet",
 	commonOpenSnippetInTerminal = "globalSnippetsCmd.openSnippetInTerminal",
