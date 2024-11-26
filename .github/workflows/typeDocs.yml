@@ -24,7 +24,7 @@ jobs:
             git reset -- ./docs  # Restore docs folder from the previous commit
             git add ./docs
             git commit -m "Generated documentation"
-            git push origin HEAD:gh-pages
+            git push origin HEAD:gh-pages --force
 
         # - name: Deploy to GitHub Pages
         #   uses: peaceiris/actions-gh-pages@v3
