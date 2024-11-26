@@ -444,12 +444,12 @@
 				{
 					"command": "snippets.shareSnippetToGist",
 					"when": "view == snippetsExplorer",
-					"group": "inline"
+					"group": "3_sharing@1"
 				},
 				{
 					"command": "snippets.shareSnippetToGist",
 					"when": "view == wsSnippetsExplorer",
-					"group": "inline"
+					"group": "3_sharing@1"
 				},
 				{
 					"command": "globalSnippetsCmd.openSnippet",
