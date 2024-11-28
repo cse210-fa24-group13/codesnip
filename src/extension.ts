@@ -294,6 +294,24 @@ export function activate(context: vscode.ExtensionContext) {
         }
     }));
 
+    context.subscriptions.push(
+        vscode.commands.registerCommand('snippets.testGitHubAuth', async () => {
+            try {
+                const session = await AuthService.getGitHubSession();
+                console.log('GitHub Session:', {
+                    id: session.id,
+                    account: session.account,
+                    scopes: session.scopes
+                });
+                vscode.window.showInformationMessage(
+                    `Authenticated as ${session.account.label}`
+                );
+            } catch (error) {
+                console.error('Authentication Error:', error);
+            }
+        })
+    );
+
     //** COMMAND : INITIALIZE GENERIC COMPLETION ITEM PROVIDER **/*
 
     let triggerCharacter: any = vscode.workspace.getConfiguration(snippetsConfigKey).get("triggerKey");

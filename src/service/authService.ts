@@ -1,5 +1,4 @@
 import * as vscode from 'vscode';
-
 export class AuthService {
     private static readonly AUTH_TYPE = 'github';
     private static readonly SCOPES = ['gist'];
@@ -11,18 +10,22 @@ export class AuthService {
                 this.SCOPES,
                 { createIfNone: true }
             );
+            
+            // Detailed session logging
+            console.log('GitHub Session Details:', {
+                id: session.id,
+                account: {
+                    id: session.account.id,
+                    label: session.account.label
+                },
+                scopes: session.scopes,
+                accessToken: session.accessToken  
+            });
+            
             return session;
         } catch (err) {
+            console.error('GitHub Authentication Error:', err);
             throw new Error('Failed to get GitHub session');
-        }
-    }
-
-    public static async checkAuthStatus(): Promise<boolean> {
-        try {
-            const session = await this.getGitHubSession();
-            return !!session;
-        } catch {
-            return false;
         }
     }
 }
