@@ -377,6 +377,7 @@ export function activate(context: vscode.ExtensionContext) {
                 `Do you want to insert the snippet "${snippet.label}"?`,
                 { modal: true },
                 "Yes"
+                
             );
             if (confirm !== "Yes") {
                 vscode.window.showInformationMessage("Snippet insertion canceled.");
@@ -423,6 +424,7 @@ export function activate(context: vscode.ExtensionContext) {
                 `Do you want to insert the snippet "${snippet.label}"?`,
                 { modal: true },
                 "Yes"
+                
             );
             if (confirm !== "Yes") {
                 vscode.window.showInformationMessage("Snippet insertion canceled.");
@@ -440,6 +442,7 @@ export function activate(context: vscode.ExtensionContext) {
                 `Do you want to copy the snippet "${snippet.label}" to the clipboard?`,
                 { modal: true },
                 "Yes"
+                
             );
             if (confirm !== "Yes") {
                 vscode.window.showInformationMessage("Snippet copying to clipboard canceled.");
