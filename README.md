@@ -199,6 +199,15 @@ alt="Manually Bind Snippets to Languages">
 <img src="https://raw.githubusercontent.com/tahabasri/snippets/main/images/features/06-open-intelligent-snippet.gif" 
 alt="Open Snippet with Variables">
 
+## Code Documentation
+
+> Learn more about how the code works and the implementation details
+> 
+> Documentation for the code is auto-generated and hosted at https://cse210-fa24-group13.github.io/codesnip/
+
+![image](https://github.com/user-attachments/assets/2e176752-52f8-4cef-90e7-a233156d1f5d)
+
+
 **Enjoy!**
 
 ## FAQ
