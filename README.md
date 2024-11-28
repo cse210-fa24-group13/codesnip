@@ -207,6 +207,14 @@ alt="Open Snippet with Variables">
 
 ![image](https://github.com/user-attachments/assets/2e176752-52f8-4cef-90e7-a233156d1f5d)
 
+## Code Quality
+
+> Learn more about the code quality of the project
+> 
+> To check it out, head over to: https://codeclimate.com/github/cse210-fa24-group13/codesnip/
+
+![image](https://github.com/user-attachments/assets/3711d010-192d-484f-b874-58f51eeb250a)
+
 
 **Enjoy!**
 
