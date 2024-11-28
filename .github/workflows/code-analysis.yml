@@ -8,4 +8,4 @@ jobs:
       - name: Install modules
         run: npm install
       - name: Run ESLint
-        run: npx eslint src --ext ts --max-warnings=0
+        run: npx eslint src --max-warnings=0

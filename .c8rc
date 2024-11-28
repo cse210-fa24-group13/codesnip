@@ -1,0 +1,23 @@
+{
+  "all": true,
+  "include": [
+    "out/**"
+  ],
+  "exclude": [
+    "**/node_modules/**",
+    "out/test/",
+    "resources/**",
+    "build/**",
+    "views/**"
+  ],
+  "reporter": [
+    "html",
+    "text",
+    "lcov"
+  ],
+  "check-coverage": true,
+  "branches": 0,
+  "functions": 0,
+  "lines": 0,
+  "statements": 0
+}
