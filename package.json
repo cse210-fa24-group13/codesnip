@@ -64,10 +64,14 @@
                 "title": "Snippets: Test GitHub Auth",
                 "category": "Snippets"
             },
-			{
+            {
                 "command": "snippets.authenticateGitHub",
                 "title": "Sign in to GitHub",
                 "category": "Snippets"
+            },
+            {
+                "command": "snippets.shareSnippetToGist",
+                "title": "Share Snippet"
             },
 			{
 				"command": "miscCmd.requestWSConfig",
