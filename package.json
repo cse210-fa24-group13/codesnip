@@ -708,6 +708,7 @@
 	"dependencies": {
 		"@types/mustache": "^4.2.5",
 		"mustache": "^4.2.0",
-		"typedocs": "^0.6.7"
+		"typedocs": "^0.6.7",
+		"axios":"^0.21.1"
 	}
 }
