@@ -13,11 +13,12 @@ import { UIUtility } from './utility/uiUtility';
 import { StringUtility } from './utility/stringUtility';
 import { Labels } from './config/labels';
 import { FileDataAccess } from './data/fileDataAccess';
-
+import { shareSnippetToGist } from './config/commands';
 /**
  * Activate extension by initializing views for snippets and feature commands.
  * @param context 
  */
+
 export function activate(context: vscode.ExtensionContext) {
     // exact version for which show Changelog panel
     const changelogVersion = '3.1.0';
@@ -680,6 +681,17 @@ export function activate(context: vscode.ExtensionContext) {
             }
         }
       }));
+  
+      // Register the shareSnippetToGist command
+      context.subscriptions.push(
+          vscode.commands.registerCommand('snippets.shareSnippetToGist', (node: Snippet | undefined) => {
+              shareSnippetToGist(snippetsExplorer, snippetsProvider, node);
+          })
+      );
+
+    // Register the tree data providers
+    vscode.window.registerTreeDataProvider('snippetsExplorer', snippetsProvider);
+    vscode.window.registerTreeDataProvider('wsSnippetsExplorer', snippetsProvider);
 }
 
 export function deactivate() { }

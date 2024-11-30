@@ -59,22 +59,22 @@
 			}
 		],
 		"commands": [
+		{
+      "command": "snippets.testGitHubAuth",
+      "title": "Snippets: Test GitHub Auth",
+      "category": "Snippets"
+     },
+     {
+       "command": "snippets.authenticateGitHub",
+       "title": "Sign in to GitHub",
+       "category": "Snippets"
+      },
+      {
+        "command": "snippets.shareSnippetToGist",
+        "title": "Share Snippet"
+      },
 			{
-                "command": "snippets.testGitHubAuth",
-                "title": "Snippets: Test GitHub Auth",
-                "category": "Snippets"
-            },
-            {
-                "command": "snippets.authenticateGitHub",
-                "title": "Sign in to GitHub",
-                "category": "Snippets"
-            },
-            {
-                "command": "snippets.shareSnippetToGist",
-                "title": "Share Snippet"
-            },
-			{
-				"command": "miscCmd.requestWSConfig",
+			  "command": "miscCmd.requestWSConfig",
 				"title": "Init WS Config"
 			},
 			{
@@ -457,6 +457,16 @@
 			],
 			"view/item/context": [
 				{
+					"command": "snippets.shareSnippetToGist",
+					"when": "view == snippetsExplorer",
+					"group": "3_sharing@1"
+				},
+				{
+					"command": "snippets.shareSnippetToGist",
+					"when": "view == wsSnippetsExplorer",
+					"group": "3_sharing@1"
+				},
+				{
 					"command": "globalSnippetsCmd.openSnippet",
 					"when": "view == snippetsExplorer && viewItem =~ /^snippet(:\\S+)?$/",
 					"group": "1_snippets@1"
@@ -713,6 +723,7 @@
 	"dependencies": {
 		"@types/mustache": "^4.2.5",
 		"mustache": "^4.2.0",
-		"typedocs": "^0.6.7"
+		"typedocs": "^0.6.7",
+		"axios":"^0.21.1"
 	}
 }
