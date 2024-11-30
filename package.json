@@ -60,6 +60,10 @@
 		],
 		"commands": [
 			{
+				"command": "snippets.shareSnippetToGist",
+				"title": "Share Snippet"
+			  },
+			{
 				"command": "miscCmd.requestWSConfig",
 				"title": "Init WS Config"
 			},
@@ -437,6 +441,16 @@
 				}
 			],
 			"view/item/context": [
+				{
+					"command": "snippets.shareSnippetToGist",
+					"when": "view == snippetsExplorer",
+					"group": "3_sharing@1"
+				},
+				{
+					"command": "snippets.shareSnippetToGist",
+					"when": "view == wsSnippetsExplorer",
+					"group": "3_sharing@1"
+				},
 				{
 					"command": "globalSnippetsCmd.openSnippet",
 					"when": "view == snippetsExplorer && viewItem =~ /^snippet(:\\S+)?$/",
