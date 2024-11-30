@@ -61,5 +61,5 @@ Chosen option: **Puppeteer**, because it is lightweight, provides excellent supp
 ## Next Steps
 
 - Implement Puppeteer in the testing pipeline for WebViews.
-- Create initial test scripts to validate functionality and ensure stability.
+- Develop initial test scripts to verify functionality, ensure stability, and validate the decision.
 - Reassess the choice in the next sprint to ensure it meets the project's evolving requirements.
