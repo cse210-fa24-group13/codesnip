@@ -29,8 +29,8 @@ POST /gists
 
 | Header | Value |
 |--------|-------|
-| Authorization  | Bearer YOUR_TOKEN | 
-| Content-Type   | application/json  | 
+| authorization  | Bearer YOUR_TOKEN | 
+| content-type   | application/json  | 
 
 
 #### Request Body
@@ -76,7 +76,7 @@ GET /gists
 
 | Header | Value |
 |--------|-------|
-| Authorization  | Bearer YOUR_TOKEN | 
+| authorization  | Bearer YOUR_TOKEN | 
 | accept | application/vnd.github+json |
 
 
@@ -168,7 +168,7 @@ GET /gists/{gist_id}
 
 | Header | Value |
 |--------|-------|
-| Authorization  | Bearer YOUR_TOKEN | 
+| authorization  | Bearer YOUR_TOKEN | 
 | accept | application/vnd.github+json |
 
 #### Path Parameters
