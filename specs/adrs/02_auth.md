@@ -10,7 +10,7 @@
 
 ## Context and Problem Statement
 
-In order to get gist from GitHub, we need to use GitHub API to do authentication and access the data.
+In order to get gist from GitHub, we need to use GitHub API to do authentication.
 
 ## Tool
 `VS Code API` is a set of JavaScript APIs that you can invoke in your Visual Studio Code extension.
@@ -22,8 +22,22 @@ In order to get gist from GitHub, we need to use GitHub API to do authentication
 const session = await vscode.authentication.getSession(
     'github', // provider
     ['gist'], // scope
-    { createIfNone: true }
+    { createIfNone: true } // Whether login should be performed if there is no matching session.
 );
 ```
+For more info about VScode API: [VS Code API](https://code.visualstudio.com/api/references/vscode-api#AuthenticationGetSessionOptions)
 
 For more info about scope: [Scopes for GitHub OAuth apps](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps)
+
+```javascript
+// Detailed session logging
+console.log('GitHub Session Details:', {
+    id: session.id,
+    account: {
+        id: session.account.id,
+        label: session.account.label
+    },
+    scopes: session.scopes,
+    accessToken: session.accessToken  
+});
+```
