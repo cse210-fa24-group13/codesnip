@@ -1,13 +1,14 @@
 import * as vscode from 'vscode';
+
 export class AuthService {
-    private static readonly AUTH_TYPE = 'github';
-    private static readonly SCOPES = ['gist'];
+    private static readonly authType = 'github';
+    private static readonly scopes = ['gist'];
 
     public static async getGitHubSession(): Promise<vscode.AuthenticationSession> {
         try {
             const session = await vscode.authentication.getSession(
-                this.AUTH_TYPE,
-                this.SCOPES,
+                this.authType,
+                this.scopes,
                 { createIfNone: true }
             );
             
