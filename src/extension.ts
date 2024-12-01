@@ -437,9 +437,13 @@ export function activate(context: vscode.ExtensionContext) {
         // Generate HTML list of snippets
         snippets.forEach((snippet, index) => {
             snippetsHtml += `
-                <li>
-                    <strong>${index + 1}. ${snippet.label}</strong><br/>
-                    <code>${snippet.value}</code>
+                <li class="card">
+                    <div class="left">
+                        <code>${snippet.value}</code>
+                    </div>
+                    <div class="right">
+                        <strong>${snippet.label}</strong><br/>
+                    </div>
                 </li>
             `;
         });
@@ -449,24 +453,73 @@ export function activate(context: vscode.ExtensionContext) {
             <html>
                 <head>
                     <style>
+                        body{
+                            --background-color: #B0CAF3;
+                            --primary-color: #657FF0;
+                            --secondary-color: #7FA3F7;
+                            --black: #1E1E1E;
+                        }
                         body {
                             font-family: Arial, sans-serif;
-                            padding: 20px;
-                        }
-                        ul {
-                            list-style-type: none;
+                            color: var(--black);
+                            margin: 0;
                             padding: 0;
+                            background-color: var(--background-color);
                         }
-                        li {
-                            margin-bottom: 20px;
-                            border-bottom: 1px solid #ddd;
-                            padding-bottom: 10px;
+                        #nav{
+                            top: 0;
+                            width: 100%;
+                            height: 6em;
+                            display: flex;
+                            justify-content: space-between;
+                            list-style-type: none;
+                            margin: 0;
+                            padding: 0;
+                            background-color: var(--primary-color);
+                        }
+                        #nav li{
+                            margin: auto 2em;
+                            font-weight: 700;
+                            font-size: 1.2em;
+                        }
+                        #cards{
+                            margin: 0 auto;
+                            padding: 0;
+                            height: full;
+                            width: 62em;
+                            list-style-type: none;
+                            display: grid;
+                            grid-template-columns: 1fr 1fr;
+                        }
+                        .card {
+                            flex: 50%;
+                            height: 18em;
+                            width: 30em;
+                            display: flex;
+                            margin: 1em 0.5em 0 0.5em;
+                            border-radius: 1em;
+                            overflow: hidden;
+                        }
+                        .left{
+                            background-color: var(--secondary-color);
+                            width: 100%;
+                            padding: 1em;
+                        }
+                        .right{
+                            padding: 1em;
+                            width: 15em;
+                            background-color: var(--primary-color);
                         }
                     </style>
                 </head>
                 <body>
-                    <h1>Available Snippets</h1>
-                    <ul>
+                    <ul id="nav">
+                        <li>Back</li>
+                        <li>New Room</li>
+                        <li>Join Room</li>
+                        <li>Search</li>
+                    </ul>
+                    <ul id="cards">
                         ${snippetsHtml}
                     </ul>
                 </body>
