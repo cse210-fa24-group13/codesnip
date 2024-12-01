@@ -11,16 +11,7 @@ export class AuthService {
                 { createIfNone: true }
             );
             
-            // Detailed session logging
-            console.log('GitHub Session Details:', {
-                id: session.id,
-                account: {
-                    id: session.account.id,
-                    label: session.account.label
-                },
-                scopes: session.scopes,
-                accessToken: session.accessToken  
-            });
+            // Detailed session logging        
             
             return session;
         } catch (err) {

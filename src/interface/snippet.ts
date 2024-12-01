@@ -20,7 +20,8 @@ export class Snippet {
     children: Array<Snippet>,
     folder?: boolean,
     parentId?: number,
-    value?: string
+    value?: string,
+    description?: string
   ) {
     this.id = id;
     this.label = label;
@@ -28,5 +29,6 @@ export class Snippet {
     this.children = children;
     this.parentId = parentId;
     this.value = value;
+    this.description = description;
   }
 }

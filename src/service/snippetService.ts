@@ -172,7 +172,8 @@ export class SnippetService {
                         label: snippet.label,
                         // if its a folder, don't update content, use old value instead
                         // if its a snippet, update its content
-                        value: [snippet.folder ? obj.value : snippet.value]
+                        value: [snippet.folder ? obj.value : snippet.value],
+                        description: snippet.description
                     }
                         : obj
                 );

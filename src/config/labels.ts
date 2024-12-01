@@ -26,6 +26,13 @@ export const enum Labels {
 	snippetNameValidationMsg = "Snippet name should not be empty.",
 	snippetNameErrorMsg = "Snippet must have a non-empty name.",
 
+	snippetDescriptionPrompt = "Snippet Description",
+	snippetDescriptionPlaceholder = "Description",	
+	snippetDescriptionErrorMsg = "No description provided",
+
+	snippetVisibilityPrompt = "Do you want your snippet to be public or private?",
+	snippetVisibilityErrorMsg = "No visibility option selected",
+
 	snippetNameFolderPrompt = "Snippet Folder Name",
 	snippetNameFolderPlaceholder = "Some examples: Alerts, JS Snippets, etc.",
 	snippetFolderNameValidationMsg = "Folder name should not be empty.",

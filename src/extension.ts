@@ -13,7 +13,6 @@ import { UIUtility } from './utility/uiUtility';
 import { StringUtility } from './utility/stringUtility';
 import { Labels } from './config/labels';
 import { FileDataAccess } from './data/fileDataAccess';
-import { shareSnippetToGist } from './config/commands';
 /**
  * Activate extension by initializing views for snippets and feature commands.
  * @param context 
@@ -83,20 +82,6 @@ export function activate(context: vscode.ExtensionContext) {
         new NewRelease(context);
         context.globalState.update(releaseChangelogId, true);
     }
-    context.subscriptions.push(
-        vscode.commands.registerCommand('snippets.authenticateGitHub', async () => {
-            try {
-                const session = await AuthService.getGitHubSession();
-                vscode.window.showInformationMessage(
-                    `Signed in to GitHub as ${session.account.label}`
-                );
-            } catch (err) {
-                vscode.window.showErrorMessage(
-                    'Failed to authenticate with GitHub'
-                );
-            }
-        })
-    );
     //** upgrade from 1.x to 2.x **//
     let oldSnippetsPath: string = vscode.workspace.getConfiguration('snippets').get('snippetsLocation')
         || path.join(context.globalStorageUri.fsPath, "data.json");
@@ -681,17 +666,50 @@ export function activate(context: vscode.ExtensionContext) {
             }
         }
       }));
-  
-      // Register the shareSnippetToGist command
+
+      // Get Authentication Token
       context.subscriptions.push(
-          vscode.commands.registerCommand('snippets.shareSnippetToGist', (node: Snippet | undefined) => {
-              shareSnippetToGist(snippetsExplorer, snippetsProvider, node);
-          })
-      );
+        vscode.commands.registerCommand('snippets.authenticateGitHub', async () => {
+            try {
+                const session = await AuthService.getGitHubSession();                                
+                vscode.window.showInformationMessage(
+                    `Signed in to GitHub as ${session.account.label}`
+                );
+            } catch (err) {
+                vscode.window.showErrorMessage(
+                    'Failed to authenticate with GitHub'
+                );
+            }
+        })
+    );
+
+    // async function createSnippetOnGist(
+    //     snippetsExplorer: vscode.TreeView<Snippet>,    
+    //     node: Snippet | undefined
+    // ) {
+    //     const session = await AuthService.getGitHubSession();
+    //     if (session != null) {
+    //         shareSnippetToGist(snippetsExplorer, node);
+    //     } else {
+    //         vscode.window.showErrorMessage(
+    //             'Please make sure you are signed-in to Github'
+    //         );
+    //     }
+    // }
+    
+      // Register the shareSnippetToGist command    
+    //   context.subscriptions.push(
+    //       vscode.commands.registerCommand('snippets.shareSnippetToGist', async (node: Snippet | undefined) => {
+    //         await createSnippetOnGist(snippetsExplorer, node);
+              
+    //       })
+    //   );
 
     // Register the tree data providers
     vscode.window.registerTreeDataProvider('snippetsExplorer', snippetsProvider);
     vscode.window.registerTreeDataProvider('wsSnippetsExplorer', snippetsProvider);
 }
+
+
 
 export function deactivate() { }
