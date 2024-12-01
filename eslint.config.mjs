@@ -16,7 +16,15 @@ export default [{
     },
 
     rules: {
-        "@typescript-eslint/naming-convention": "warn",    
+        "@typescript-eslint/naming-convention": ["warn", {
+            "selector": "property",
+            "format": ["camelCase", "snake_case"],
+            "leadingUnderscore": "allow",
+            "filter": {
+                "regex": "^(Authorization|Content-Type)$",
+                "match": false
+            }
+        }],
         curly: "warn",
         eqeqeq: "warn",
         "no-throw-literal": "warn",
