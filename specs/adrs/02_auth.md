@@ -46,7 +46,7 @@ console.log('GitHub Session Details:', {
 
 - Need secure access to GitHub Gists API
 - Must integrate seamlessly with VS Code
-- Should provide good user experience
+- Should provide a good user experience
 - Must handle token storage securely
 - Should support token refresh and session management
 - Need to minimize implementation complexity
@@ -86,7 +86,8 @@ Chosen option: "VS Code's Built-in GitHub Authentication" because:
 
 # Pros and Cons of the Options
 
-VS Code's Built-in GitHub Authentication
+**VS Code's Built-in GitHub Authentication**
+
 Pros:
 - Secure token storage
 - Automatic token refresh
@@ -98,7 +99,7 @@ Cons:
 - Less customization options
 
 
-Custom OAuth Implementation
+**Custom OAuth Implementation**
 Pros:
 - Full control over auth flow
 - Platform independent
@@ -110,7 +111,7 @@ Cons:
 - Custom security implementation needed
 
 
-Personal Access Token
+**Personal Access Token**
 Pros:
 - Simple to implement
 - Platform independent
