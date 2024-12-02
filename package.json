@@ -696,7 +696,6 @@
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.15.0",
-		"@types/glob": "^8.1.0",
 		"@types/mocha": "^10.0.10",
 		"@types/node": "^22.9.1",
 		"@types/vscode": "^1.95.0",
@@ -706,6 +705,7 @@
 		"c8": "^10.1.2",
 		"eslint": "^9.15.0",
 		"glob": "^11.0.0",
+		"minimatch": "^10.0.1",
 		"mocha": "^10.8.2",
 		"ts-loader": "9.5.1",
 		"typescript": "^5.6.3",
