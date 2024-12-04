@@ -436,18 +436,22 @@ export function activate(context: vscode.ExtensionContext) {
     
         // Generate HTML list of snippets
         snippets.forEach((snippet, index) => {
+            let code = snippet.value;
+            if(code !== undefined){
+                code = code.split('<').join('&lt;').split('>').join('&gt;');
+            }
             snippetsHtml += `
                 <li class="card">
-                    <div class="left">
-                        <code>${snippet.value}</code>
+                    <div class="top">
+                        <p>${code}</p>
                     </div>
-                    <div class="right">
+                    <div class="bottom">
                         <strong>${snippet.label}</strong><br/>
                     </div>
                 </li>
             `;
         });
-    
+
         // Set HTML content for the snippets page
         panel.webview.html = `
             <html>
@@ -495,19 +499,20 @@ export function activate(context: vscode.ExtensionContext) {
                             flex: 50%;
                             height: 18em;
                             width: 30em;
-                            display: flex;
+                            /* display: flex; */
                             margin: 1em 0.5em 0 0.5em;
+                            /* border: solid; */
                             border-radius: 1em;
                             overflow: hidden;
                         }
-                        .left{
+                        .top{
                             background-color: var(--secondary-color);
-                            width: 100%;
+                            height: 60%;
                             padding: 1em;
                         }
-                        .right{
+                        .bottom{
                             padding: 1em;
-                            width: 15em;
+                            height: 100%;
                             background-color: var(--primary-color);
                         }
                     </style>
