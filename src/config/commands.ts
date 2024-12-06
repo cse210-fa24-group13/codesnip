@@ -9,6 +9,7 @@ import axios from 'axios';
 import * as path from 'path';
 import { AuthService } from '../service/authService';
 
+
 export const enum CommandsConsts {
 	miscRequestWSConfig = "miscCmd.requestWSConfig",
 	// common commands across global & ws
@@ -48,31 +49,85 @@ export const enum CommandsConsts {
 	wsSortAllSnippets = "wsSnippetsCmd.sortAllSnippets",
 }
 
-export async function createSnippet(name: string, text: string, description: string , visibility: string){
-
-	const gistPayload = {
+export async function createSnippet(
+    name: string,
+    text: string,
+    description: string,
+    visibility: string
+) {
+    const gistPayload = {
         description,
         public: visibility === "Public",
         files: {
             [name]: {
-                content: text
-            }
-        }
+                content: text,
+            },
+        },
     };
-	const session = await AuthService.getGitHubSession();
+
+    const session = await AuthService.getGitHubSession();
     try {
-        
         const response = await axios.post("https://api.github.com/gists", gistPayload, {
             headers: {
                 Authorization: `Bearer ${session.accessToken}`,
-                "Content-Type": "application/json"
-            }
+                "Content-Type": "application/json",
+            },
         });
-        
+
+        // Extracting the gist ID from the response
+        const gistId = response.data.id;
+        vscode.window.showInformationMessage(`Snippet created successfully! Gist ID: ${gistId}`);
+        return gistId;
     } catch (error: any) {
-        vscode.window.showErrorMessage(`Error creating snippet: ${error?.response?.data?.message || error.message || "Unknown error"}`);
+        vscode.window.showErrorMessage(
+            `Error creating snippet: ${error?.response?.data?.message || error.message || "Unknown error"}`
+        );
     }
 }
+
+export async function updateGist(
+    gistId: string| undefined,
+    name: string,
+    text: string| undefined,
+    description: string| undefined,
+) {
+    const gistPayload = {
+        description,
+        files: {
+            [name]: {
+                content: text,
+            },
+        },
+    };
+
+    const session = await AuthService.getGitHubSession(); // Assuming AuthService handles authentication
+    try {
+        const response = await axios.patch(
+            `https://api.github.com/gists/${gistId}`,
+            gistPayload,
+            {
+                headers: {
+                    Authorization: `Bearer ${session.accessToken}`,
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+
+        vscode.window.showInformationMessage(
+            `Gist updated successfully! Updated Gist ID: ${response.data.id}`
+        );
+
+        return response.data; // Return the updated gist data
+    } catch (error: any) {
+        vscode.window.showErrorMessage(
+            `Error updating gist: ${error?.response?.data?.message || error.message || "Unknown error"}`
+        );
+        throw error;
+    }
+}
+
+
+
 
 // export async function shareSnippetToGist(
 //     snippetsExplorer: vscode.TreeView<Snippet>,     
@@ -197,59 +252,81 @@ export async function commonAddSnippet(allLanguages: any[], snippetsProvider: Sn
     }
 
 	// request where to save snippets if ws is available
-	if (workspaceSnippetsAvailable) {
-		const targetView = await UIUtility.requestTargetSnippetsView();
-		// no value chosen
-		if (!targetView) {
-			vscode.window.showWarningMessage(Labels.noViewTypeSelected);
-		} else if (targetView === Labels.globalSnippets) {
-			snippetsProvider.addSnippet(name, text, Snippet.rootParentId, description, languageExt);
-		} else if (targetView === Labels.wsSnippets) {
-			wsSnippetsProvider.addSnippet(name, text, Snippet.rootParentId, description, languageExt);
-		}
-	} else {
-		snippetsProvider.addSnippet(name, text, Snippet.rootParentId, languageExt);
-	}
-	createSnippet(name, text, description, visibility);
+	let targetView = undefined;
+    if (workspaceSnippetsAvailable) {
+        targetView = await UIUtility.requestTargetSnippetsView();
+        // No value chosen
+        if (!targetView) {
+            vscode.window.showWarningMessage(Labels.noViewTypeSelected);
+            return;
+        }
+    }
+
+    try {
+        // Create the gist and get the gistId
+        let gistId = await createSnippet(name, text, description, visibility);
+
+        // Save snippet with the gistId
+        if (workspaceSnippetsAvailable) {
+            if (targetView === Labels.globalSnippets) {
+                snippetsProvider.addSnippet(name, text, Snippet.rootParentId, description, languageExt, gistId);
+            } else if (targetView === Labels.wsSnippets) {
+                wsSnippetsProvider.addSnippet(name, text, Snippet.rootParentId, description, languageExt, gistId);
+            }
+        } else {
+            snippetsProvider.addSnippet(name, text, Snippet.rootParentId, description, languageExt, gistId);
+        }
+
+        vscode.window.showInformationMessage(`Snippet saved successfully with Gist ID: ${gistId}`);
+    } catch (error) {
+        vscode.window.showErrorMessage(`Failed to save snippet`);
+    }
+
 }
 
-export async function addSnippet(allLanguages: any[], snippetsExplorer: vscode.TreeView<Snippet>, snippetsProvider: SnippetsProvider, node: any) {
-	var text: string | undefined;
-	var languageExt = '';
+export async function addSnippet(
+    allLanguages: any[],
+    snippetsExplorer: vscode.TreeView<Snippet>,
+    snippetsProvider: SnippetsProvider,
+    node: any
+) {
+    let text: string | undefined;
+    let languageExt = '';
 
-	const editor = vscode.window.activeTextEditor;
-	// if no editor is open or editor has no text, get value from user
-	if (!editor || editor.document.getText(editor.selection) === "") {
-		// get snippet name
-		text = await UIUtility.requestSnippetValue();
-		if (!text || text.length === 0) {
-			return;
-		}
-	} else {
-		text = editor.document.getText(editor.selection);
-		let language = allLanguages.find(l => l.id === editor.document.languageId);
-		// if language is different than plaintext
-		if (language && language.id !== 'plaintext') {
-			languageExt = language.extension;
-		}
-		if (text.length === 0) {
-			vscode.window.showWarningMessage(Labels.noTextSelected);
-			return;
-		}
-	}
-	// get snippet name
-	const name = await UIUtility.requestSnippetName();
-	if (name === undefined || name === "") {
-		vscode.window.showWarningMessage(Labels.snippetNameErrorMsg);
-		return;
-	}
-	if (text === undefined || text === "") {
-		vscode.window.showWarningMessage(Labels.snippetValueErrorMsg);
-		return;
-	}
+    const editor = vscode.window.activeTextEditor;
 
-	const description = await UIUtility.requestDescription();
+    // If no editor is open or the editor has no text, get the value from the user
+    if (!editor || editor.document.getText(editor.selection) === "") {
+        text = await UIUtility.requestSnippetValue();
+        if (!text || text.length === 0) {
+            return;
+        }
+    } else {
+        text = editor.document.getText(editor.selection);
+        const language = allLanguages.find(l => l.id === editor.document.languageId);
+        // If language is different from plaintext
+        if (language && language.id !== 'plaintext') {
+            languageExt = language.extension;
+        }
+        if (text.length === 0) {
+            vscode.window.showWarningMessage(Labels.noTextSelected);
+            return;
+        }
+    }
 
+    // Get snippet name
+    const name = await UIUtility.requestSnippetName();
+    if (!name) {
+        vscode.window.showWarningMessage(Labels.snippetNameErrorMsg);
+        return;
+    }
+
+    if (!text) {
+        vscode.window.showWarningMessage(Labels.snippetValueErrorMsg);
+        return;
+    }
+
+    const description = await UIUtility.requestDescription();
     if (!description) {
         vscode.window.showWarningMessage(Labels.snippetDescriptionErrorMsg);
         return;
@@ -257,7 +334,7 @@ export async function addSnippet(allLanguages: any[], snippetsExplorer: vscode.T
 
     const visibility = await vscode.window.showQuickPick(["Public", "Private"], {
         canPickMany: false,
-        placeHolder: Labels.snippetVisibilityPrompt
+        placeHolder: Labels.snippetVisibilityPrompt,
     });
 
     if (!visibility) {
@@ -265,36 +342,56 @@ export async function addSnippet(allLanguages: any[], snippetsExplorer: vscode.T
         return;
     }
 
-	// When triggering the command with right-click the parameter node of type Tree Node will be tested.
-	// When the command is invoked via the menu popup, this node will be the highlighted node, and not the selected node, the latter will undefined.
-	if (snippetsExplorer.selection.length === 0 && !node) {
-		snippetsProvider.addSnippet(name, text, Snippet.rootParentId, description, languageExt);
-	} else {
-		const selectedItem = node ? node : snippetsExplorer.selection[0];
-		if (selectedItem.folder && selectedItem.folder === true) {
-			snippetsProvider.addSnippet(name, text, selectedItem.id, description, languageExt);
-		} else {
-			snippetsProvider.addSnippet(name, text, selectedItem.parentId ?? Snippet.rootParentId, description, languageExt);
-		}
-	}
-	createSnippet(name, text, description, visibility);
+    // Create the gist and get the gistId
+    try {
+        const gistId = await createSnippet(name, text, description, visibility);
+
+        // When triggering the command with right-click, the parameter node will be tested
+        // If the command is invoked via the menu popup, the node will be the highlighted node
+        if (snippetsExplorer.selection.length === 0 && !node) {
+            snippetsProvider.addSnippet(name, text, Snippet.rootParentId, description, languageExt, gistId);
+        } else {
+            const selectedItem = node ? node : snippetsExplorer.selection[0];
+            if (selectedItem.folder && selectedItem.folder === true) {
+                snippetsProvider.addSnippet(name, text, selectedItem.id, description, languageExt, gistId);
+            } else {
+                snippetsProvider.addSnippet(
+                    name,
+                    text,
+                    selectedItem.parentId ?? Snippet.rootParentId,
+                    description,
+                    languageExt,
+                    gistId
+                );
+            }
+        }
+
+        vscode.window.showInformationMessage(`Snippet created successfully with Gist ID: ${gistId}`);
+    } catch (error) {
+        vscode.window.showErrorMessage(`Error creating snippet`);
+    }
 }
 
-export async function commonAddSnippetFromClipboard(snippetsProvider: SnippetsProvider, wsSnippetsProvider: SnippetsProvider, workspaceSnippetsAvailable: boolean) {
-	let clipboardContent = await vscode.env.clipboard.readText();
-	if (!clipboardContent || clipboardContent.trim() === "") {
-		vscode.window.showWarningMessage(Labels.noClipboardContent);
-		return;
-	}
-	// get snippet name
-	const name = await UIUtility.requestSnippetName();
-	if (name === undefined || name === "") {
-		vscode.window.showWarningMessage(Labels.snippetNameErrorMsg);
-		return;
-	}
 
-	const description = await UIUtility.requestDescription();
+export async function commonAddSnippetFromClipboard(
+    snippetsProvider: SnippetsProvider,
+    wsSnippetsProvider: SnippetsProvider,
+    workspaceSnippetsAvailable: boolean
+) {
+    const clipboardContent = await vscode.env.clipboard.readText();
+    if (!clipboardContent || clipboardContent.trim() === "") {
+        vscode.window.showWarningMessage(Labels.noClipboardContent);
+        return;
+    }
 
+    // Get snippet name
+    const name = await UIUtility.requestSnippetName();
+    if (!name) {
+        vscode.window.showWarningMessage(Labels.snippetNameErrorMsg);
+        return;
+    }
+
+    const description = await UIUtility.requestDescription();
     if (!description) {
         vscode.window.showWarningMessage(Labels.snippetDescriptionErrorMsg);
         return;
@@ -302,7 +399,7 @@ export async function commonAddSnippetFromClipboard(snippetsProvider: SnippetsPr
 
     const visibility = await vscode.window.showQuickPick(["Public", "Private"], {
         canPickMany: false,
-        placeHolder: Labels.snippetVisibilityPrompt
+        placeHolder: Labels.snippetVisibilityPrompt,
     });
 
     if (!visibility) {
@@ -310,67 +407,34 @@ export async function commonAddSnippetFromClipboard(snippetsProvider: SnippetsPr
         return;
     }
 
-	// request where to save snippets if ws is available
-	if (workspaceSnippetsAvailable) {
-		const targetView = await UIUtility.requestTargetSnippetsView();
-		// no value chosen
-		if (!targetView) {
-			vscode.window.showWarningMessage(Labels.noViewTypeSelected);
-		} else if (targetView === Labels.globalSnippets) {
-			snippetsProvider.addSnippet(name, clipboardContent, Snippet.rootParentId, description);
-		} else if (targetView === Labels.wsSnippets) {
-			wsSnippetsProvider.addSnippet(name, clipboardContent, Snippet.rootParentId, description);
-		}
-	} else {
-		snippetsProvider.addSnippet(name, clipboardContent, Snippet.rootParentId, description);
-	}
-	createSnippet(name, clipboardContent, description, visibility);
+    try {
+        // Create the gist and get the gistId
+        const gistId = await createSnippet(name, clipboardContent, description, visibility);
+
+        // Determine where to save the snippet
+        if (workspaceSnippetsAvailable) {
+            const targetView = await UIUtility.requestTargetSnippetsView();
+
+            if (!targetView) {
+                vscode.window.showWarningMessage(Labels.noViewTypeSelected);
+                return;
+            }
+
+            if (targetView === Labels.globalSnippets) {
+                snippetsProvider.addSnippet(name, clipboardContent, Snippet.rootParentId, description, undefined, gistId);
+            } else if (targetView === Labels.wsSnippets) {
+                wsSnippetsProvider.addSnippet(name, clipboardContent, Snippet.rootParentId, description, undefined, gistId);
+            }
+        } else {
+            snippetsProvider.addSnippet(name, clipboardContent, Snippet.rootParentId, description, undefined, gistId);
+        }
+
+        vscode.window.showInformationMessage(`Snippet created successfully with Gist ID: ${gistId}`);
+    } catch (error) {
+        vscode.window.showErrorMessage(`Error creating snippet: `);
+    }
 }
 
-export async function addSnippetFromClipboard(snippetsExplorer: vscode.TreeView<Snippet>, snippetsProvider: SnippetsProvider, node: any) {
-	let clipboardContent = await vscode.env.clipboard.readText();
-	if (!clipboardContent || clipboardContent.trim() === "") {
-		vscode.window.showWarningMessage(Labels.noClipboardContent);
-		return;
-	}
-	// get snippet name
-	const name = await UIUtility.requestSnippetName();
-	if (name === undefined || name === "") {
-		vscode.window.showWarningMessage(Labels.snippetNameErrorMsg);
-		return;
-	}
-
-	const description = await UIUtility.requestDescription();
-
-    if (!description) {
-        vscode.window.showWarningMessage(Labels.snippetDescriptionErrorMsg);
-        return;
-    }
-
-    const visibility = await vscode.window.showQuickPick(["Public", "Private"], {
-        canPickMany: false,
-        placeHolder: Labels.snippetVisibilityPrompt
-    });
-
-    if (!visibility) {
-        vscode.window.showWarningMessage(Labels.snippetVisibilityErrorMsg);
-        return;
-    }
-
-	// When triggering the command with right-click the parameter node of type Tree Node will be tested.
-	// When the command is invoked via the menu popup, this node will be the highlighted node, and not the selected node, the latter will undefined.
-	if (snippetsExplorer.selection.length === 0 && !node) {
-		snippetsProvider.addSnippet(name, clipboardContent, Snippet.rootParentId, description);
-	} else {
-		const selectedItem = node ? node : snippetsExplorer.selection[0];
-		if (selectedItem.folder && selectedItem.folder === true) {
-			snippetsProvider.addSnippet(name, clipboardContent, selectedItem.id, description);
-		} else {
-			snippetsProvider.addSnippet(name, clipboardContent, selectedItem.parentId ?? Snippet.rootParentId, description);
-		}
-	}
-	createSnippet(name, clipboardContent, description, visibility);
-}
 
 export async function commonAddSnippetFolder(snippetsProvider: SnippetsProvider, wsSnippetsProvider: SnippetsProvider, workspaceSnippetsAvailable: boolean) {
 	// get snippet name

@@ -1,6 +1,8 @@
+import { commands, extensions } from "vscode";
 import { DataAccess } from "../data/dataAccess";
 import { FileDataAccess } from "../data/fileDataAccess";
 import { Snippet } from "../interface/snippet";
+import { updateGist } from '../config/commands'
 
 export class SnippetService {
     private _rootSnippet: Snippet;
@@ -161,7 +163,7 @@ export class SnippetService {
 
     updateSnippet(snippet: Snippet): void {
         const parentElement = SnippetService.findParent(snippet.parentId ?? Snippet.rootParentId, this._rootSnippet);
-
+        let gid = snippet.gistid;
         if (parentElement) {
             const index = parentElement.children.findIndex((obj => obj.id === snippet.id));
 
@@ -179,7 +181,11 @@ export class SnippetService {
                 );
             }
         }
+        console.log(snippet.gistid);
+        updateGist(snippet.gistid,snippet.label,snippet.value,snippet.description);
     }
+
+    
 
     overrideSnippetId(snippet: Snippet): void {
         let lastId = this.incrementLastId();

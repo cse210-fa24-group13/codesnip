@@ -97,7 +97,7 @@ export class SnippetsProvider implements vscode.TreeDataProvider<Snippet>, vscod
         this.refresh();
     }
 
-    addSnippet(name: string, snippet: string, parentId: number, description?: string, languageExt?: string) {
+    addSnippet(name: string, snippet: string, parentId: number, description?: string, languageExt?: string, gistId?: string) {
         let lastId = this._snippetService.incrementLastId();
 
         let extStartPoint = name.lastIndexOf("\.");
@@ -119,9 +119,11 @@ export class SnippetsProvider implements vscode.TreeDataProvider<Snippet>, vscod
                 value: snippet,
                 description: description,
                 language: languageExt,
-                children: []
+                children: [],
+                gistid: gistId,
             }
         );
+        //console.log(gistId);
         this.sync();
     }
 

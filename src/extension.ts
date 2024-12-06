@@ -452,14 +452,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.commonAddSnippetFromClipboard,
         async _ => handleCommand(() => commands.commonAddSnippetFromClipboard(snippetsProvider, wsSnippetsProvider, workspaceSnippetsAvailable))
     ));
-
-    context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.globalAddSnippetFromClipboard,
-        async (node) => handleCommand(() => commands.addSnippetFromClipboard(snippetsExplorer, snippetsProvider, node))
-    ));
-
-    context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.wsAddSnippetFromClipboard,
-        async (node) => handleCommand(() => commands.addSnippetFromClipboard(wsSnippetsExplorer, wsSnippetsProvider, node)
-        )));
+    
 
     //** COMMAND : ADD SNIPPET FOLDER **/
 
