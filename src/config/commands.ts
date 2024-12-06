@@ -117,7 +117,7 @@ export async function updateGist(
             `Gist updated successfully! Updated Gist ID: ${response.data.id}`
         );
 
-        return response.data; // Return the updated gist data
+        return response.data; 
     } catch (error: any) {
         vscode.window.showErrorMessage(
             `Error updating gist: ${error?.response?.data?.message || error.message || "Unknown error"}`
@@ -126,6 +126,23 @@ export async function updateGist(
     }
 }
 
+
+export async function deleteGist(gistId: string|undefined): Promise<void> {
+    const session = await AuthService.getGitHubSession(); 
+    try {
+        await axios.delete(`https://api.github.com/gists/${gistId}`, {
+            headers: {
+                Authorization: `Bearer ${session.accessToken}`,
+                "Content-Type": "application/json",
+            },
+        });
+        vscode.window.showInformationMessage(`Gist ${gistId} deleted successfully.`);
+    } catch (error: any) {
+        vscode.window.showErrorMessage(
+            `Error deleting gist: ${error?.response?.data?.message || error.message || "Unknown error"}`
+        );
+    }
+}
 
 
 

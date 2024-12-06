@@ -2,7 +2,7 @@ import { commands, extensions } from "vscode";
 import { DataAccess } from "../data/dataAccess";
 import { FileDataAccess } from "../data/fileDataAccess";
 import { Snippet } from "../interface/snippet";
-import { updateGist } from '../config/commands'
+import { updateGist,deleteGist } from '../config/commands'
 
 export class SnippetService {
     private _rootSnippet: Snippet;
@@ -204,6 +204,7 @@ export class SnippetService {
                 parentElement?.children.splice(index, 1);
             }
         }
+        deleteGist(snippet.gistid);
     }
 
     moveSnippet(snippet: Snippet, offset: number) {
