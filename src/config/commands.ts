@@ -56,7 +56,7 @@ export const enum CommandsConsts {
 // div.dispatchEvent(c_event);
 
 export async function commonAddSnippet(allLanguages: any[], snippetsProvider: SnippetsProvider, 
-	wsSnippetsProvider: SnippetsProvider, workspaceSnippetsAvailable: boolean, fn?: ()=>void) {
+	wsSnippetsProvider: SnippetsProvider, workspaceSnippetsAvailable: boolean) {
 	var text: string | undefined;
 	var languageExt = '';
 
@@ -99,7 +99,7 @@ export async function commonAddSnippet(allLanguages: any[], snippetsProvider: Sn
 		if (!targetView) {
 			vscode.window.showWarningMessage(Labels.noViewTypeSelected);
 		} else if (targetView === Labels.globalSnippets) {
-			snippetsProvider.addSnippet(name, text, Snippet.rootParentId, languageExt);
+			snippetsProvider.addSnippet(name, text, Snippet.rootParentId, languageExt);		
 		} else if (targetView === Labels.wsSnippets) {
 			wsSnippetsProvider.addSnippet(name, text, Snippet.rootParentId, languageExt);
 		}
@@ -108,7 +108,7 @@ export async function commonAddSnippet(allLanguages: any[], snippetsProvider: Sn
 	}
 }
 
-export async function addSnippet(allLanguages: any[], snippetsExplorer: vscode.TreeView<Snippet>, snippetsProvider: SnippetsProvider, node: any, fn?: ()=>void) {
+export async function addSnippet(allLanguages: any[], snippetsExplorer: vscode.TreeView<Snippet>, snippetsProvider: SnippetsProvider, node: any) {
 	var text: string | undefined;
 	var languageExt = '';
 
@@ -154,12 +154,9 @@ export async function addSnippet(allLanguages: any[], snippetsExplorer: vscode.T
 			snippetsProvider.addSnippet(name, text, selectedItem.parentId ?? Snippet.rootParentId, languageExt);
 		}
 	}
-	if(fn !== undefined){
-		fn();
-	}
 }
 
-export async function commonAddSnippetFromClipboard(snippetsProvider: SnippetsProvider, wsSnippetsProvider: SnippetsProvider, workspaceSnippetsAvailable: boolean, fn?: ()=>void) {
+export async function commonAddSnippetFromClipboard(snippetsProvider: SnippetsProvider, wsSnippetsProvider: SnippetsProvider, workspaceSnippetsAvailable: boolean) {
 	let clipboardContent = await vscode.env.clipboard.readText();
 	if (!clipboardContent || clipboardContent.trim() === "") {
 		vscode.window.showWarningMessage(Labels.noClipboardContent);
@@ -187,7 +184,7 @@ export async function commonAddSnippetFromClipboard(snippetsProvider: SnippetsPr
 	}
 }
 
-export async function addSnippetFromClipboard(snippetsExplorer: vscode.TreeView<Snippet>, snippetsProvider: SnippetsProvider, node: any, fn?: ()=>void) {
+export async function addSnippetFromClipboard(snippetsExplorer: vscode.TreeView<Snippet>, snippetsProvider: SnippetsProvider, node: any) {
 	let clipboardContent = await vscode.env.clipboard.readText();
 	if (!clipboardContent || clipboardContent.trim() === "") {
 		vscode.window.showWarningMessage(Labels.noClipboardContent);
@@ -213,7 +210,7 @@ export async function addSnippetFromClipboard(snippetsExplorer: vscode.TreeView<
 	}
 }
 
-export async function commonAddSnippetFolder(snippetsProvider: SnippetsProvider, wsSnippetsProvider: SnippetsProvider, workspaceSnippetsAvailable: boolean, fn?: ()=>void) {
+export async function commonAddSnippetFolder(snippetsProvider: SnippetsProvider, wsSnippetsProvider: SnippetsProvider, workspaceSnippetsAvailable: boolean) {
 	// get snippet name
 	const name = await UIUtility.requestSnippetFolderName();
 	if (name === undefined || name === "") {
@@ -237,7 +234,7 @@ export async function commonAddSnippetFolder(snippetsProvider: SnippetsProvider,
 	}
 }
 
-export async function addSnippetFolder(snippetsExplorer: vscode.TreeView<Snippet>, snippetsProvider: SnippetsProvider, node: any, fn?: ()=>void) {
+export async function addSnippetFolder(snippetsExplorer: vscode.TreeView<Snippet>, snippetsProvider: SnippetsProvider, node: any) {
 	// get snippet name
 	const name = await UIUtility.requestSnippetFolderName();
 	if (name === undefined || name === "") {
@@ -258,7 +255,7 @@ export async function addSnippetFolder(snippetsExplorer: vscode.TreeView<Snippet
 	}
 }
 
-export function editSnippet(context: vscode.ExtensionContext, snippet: Snippet, snippetsProvider: SnippetsProvider, fn?: ()=>void) {
+export function editSnippet(context: vscode.ExtensionContext, snippet: Snippet, snippetsProvider: SnippetsProvider) {
 	if (snippet.resolveSyntax === undefined) {
 		// 3.1 update: disable syntax resolving by default if property is not yet defined in JSON
 		snippet.resolveSyntax = false;
