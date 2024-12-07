@@ -146,6 +146,7 @@ export function activate(context: vscode.ExtensionContext) {
     // refresh windows whenever it gains focus
     // this will prevent de-sync between multiple open workspaces
     vscode.window.onDidChangeWindowState((event) => {
+        console.log('test2', event)
         if (event.focused) {
             refreshUI();
         }
@@ -154,6 +155,7 @@ export function activate(context: vscode.ExtensionContext) {
     // refresh UI when updating workspace setting
     vscode.workspace.onDidChangeConfiguration(event => {
         let affected = event.affectsConfiguration(`${snippetsConfigKey}.${useWorkspaceFolderKey}`);
+        console.log('test');
         if (affected) {
             if (vscode.workspace.getConfiguration(snippetsConfigKey).get(useWorkspaceFolderKey)) {
                 requestWSConfigSetup();
@@ -177,6 +179,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     //** common logic **//
     function refreshUI() {
+        console.log('refreshUI')
         cipDisposable?.dispose();
         snippetsProvider.refresh();
         // re-check if .vscode/snippets.json is always available (use case when deleting file after enabling workspace in settings)
@@ -265,6 +268,7 @@ export function activate(context: vscode.ExtensionContext) {
             vscode.window.showErrorMessage(StringUtility.formatString(Labels.genericError, error.message));
             refreshUI();
         });
+        console.log('handler')
     }
     //** common logic **//
 
@@ -429,107 +433,113 @@ export function activate(context: vscode.ExtensionContext) {
                 enableScripts: true, // Allow JavaScript in the webview
             }
         );
-    
-        // Get all snippets
-        const snippets = snippetService.getAllSnippets(); // Assumes `getAllSnippets` returns an array of snippets
-        let snippetsHtml = '';
-    
-        // Generate HTML list of snippets
-        snippets.forEach((snippet, index) => {
-            let code = snippet.value;
-            if(code !== undefined){
-                code = code.split('<').join('&lt;').split('>').join('&gt;');
-            }
-            snippetsHtml += `
-                <li class="card">
-                    <div class="top">
-                        <p>${code}</p>
-                    </div>
-                    <div class="bottom">
-                        <strong>${snippet.label}</strong><br/>
-                    </div>
-                </li>
-            `;
-        });
 
-        // Set HTML content for the snippets page
-        panel.webview.html = `
-            <html>
-                <head>
-                    <style>
-                        body{
-                            --background-color: #B0CAF3;
-                            --primary-color: #657FF0;
-                            --secondary-color: #7FA3F7;
-                            --black: #1E1E1E;
-                        }
-                        body {
-                            font-family: Arial, sans-serif;
-                            color: var(--black);
-                            margin: 0;
-                            padding: 0;
-                            background-color: var(--background-color);
-                        }
-                        #nav{
-                            top: 0;
-                            width: 100%;
-                            height: 6em;
-                            display: flex;
-                            justify-content: space-between;
-                            list-style-type: none;
-                            margin: 0;
-                            padding: 0;
-                            background-color: var(--primary-color);
-                        }
-                        #nav li{
-                            margin: auto 2em;
-                            font-weight: 700;
-                            font-size: 1.2em;
-                        }
-                        #cards{
-                            margin: 0 auto;
-                            padding: 0;
-                            height: full;
-                            width: 62em;
-                            list-style-type: none;
-                            display: grid;
-                            grid-template-columns: 1fr 1fr;
-                        }
-                        .card {
-                            flex: 50%;
-                            height: 18em;
-                            width: 30em;
-                            /* display: flex; */
-                            margin: 1em 0.5em 0 0.5em;
-                            /* border: solid; */
-                            border-radius: 1em;
-                            overflow: hidden;
-                        }
-                        .top{
-                            background-color: var(--secondary-color);
-                            height: 60%;
-                            padding: 1em;
-                        }
-                        .bottom{
-                            padding: 1em;
-                            height: 100%;
-                            background-color: var(--primary-color);
-                        }
-                    </style>
-                </head>
-                <body>
-                    <ul id="nav">
-                        <li>Back</li>
-                        <li>New Room</li>
-                        <li>Join Room</li>
-                        <li>Search</li>
-                    </ul>
-                    <ul id="cards">
-                        ${snippetsHtml}
-                    </ul>
-                </body>
-            </html>
-        `;
+        // setInterval(fillWebView, 500);
+        fillWebView();
+    
+        function fillWebView(){
+            // Get all snippets
+            const snippets = snippetService.getAllSnippets(); // Assumes `getAllSnippets` returns an array of snippets
+            let snippetsHtml = '';
+        
+            // Generate HTML list of snippets
+            snippets.forEach((snippet, index) => {
+                let code = snippet.value;
+                if(code !== undefined){
+                    code = code.split('<').join('&lt;').split('>').join('&gt;');
+                }
+                snippetsHtml += `
+                    <li class="card">
+                        <div class="top">
+                            <p>${code}</p>
+                        </div>
+                        <div class="bottom">
+                            <strong>${snippet.label}</strong><br/>
+                        </div>
+                    </li>
+                `;
+            });
+    
+            // Set HTML content for the snippets page
+            panel.webview.html = `
+                <html>
+                    <head>
+                        <style>
+                            body{
+                                --background-color: #B0CAF3;
+                                --primary-color: #657FF0;
+                                --secondary-color: #7FA3F7;
+                                --black: #1E1E1E;
+                            }
+                            body {
+                                font-family: Arial, sans-serif;
+                                color: var(--black);
+                                margin: 0;
+                                padding: 0;
+                                background-color: var(--background-color);
+                            }
+                            #nav{
+                                top: 0;
+                                width: 100%;
+                                height: 6em;
+                                display: flex;
+                                justify-content: space-between;
+                                list-style-type: none;
+                                margin: 0;
+                                padding: 0;
+                                background-color: var(--primary-color);
+                            }
+                            #nav li{
+                                margin: auto 2em;
+                                font-weight: 700;
+                                font-size: 1.2em;
+                            }
+                            #cards{
+                                margin: 0 auto;
+                                padding: 0;
+                                height: full;
+                                width: 62em;
+                                list-style-type: none;
+                                display: grid;
+                                grid-template-columns: 1fr 1fr;
+                            }
+                            .card {
+                                flex: 50%;
+                                height: 18em;
+                                width: 30em;
+                                /* display: flex; */
+                                margin: 1em 0.5em 0 0.5em;
+                                /* border: solid; */
+                                border-radius: 1em;
+                                overflow: hidden;
+                            }
+                            .top{
+                                background-color: var(--secondary-color);
+                                height: 60%;
+                                padding: 1em;
+                            }
+                            .bottom{
+                                padding: 1em;
+                                height: 100%;
+                                background-color: var(--primary-color);
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <ul id="nav">
+                            <li>Back</li>
+                            <li>New Room</li>
+                            <li>Join Room</li>
+                            <li>Search</li>
+                        </ul>
+                        <ul id="cards">
+                            ${snippetsHtml}
+                        </ul>
+                    </body>
+                </html>
+            `;
+        }
+
     }
     
     
@@ -542,7 +552,9 @@ export function activate(context: vscode.ExtensionContext) {
     
 
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.globalAddSnippet,
-        async (node) => handleCommand(() => commands.addSnippet(allLanguages, snippetsExplorer, snippetsProvider, node))
+        async (node) => handleCommand(() => {
+            commands.addSnippet(allLanguages, snippetsExplorer, snippetsProvider, node, refreshUI)}
+        )
     ));
 
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.wsAddSnippet,

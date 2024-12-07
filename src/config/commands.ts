@@ -47,6 +47,14 @@ export const enum CommandsConsts {
 	wsSortAllSnippets = "wsSnippetsCmd.sortAllSnippets",
 }
 
+// const c_event = new CustomEvent("build", { detail: 3 });
+
+// window.addEventListener("beforeinstallprompt", ((event: CustomEvent) => {
+// 	console.log("Whoop!");
+// }) as EventListener);
+
+// div.dispatchEvent(c_event);
+
 export async function commonAddSnippet(allLanguages: any[], snippetsProvider: SnippetsProvider, 
 	wsSnippetsProvider: SnippetsProvider, workspaceSnippetsAvailable: boolean) {
 	var text: string | undefined;
@@ -100,7 +108,7 @@ export async function commonAddSnippet(allLanguages: any[], snippetsProvider: Sn
 	}
 }
 
-export async function addSnippet(allLanguages: any[], snippetsExplorer: vscode.TreeView<Snippet>, snippetsProvider: SnippetsProvider, node: any) {
+export async function addSnippet(allLanguages: any[], snippetsExplorer: vscode.TreeView<Snippet>, snippetsProvider: SnippetsProvider, node: any, fn?: ()=>void) {
 	var text: string | undefined;
 	var languageExt = '';
 
@@ -145,6 +153,9 @@ export async function addSnippet(allLanguages: any[], snippetsExplorer: vscode.T
 		} else {
 			snippetsProvider.addSnippet(name, text, selectedItem.parentId ?? Snippet.rootParentId, languageExt);
 		}
+	}
+	if(fn !== undefined){
+		fn();
 	}
 }
 
