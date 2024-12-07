@@ -194,6 +194,28 @@ export function activate(context: vscode.ExtensionContext) {
         }
     }
 
+    let panel: vscode.WebviewPanel;
+
+    function refreshWebUI() {
+        console.log('refreshWebUI');
+
+        cipDisposable?.dispose();
+        snippetsProvider.refresh();
+        // re-check if .vscode/snippets.json is always available (use case when deleting file after enabling workspace in settings)
+        requestWSConfigSetup(false);
+        if (workspaceSnippetsAvailable) {
+            wsSnippetsProvider.refresh();
+        } else {
+            vscode.commands.executeCommand(setContextCmd, contextWSStateKey, contextWSFileNotAvailable);
+        }
+        if (registerGlobalCIPSnippets) {
+            registerGlobalCIPSnippets();
+        }
+        if(panel){
+            fillWebView(panel);
+        }
+    }
+
     async function requestWSConfigSetup(requestInput = true) {
         if (vscode.workspace.workspaceFolders && vscode.workspace.getConfiguration(snippetsConfigKey).get(useWorkspaceFolderKey)) {
             snippetsPath = path.join(vscode.workspace.workspaceFolders[0].uri.fsPath, workspaceFileName);
@@ -425,7 +447,7 @@ export function activate(context: vscode.ExtensionContext) {
     ));
 
     function openPage(context: vscode.ExtensionContext) {
-        const panel = vscode.window.createWebviewPanel(
+        panel = vscode.window.createWebviewPanel(
             'webviewFirstPage', // Identifies the webview panel (type)
             'Snippets Page', // Title
             vscode.ViewColumn.One, // Where to show the webview (first editor group)
@@ -435,111 +457,110 @@ export function activate(context: vscode.ExtensionContext) {
         );
 
         // setInterval(fillWebView, 500);
-        fillWebView();
-    
-        function fillWebView(){
-            // Get all snippets
-            const snippets = snippetService.getAllSnippets(); // Assumes `getAllSnippets` returns an array of snippets
-            let snippetsHtml = '';
-        
-            // Generate HTML list of snippets
-            snippets.forEach((snippet, index) => {
-                let code = snippet.value;
-                if(code !== undefined){
-                    code = code.split('<').join('&lt;').split('>').join('&gt;');
-                }
-                snippetsHtml += `
-                    <li class="card">
-                        <div class="top">
-                            <p>${code}</p>
-                        </div>
-                        <div class="bottom">
-                            <strong>${snippet.label}</strong><br/>
-                        </div>
-                    </li>
-                `;
-            });
-    
-            // Set HTML content for the snippets page
-            panel.webview.html = `
-                <html>
-                    <head>
-                        <style>
-                            body{
-                                --background-color: #B0CAF3;
-                                --primary-color: #657FF0;
-                                --secondary-color: #7FA3F7;
-                                --black: #1E1E1E;
-                            }
-                            body {
-                                font-family: Arial, sans-serif;
-                                color: var(--black);
-                                margin: 0;
-                                padding: 0;
-                                background-color: var(--background-color);
-                            }
-                            #nav{
-                                top: 0;
-                                width: 100%;
-                                height: 6em;
-                                display: flex;
-                                justify-content: space-between;
-                                list-style-type: none;
-                                margin: 0;
-                                padding: 0;
-                                background-color: var(--primary-color);
-                            }
-                            #nav li{
-                                margin: auto 2em;
-                                font-weight: 700;
-                                font-size: 1.2em;
-                            }
-                            #cards{
-                                margin: 0 auto;
-                                padding: 0;
-                                height: full;
-                                width: 62em;
-                                list-style-type: none;
-                                display: grid;
-                                grid-template-columns: 1fr 1fr;
-                            }
-                            .card {
-                                flex: 50%;
-                                height: 18em;
-                                width: 30em;
-                                /* display: flex; */
-                                margin: 1em 0.5em 0 0.5em;
-                                /* border: solid; */
-                                border-radius: 1em;
-                                overflow: hidden;
-                            }
-                            .top{
-                                background-color: var(--secondary-color);
-                                height: 60%;
-                                padding: 1em;
-                            }
-                            .bottom{
-                                padding: 1em;
-                                height: 100%;
-                                background-color: var(--primary-color);
-                            }
-                        </style>
-                    </head>
-                    <body>
-                        <ul id="nav">
-                            <li>Back</li>
-                            <li>New Room</li>
-                            <li>Join Room</li>
-                            <li>Search</li>
-                        </ul>
-                        <ul id="cards">
-                            ${snippetsHtml}
-                        </ul>
-                    </body>
-                </html>
-            `;
-        }
+        fillWebView(panel);
+    }
 
+    function fillWebView(panel: vscode.WebviewPanel){
+        // Get all snippets
+        const snippets = snippetService.getAllSnippets(); // Assumes `getAllSnippets` returns an array of snippets
+        let snippetsHtml = '';
+    
+        // Generate HTML list of snippets
+        snippets.forEach((snippet, index) => {
+            let code = snippet.value;
+            if(code !== undefined){
+                code = code.split('<').join('&lt;').split('>').join('&gt;');
+            }
+            snippetsHtml += `
+                <li class="card">
+                    <div class="top">
+                        <p>${code}</p>
+                    </div>
+                    <div class="bottom">
+                        <strong>${snippet.label}</strong><br/>
+                    </div>
+                </li>
+            `;
+        });
+
+        // Set HTML content for the snippets page
+        panel.webview.html = `
+            <html>
+                <head>
+                    <style>
+                        body{
+                            --background-color: #B0CAF3;
+                            --primary-color: #657FF0;
+                            --secondary-color: #7FA3F7;
+                            --black: #1E1E1E;
+                        }
+                        body {
+                            font-family: Arial, sans-serif;
+                            color: var(--black);
+                            margin: 0;
+                            padding: 0;
+                            background-color: var(--background-color);
+                        }
+                        #nav{
+                            top: 0;
+                            width: 100%;
+                            height: 6em;
+                            display: flex;
+                            justify-content: space-between;
+                            list-style-type: none;
+                            margin: 0;
+                            padding: 0;
+                            background-color: var(--primary-color);
+                        }
+                        #nav li{
+                            margin: auto 2em;
+                            font-weight: 700;
+                            font-size: 1.2em;
+                        }
+                        #cards{
+                            margin: 0 auto;
+                            padding: 0;
+                            height: full;
+                            width: 62em;
+                            list-style-type: none;
+                            display: grid;
+                            grid-template-columns: 1fr 1fr;
+                        }
+                        .card {
+                            flex: 50%;
+                            height: 18em;
+                            width: 30em;
+                            /* display: flex; */
+                            margin: 1em 0.5em 0 0.5em;
+                            /* border: solid; */
+                            border-radius: 1em;
+                            overflow: hidden;
+                        }
+                        .top{
+                            background-color: var(--secondary-color);
+                            height: 60%;
+                            padding: 1em;
+                        }
+                        .bottom{
+                            padding: 1em;
+                            height: 100%;
+                            background-color: var(--primary-color);
+                        }
+                    </style>
+                </head>
+                <body>
+                    <ul id="nav">
+                        <li>Back</li>
+                        <li>New Room</li>
+                        <li>Join Room</li>
+                        <li>Search</li>
+                    </ul>
+                    <ul id="cards">
+                        ${snippetsHtml}
+                    </ul>
+                </body>
+            </html>
+        `;
     }
     
     
@@ -547,56 +568,54 @@ export function activate(context: vscode.ExtensionContext) {
     //** COMMAND : ADD SNIPPET **/
 
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.commonAddSnippet,
-        async _ => handleCommand(() => commands.commonAddSnippet(allLanguages, snippetsProvider, wsSnippetsProvider, workspaceSnippetsAvailable))
+        async _ => handleCommand(() => commands.commonAddSnippet(allLanguages, snippetsProvider, wsSnippetsProvider, workspaceSnippetsAvailable, refreshWebUI))
     ));
     
 
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.globalAddSnippet,
-        async (node) => handleCommand(() => {
-            commands.addSnippet(allLanguages, snippetsExplorer, snippetsProvider, node, refreshUI)}
-        )
+        async (node) => handleCommand(() => commands.addSnippet(allLanguages, snippetsExplorer, snippetsProvider, node, refreshWebUI))
     ));
 
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.wsAddSnippet,
-        async (node) => handleCommand(() => commands.addSnippet(allLanguages, wsSnippetsExplorer, wsSnippetsProvider, node))
+        async (node) => handleCommand(() => commands.addSnippet(allLanguages, wsSnippetsExplorer, wsSnippetsProvider, node, refreshWebUI))
     ));
 
     //** COMMAND : ADD SNIPPET FROM CLIPBOARD **/
 
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.commonAddSnippetFromClipboard,
-        async _ => handleCommand(() => commands.commonAddSnippetFromClipboard(snippetsProvider, wsSnippetsProvider, workspaceSnippetsAvailable))
+        async _ => handleCommand(() => commands.commonAddSnippetFromClipboard(snippetsProvider, wsSnippetsProvider, workspaceSnippetsAvailable, refreshWebUI))
     ));
 
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.globalAddSnippetFromClipboard,
-        async (node) => handleCommand(() => commands.addSnippetFromClipboard(snippetsExplorer, snippetsProvider, node))
+        async (node) => handleCommand(() => commands.addSnippetFromClipboard(snippetsExplorer, snippetsProvider, node, refreshWebUI))
     ));
 
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.wsAddSnippetFromClipboard,
-        async (node) => handleCommand(() => commands.addSnippetFromClipboard(wsSnippetsExplorer, wsSnippetsProvider, node)
+        async (node) => handleCommand(() => commands.addSnippetFromClipboard(wsSnippetsExplorer, wsSnippetsProvider, node, refreshWebUI)
         )));
 
     //** COMMAND : ADD SNIPPET FOLDER **/
 
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.commonAddSnippetFolder,
-        async _ => handleCommand(() => commands.commonAddSnippetFolder(snippetsProvider, wsSnippetsProvider, workspaceSnippetsAvailable))
+        async _ => handleCommand(() => commands.commonAddSnippetFolder(snippetsProvider, wsSnippetsProvider, workspaceSnippetsAvailable, refreshWebUI))
     ));
 
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.globalAddSnippetFolder,
-        async (node) => handleCommand(() => commands.addSnippetFolder(snippetsExplorer, snippetsProvider, node))
+        async (node) => handleCommand(() => commands.addSnippetFolder(snippetsExplorer, snippetsProvider, node, refreshWebUI))
     ));
 
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.wsAddSnippetFolder,
-        async (node) => handleCommand(() => commands.addSnippetFolder(wsSnippetsExplorer, wsSnippetsProvider, node))
+        async (node) => handleCommand(() => commands.addSnippetFolder(wsSnippetsExplorer, wsSnippetsProvider, node, refreshWebUI))
     ));
 
     //** COMMAND : EDIT SNIPPET **/
 
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.globalEditSnippet,
-        (snippet: Snippet) => handleCommand(() => commands.editSnippet(context, snippet, snippetsProvider))
+        (snippet: Snippet) => handleCommand(() => commands.editSnippet(context, snippet, snippetsProvider, refreshWebUI))
     ));
 
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.wsEditSnippet,
-        (snippet: Snippet) => handleCommand(() => commands.editSnippet(context, snippet, wsSnippetsProvider))
+        (snippet: Snippet) => handleCommand(() => commands.editSnippet(context, snippet, wsSnippetsProvider, refreshWebUI))
     ));
 
     //** COMMAND : EDIT SNIPPET FOLDER **/
@@ -718,6 +737,7 @@ export function activate(context: vscode.ExtensionContext) {
     //** COMMAND : REFRESH **/
 
     context.subscriptions.push(vscode.commands.registerCommand("commonSnippetsCmd.refreshEntry", _ => refreshUI()));
+    context.subscriptions.push(vscode.commands.registerCommand("commonSnippetsCmd.refreshEntry", _ => refreshWebUI()));
 
     //** COMMAND : IMPORT & EXPORT **/
 
