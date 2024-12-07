@@ -47,8 +47,16 @@ export const enum CommandsConsts {
 	wsSortAllSnippets = "wsSnippetsCmd.sortAllSnippets",
 }
 
+// const c_event = new CustomEvent("build", { detail: 3 });
+
+// window.addEventListener("beforeinstallprompt", ((event: CustomEvent) => {
+// 	console.log("Whoop!");
+// }) as EventListener);
+
+// div.dispatchEvent(c_event);
+
 export async function commonAddSnippet(allLanguages: any[], snippetsProvider: SnippetsProvider, 
-	wsSnippetsProvider: SnippetsProvider, workspaceSnippetsAvailable: boolean) {
+	wsSnippetsProvider: SnippetsProvider, workspaceSnippetsAvailable: boolean, fn?: ()=>void) {
 	var text: string | undefined;
 	var languageExt = '';
 
@@ -100,7 +108,7 @@ export async function commonAddSnippet(allLanguages: any[], snippetsProvider: Sn
 	}
 }
 
-export async function addSnippet(allLanguages: any[], snippetsExplorer: vscode.TreeView<Snippet>, snippetsProvider: SnippetsProvider, node: any) {
+export async function addSnippet(allLanguages: any[], snippetsExplorer: vscode.TreeView<Snippet>, snippetsProvider: SnippetsProvider, node: any, fn?: ()=>void) {
 	var text: string | undefined;
 	var languageExt = '';
 
@@ -146,9 +154,12 @@ export async function addSnippet(allLanguages: any[], snippetsExplorer: vscode.T
 			snippetsProvider.addSnippet(name, text, selectedItem.parentId ?? Snippet.rootParentId, languageExt);
 		}
 	}
+	if(fn !== undefined){
+		fn();
+	}
 }
 
-export async function commonAddSnippetFromClipboard(snippetsProvider: SnippetsProvider, wsSnippetsProvider: SnippetsProvider, workspaceSnippetsAvailable: boolean) {
+export async function commonAddSnippetFromClipboard(snippetsProvider: SnippetsProvider, wsSnippetsProvider: SnippetsProvider, workspaceSnippetsAvailable: boolean, fn?: ()=>void) {
 	let clipboardContent = await vscode.env.clipboard.readText();
 	if (!clipboardContent || clipboardContent.trim() === "") {
 		vscode.window.showWarningMessage(Labels.noClipboardContent);
@@ -176,7 +187,7 @@ export async function commonAddSnippetFromClipboard(snippetsProvider: SnippetsPr
 	}
 }
 
-export async function addSnippetFromClipboard(snippetsExplorer: vscode.TreeView<Snippet>, snippetsProvider: SnippetsProvider, node: any) {
+export async function addSnippetFromClipboard(snippetsExplorer: vscode.TreeView<Snippet>, snippetsProvider: SnippetsProvider, node: any, fn?: ()=>void) {
 	let clipboardContent = await vscode.env.clipboard.readText();
 	if (!clipboardContent || clipboardContent.trim() === "") {
 		vscode.window.showWarningMessage(Labels.noClipboardContent);
@@ -202,7 +213,7 @@ export async function addSnippetFromClipboard(snippetsExplorer: vscode.TreeView<
 	}
 }
 
-export async function commonAddSnippetFolder(snippetsProvider: SnippetsProvider, wsSnippetsProvider: SnippetsProvider, workspaceSnippetsAvailable: boolean) {
+export async function commonAddSnippetFolder(snippetsProvider: SnippetsProvider, wsSnippetsProvider: SnippetsProvider, workspaceSnippetsAvailable: boolean, fn?: ()=>void) {
 	// get snippet name
 	const name = await UIUtility.requestSnippetFolderName();
 	if (name === undefined || name === "") {
@@ -226,7 +237,7 @@ export async function commonAddSnippetFolder(snippetsProvider: SnippetsProvider,
 	}
 }
 
-export async function addSnippetFolder(snippetsExplorer: vscode.TreeView<Snippet>, snippetsProvider: SnippetsProvider, node: any) {
+export async function addSnippetFolder(snippetsExplorer: vscode.TreeView<Snippet>, snippetsProvider: SnippetsProvider, node: any, fn?: ()=>void) {
 	// get snippet name
 	const name = await UIUtility.requestSnippetFolderName();
 	if (name === undefined || name === "") {
@@ -247,7 +258,7 @@ export async function addSnippetFolder(snippetsExplorer: vscode.TreeView<Snippet
 	}
 }
 
-export function editSnippet(context: vscode.ExtensionContext, snippet: Snippet, snippetsProvider: SnippetsProvider) {
+export function editSnippet(context: vscode.ExtensionContext, snippet: Snippet, snippetsProvider: SnippetsProvider, fn?: ()=>void) {
 	if (snippet.resolveSyntax === undefined) {
 		// 3.1 update: disable syntax resolving by default if property is not yet defined in JSON
 		snippet.resolveSyntax = false;

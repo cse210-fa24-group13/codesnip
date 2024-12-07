@@ -146,6 +146,7 @@ export function activate(context: vscode.ExtensionContext) {
     // refresh windows whenever it gains focus
     // this will prevent de-sync between multiple open workspaces
     vscode.window.onDidChangeWindowState((event) => {
+        console.log('test2', event)
         if (event.focused) {
             refreshUI();
         }
@@ -154,6 +155,7 @@ export function activate(context: vscode.ExtensionContext) {
     // refresh UI when updating workspace setting
     vscode.workspace.onDidChangeConfiguration(event => {
         let affected = event.affectsConfiguration(`${snippetsConfigKey}.${useWorkspaceFolderKey}`);
+        console.log('test');
         if (affected) {
             if (vscode.workspace.getConfiguration(snippetsConfigKey).get(useWorkspaceFolderKey)) {
                 requestWSConfigSetup();
@@ -177,6 +179,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     //** common logic **//
     function refreshUI() {
+        console.log('refreshUI')
         cipDisposable?.dispose();
         snippetsProvider.refresh();
         // re-check if .vscode/snippets.json is always available (use case when deleting file after enabling workspace in settings)
@@ -188,6 +191,28 @@ export function activate(context: vscode.ExtensionContext) {
         }
         if (registerGlobalCIPSnippets) {
             registerGlobalCIPSnippets();
+        }
+    }
+
+    let panel: vscode.WebviewPanel;
+
+    function refreshWebUI() {
+        console.log('refreshWebUI');
+
+        cipDisposable?.dispose();
+        snippetsProvider.refresh();
+        // re-check if .vscode/snippets.json is always available (use case when deleting file after enabling workspace in settings)
+        requestWSConfigSetup(false);
+        if (workspaceSnippetsAvailable) {
+            wsSnippetsProvider.refresh();
+        } else {
+            vscode.commands.executeCommand(setContextCmd, contextWSStateKey, contextWSFileNotAvailable);
+        }
+        if (registerGlobalCIPSnippets) {
+            registerGlobalCIPSnippets();
+        }
+        if(panel){
+            fillWebView(panel);
         }
     }
 
@@ -265,6 +290,7 @@ export function activate(context: vscode.ExtensionContext) {
             vscode.window.showErrorMessage(StringUtility.formatString(Labels.genericError, error.message));
             refreshUI();
         });
+        console.log('handler')
     }
     //** common logic **//
 
@@ -421,7 +447,7 @@ export function activate(context: vscode.ExtensionContext) {
     ));
 
     function openPage(context: vscode.ExtensionContext) {
-        const panel = vscode.window.createWebviewPanel(
+        panel = vscode.window.createWebviewPanel(
             'webviewFirstPage', // Identifies the webview panel (type)
             'Snippets Page', // Title
             vscode.ViewColumn.One, // Where to show the webview (first editor group)
@@ -429,7 +455,12 @@ export function activate(context: vscode.ExtensionContext) {
                 enableScripts: true, // Allow JavaScript in the webview
             }
         );
-    
+
+        // setInterval(fillWebView, 500);
+        fillWebView(panel);
+    }
+
+    function fillWebView(panel: vscode.WebviewPanel){
         // Get all snippets
         const snippets = snippetService.getAllSnippets(); // Assumes `getAllSnippets` returns an array of snippets
         let snippetsHtml = '';
@@ -537,54 +568,54 @@ export function activate(context: vscode.ExtensionContext) {
     //** COMMAND : ADD SNIPPET **/
 
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.commonAddSnippet,
-        async _ => handleCommand(() => commands.commonAddSnippet(allLanguages, snippetsProvider, wsSnippetsProvider, workspaceSnippetsAvailable))
+        async _ => handleCommand(() => commands.commonAddSnippet(allLanguages, snippetsProvider, wsSnippetsProvider, workspaceSnippetsAvailable, refreshWebUI))
     ));
     
 
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.globalAddSnippet,
-        async (node) => handleCommand(() => commands.addSnippet(allLanguages, snippetsExplorer, snippetsProvider, node))
+        async (node) => handleCommand(() => commands.addSnippet(allLanguages, snippetsExplorer, snippetsProvider, node, refreshWebUI))
     ));
 
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.wsAddSnippet,
-        async (node) => handleCommand(() => commands.addSnippet(allLanguages, wsSnippetsExplorer, wsSnippetsProvider, node))
+        async (node) => handleCommand(() => commands.addSnippet(allLanguages, wsSnippetsExplorer, wsSnippetsProvider, node, refreshWebUI))
     ));
 
     //** COMMAND : ADD SNIPPET FROM CLIPBOARD **/
 
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.commonAddSnippetFromClipboard,
-        async _ => handleCommand(() => commands.commonAddSnippetFromClipboard(snippetsProvider, wsSnippetsProvider, workspaceSnippetsAvailable))
+        async _ => handleCommand(() => commands.commonAddSnippetFromClipboard(snippetsProvider, wsSnippetsProvider, workspaceSnippetsAvailable, refreshWebUI))
     ));
 
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.globalAddSnippetFromClipboard,
-        async (node) => handleCommand(() => commands.addSnippetFromClipboard(snippetsExplorer, snippetsProvider, node))
+        async (node) => handleCommand(() => commands.addSnippetFromClipboard(snippetsExplorer, snippetsProvider, node, refreshWebUI))
     ));
 
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.wsAddSnippetFromClipboard,
-        async (node) => handleCommand(() => commands.addSnippetFromClipboard(wsSnippetsExplorer, wsSnippetsProvider, node)
+        async (node) => handleCommand(() => commands.addSnippetFromClipboard(wsSnippetsExplorer, wsSnippetsProvider, node, refreshWebUI)
         )));
 
     //** COMMAND : ADD SNIPPET FOLDER **/
 
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.commonAddSnippetFolder,
-        async _ => handleCommand(() => commands.commonAddSnippetFolder(snippetsProvider, wsSnippetsProvider, workspaceSnippetsAvailable))
+        async _ => handleCommand(() => commands.commonAddSnippetFolder(snippetsProvider, wsSnippetsProvider, workspaceSnippetsAvailable, refreshWebUI))
     ));
 
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.globalAddSnippetFolder,
-        async (node) => handleCommand(() => commands.addSnippetFolder(snippetsExplorer, snippetsProvider, node))
+        async (node) => handleCommand(() => commands.addSnippetFolder(snippetsExplorer, snippetsProvider, node, refreshWebUI))
     ));
 
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.wsAddSnippetFolder,
-        async (node) => handleCommand(() => commands.addSnippetFolder(wsSnippetsExplorer, wsSnippetsProvider, node))
+        async (node) => handleCommand(() => commands.addSnippetFolder(wsSnippetsExplorer, wsSnippetsProvider, node, refreshWebUI))
     ));
 
     //** COMMAND : EDIT SNIPPET **/
 
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.globalEditSnippet,
-        (snippet: Snippet) => handleCommand(() => commands.editSnippet(context, snippet, snippetsProvider))
+        (snippet: Snippet) => handleCommand(() => commands.editSnippet(context, snippet, snippetsProvider, refreshWebUI))
     ));
 
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.wsEditSnippet,
-        (snippet: Snippet) => handleCommand(() => commands.editSnippet(context, snippet, wsSnippetsProvider))
+        (snippet: Snippet) => handleCommand(() => commands.editSnippet(context, snippet, wsSnippetsProvider, refreshWebUI))
     ));
 
     //** COMMAND : EDIT SNIPPET FOLDER **/
@@ -706,6 +737,7 @@ export function activate(context: vscode.ExtensionContext) {
     //** COMMAND : REFRESH **/
 
     context.subscriptions.push(vscode.commands.registerCommand("commonSnippetsCmd.refreshEntry", _ => refreshUI()));
+    context.subscriptions.push(vscode.commands.registerCommand("commonSnippetsCmd.refreshEntry", _ => refreshWebUI()));
 
     //** COMMAND : IMPORT & EXPORT **/
 
