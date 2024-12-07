@@ -57,7 +57,6 @@ export function activate(context: vscode.ExtensionContext) {
     const dataAccess = new MementoDataAccess(context.globalState);
     const snippetService = new SnippetService(dataAccess);
     const snippetsProvider = new SnippetsProvider(snippetService, allLanguages);
-    snippetsProvider.setUIFunction(()=>refreshWebUI(panel));
 
     let cipDisposable: { dispose(): any } = {
         dispose: function () {
@@ -269,7 +268,7 @@ export function activate(context: vscode.ExtensionContext) {
             vscode.window.showErrorMessage(StringUtility.formatString(Labels.genericError, error.message));
             refreshUI();
         });
-        console.log('handler')
+        console.log('handler', callback)
     }
     //** common logic **//
 
@@ -428,6 +427,8 @@ export function activate(context: vscode.ExtensionContext) {
     let panel: vscode.WebviewPanel;
 
     function openPage(context: vscode.ExtensionContext) {
+
+        console.log("creating window");
         panel = vscode.window.createWebviewPanel(
             'webviewFirstPage', // Identifies the webview panel (type)
             'Snippets Page', // Title
@@ -438,6 +439,7 @@ export function activate(context: vscode.ExtensionContext) {
         );
 
         refreshWebUI(panel);
+        snippetsProvider.setUIFunction(()=>refreshWebUI(panel));
     }
 
     function refreshWebUI(panel: vscode.WebviewPanel){
@@ -462,6 +464,12 @@ export function activate(context: vscode.ExtensionContext) {
                 </li>
             `;
         });
+
+        console.log(panel, "<- panel");
+
+        if (panel === undefined){
+            return;
+        }
 
         // Set HTML content for the snippets page
         panel.webview.html = `

@@ -218,6 +218,7 @@ export class SnippetService {
     }
 
     sortAllSnippets() {
+        console.log("snip serve sort")
         let snippet = this._rootSnippet;
         if (snippet.children.length > 0) {
             this._sortSnippetsAndChildren(snippet.children);
