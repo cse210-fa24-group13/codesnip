@@ -1,4 +1,4 @@
-import fs = require('fs');
+import * as fs from 'fs';
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as commands from './config/commands';
@@ -444,111 +444,47 @@ export function activate(context: vscode.ExtensionContext) {
 
     function refreshWebUI(panel: vscode.WebviewPanel){
         // Get all snippets
-        const snippets = snippetService.getAllSnippets(); // Assumes `getAllSnippets` returns an array of snippets
-        let snippetsHtml = '';
-    
-        // Generate HTML list of snippets
-        snippets.forEach((snippet, index) => {
-            let code = snippet.value;
-            if(code !== undefined){
-                code = code.split('<').join('&lt;').split('>').join('&gt;');
+        try {
+            const htmlPath = vscode.Uri.file(
+                path.join(context.extensionPath, 'src', 'views', 'snippetsPage.html')
+            );
+            
+            if (!fs.existsSync(htmlPath.fsPath)) {
+                throw new Error(`HTML template not found at ${htmlPath.fsPath}`);
             }
-            snippetsHtml += `
-                <li class="card">
-                    <div class="top">
-                        <p><pre>${code}</pre></p>
-                    </div>
-                    <div class="bottom">
-                        <strong>${snippet.label}</strong><br/>
-                    </div>
-                </li>
-            `;
-        });
-
-        console.log(panel, "<- panel");
-
-        if (panel === undefined){
-            return;
+    
+            let htmlContent = fs.readFileSync(htmlPath.fsPath, 'utf8');
+            console.log(htmlContent, panel)
+            // Get all snippets
+            const snippets = snippetService.getAllSnippets();
+        
+            // Generate snippets HTML
+            let snippetsHtml = '';
+            snippets.forEach((snippet) => {
+                if (snippet.value !== undefined) {
+                    const code = snippet.value
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;');
+                    snippetsHtml += `
+                        <li class="card">
+                            <div class="top">${code}</div>
+                            <div class="bottom">${snippet.label}</div>
+                        </li>`;
+                }
+            });
+            
+            // Replace placeholder with actual content
+            htmlContent = htmlContent
+                .replace('${webview.cspSource}', panel.webview.cspSource)
+                .replace('<!-- Snippets will be dynamically inserted here -->', snippetsHtml);
+            
+            // Set webview content
+            panel.webview.html = htmlContent;
+            
+        } catch (error) {
+            console.error('Error loading template:', error);
+            vscode.window.showErrorMessage('Failed to load snippet template');
         }
-
-        // Set HTML content for the snippets page
-        panel.webview.html = `
-            <html>
-                <head>
-                    <style>
-                        body{
-                            --background-color: #B0CAF3;
-                            --primary-color: #657FF0;
-                            --secondary-color: #7FA3F7;
-                            --black: #1E1E1E;
-                        }
-                        body {
-                            font-family: Arial, sans-serif;
-                            color: var(--black);
-                            margin: 0;
-                            padding: 0;
-                            background-color: var(--background-color);
-                        }
-                        #nav{
-                            top: 0;
-                            width: 100%;
-                            height: 6em;
-                            display: flex;
-                            justify-content: space-between;
-                            list-style-type: none;
-                            margin: 0;
-                            padding: 0;
-                            background-color: var(--primary-color);
-                        }
-                        #nav li{
-                            margin: auto 2em;
-                            font-weight: 700;
-                            font-size: 1.2em;
-                        }
-                        #cards{
-                            margin: 0 auto;
-                            padding: 0;
-                            height: full;
-                            width: 62em;
-                            list-style-type: none;
-                            display: grid;
-                            grid-template-columns: 1fr 1fr;
-                        }
-                        .card {
-                            flex: 50%;
-                            height: 18em;
-                            width: 30em;
-                            /* display: flex; */
-                            margin: 1em 0.5em 0 0.5em;
-                            /* border: solid; */
-                            border-radius: 1em;
-                            overflow: hidden;
-                        }
-                        .top{
-                            background-color: var(--secondary-color);
-                            height: 60%;
-                            padding: 1em;
-                        }
-                        .bottom{
-                            padding: 1em;
-                            height: 100%;
-                            background-color: var(--primary-color);
-                        }
-                    </style>
-                </head>
-                <body>
-                    <ul id="nav">
-                        <li>Back</li>
-                        <li>New Room</li>
-                        <li>Join Room</li>
-                        <li>Search</li>
-                    </ul>
-                    <ul id="cards">
-                        ${snippetsHtml}
-                    </ul>
-                </body>
-            </html>
-        `;
     }
     
     
