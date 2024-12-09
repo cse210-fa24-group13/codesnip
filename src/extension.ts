@@ -57,6 +57,7 @@ export function activate(context: vscode.ExtensionContext) {
     const dataAccess = new MementoDataAccess(context.globalState);
     const snippetService = new SnippetService(dataAccess);
     const snippetsProvider = new SnippetsProvider(snippetService, allLanguages);
+
     let cipDisposable: { dispose(): any } = {
         dispose: function () {
         }
@@ -146,6 +147,7 @@ export function activate(context: vscode.ExtensionContext) {
     // refresh windows whenever it gains focus
     // this will prevent de-sync between multiple open workspaces
     vscode.window.onDidChangeWindowState((event) => {
+        console.log('test2', event)
         if (event.focused) {
             refreshUI();
         }
@@ -154,6 +156,7 @@ export function activate(context: vscode.ExtensionContext) {
     // refresh UI when updating workspace setting
     vscode.workspace.onDidChangeConfiguration(event => {
         let affected = event.affectsConfiguration(`${snippetsConfigKey}.${useWorkspaceFolderKey}`);
+        console.log('test');
         if (affected) {
             if (vscode.workspace.getConfiguration(snippetsConfigKey).get(useWorkspaceFolderKey)) {
                 requestWSConfigSetup();
@@ -265,6 +268,7 @@ export function activate(context: vscode.ExtensionContext) {
             vscode.window.showErrorMessage(StringUtility.formatString(Labels.genericError, error.message));
             refreshUI();
         });
+        console.log('handler', callback)
     }
     //** common logic **//
 
@@ -420,8 +424,12 @@ export function activate(context: vscode.ExtensionContext) {
         async () => handleCommand(() => openPage(context))
     ));
 
+    let panel: vscode.WebviewPanel;
+
     function openPage(context: vscode.ExtensionContext) {
-        const panel = vscode.window.createWebviewPanel(
+
+        console.log("creating window");
+        panel = vscode.window.createWebviewPanel(
             'webviewFirstPage', // Identifies the webview panel (type)
             'Snippets Page', // Title
             vscode.ViewColumn.One, // Where to show the webview (first editor group)
@@ -429,7 +437,12 @@ export function activate(context: vscode.ExtensionContext) {
                 enableScripts: true, // Allow JavaScript in the webview
             }
         );
-    
+
+        refreshWebUI(panel);
+        snippetsProvider.setUIFunction(()=>refreshWebUI(panel));
+    }
+
+    function refreshWebUI(panel: vscode.WebviewPanel){
         // Get all snippets
         const snippets = snippetService.getAllSnippets(); // Assumes `getAllSnippets` returns an array of snippets
         let snippetsHtml = '';
@@ -443,7 +456,7 @@ export function activate(context: vscode.ExtensionContext) {
             snippetsHtml += `
                 <li class="card">
                     <div class="top">
-                        <p>${code}</p>
+                        <p><pre>${code}</pre></p>
                     </div>
                     <div class="bottom">
                         <strong>${snippet.label}</strong><br/>
@@ -451,6 +464,12 @@ export function activate(context: vscode.ExtensionContext) {
                 </li>
             `;
         });
+
+        console.log(panel, "<- panel");
+
+        if (panel === undefined){
+            return;
+        }
 
         // Set HTML content for the snippets page
         panel.webview.html = `
