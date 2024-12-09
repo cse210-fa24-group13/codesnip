@@ -207,6 +207,19 @@ export class SnippetService {
         deleteGist(snippet.gistid);
     }
 
+    removeSnippetLocally(snippet: Snippet): void {
+        const parentElement = SnippetService.findParent(snippet.parentId ?? Snippet.rootParentId, this._rootSnippet);
+
+        if (parentElement) {
+            const index = parentElement.children.findIndex((obj => obj.id === snippet.id));
+
+            if (index > -1) {
+                parentElement?.children.splice(index, 1);
+            }
+        }
+        //deleteGist(snippet.gistid);
+    }
+
     moveSnippet(snippet: Snippet, offset: number) {
         const parentElement = SnippetService.findParent(snippet.parentId ?? Snippet.rootParentId, this._rootSnippet);
 

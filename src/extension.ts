@@ -13,6 +13,7 @@ import { UIUtility } from './utility/uiUtility';
 import { StringUtility } from './utility/stringUtility';
 import { Labels } from './config/labels';
 import { FileDataAccess } from './data/fileDataAccess';
+import axios from 'axios';
 /**
  * Activate extension by initializing views for snippets and feature commands.
  * @param context 
@@ -69,7 +70,7 @@ export function activate(context: vscode.ExtensionContext) {
         }
     };
     let registerGlobalCIPSnippets: (() => vscode.Disposable) | undefined = undefined;
-    
+
 
     // make sure lastId is accurate
     snippetService.fixLastId();
@@ -272,6 +273,30 @@ export function activate(context: vscode.ExtensionContext) {
     }
     //** common logic **//
 
+    async function fetchData(token:any) {
+        try {
+            console.log("HERE")
+            const response = await axios.get('https://api.github.com/gists',
+                {
+                    headers: {
+                                Authorization: `Bearer ${token}`,
+                            }
+                }
+            );
+            // console.log("RESPONSE IS",response)
+  
+            const data = response.data;
+
+            // Do something with the data
+            console.log("DATA IS: ",data);
+
+            return data; // Optionally return the data
+        } catch (error) {
+            // Handle errors
+            console.error(error);
+        }
+    }
+
     //** common commands **//
     //** COMMAND : INITIALIZE WS CONFIG **/*
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.miscRequestWSConfig, async _ => {
@@ -301,7 +326,55 @@ export function activate(context: vscode.ExtensionContext) {
             }
         })
     );
+    context.subscriptions.push(
+        vscode.commands.registerCommand('snippets.fecthFromGithub', async () => {
+            let candidates = snippetService.getAllSnippets();
+            for (const candidate of candidates) {
+                snippetService.removeSnippetLocally(candidate);
+            }
 
+
+
+            // await fetchData();
+            //pseudo
+            // open a session
+            // get all gists
+            //for each gist
+            //  create a new snippet(name,description,visibility,gistid)
+            //refresh
+            const session = await vscode.authentication.getSession('github', ['gist'], { createIfNone: true });
+
+            if (session) {
+                let gistsList: any = [];
+                let fetchDataResponse = await fetchData(session.accessToken);
+                console.log("FETCH DATA response", fetchDataResponse);
+                
+                // Use for...of to handle asynchronous operations sequentially
+                for (const gist of fetchDataResponse) {
+                    let gistInfo = await axios.get(`https://api.github.com/gists/${gist.id}`, {
+                        headers: { Authorization: `Bearer ${session.accessToken}` }
+                    });
+                    gistsList.push(gistInfo.data);
+                    console.log(gistsList.length);
+                }
+            
+                // Now you can safely use forEach on gistsList after waiting for fetchDataResponse to finish
+                console.log("GISTS LIST returned is", gistsList);
+                gistsList.forEach((gist: any) => {
+                    console.log("Start", gist.files);
+                    for (const fileName in gist.files) {
+                    // for (let [fileName, value] of gist.files) {
+                        console.log(fileName);
+                        snippetsProvider.addSnippet(fileName, gist.files[fileName].content, Snippet.rootParentId, gist.description, undefined, gist.id);
+                        console.log("Finished");
+                    }
+                });
+                refreshUI();
+            } else {
+                vscode.window.showErrorMessage('GitHub session could not be opened.');
+            }
+        })                
+    );
     //** COMMAND : INITIALIZE GENERIC COMPLETION ITEM PROVIDER **/*
 
     let triggerCharacter: any = vscode.workspace.getConfiguration(snippetsConfigKey).get("triggerKey");
@@ -315,11 +388,11 @@ export function activate(context: vscode.ExtensionContext) {
     const registerCIPSnippetsList: (() => vscode.Disposable)[] = [];
 
     for (const currentLanguage of allLanguages) {
-        let disposable =  currentLanguage.id === '**' ? globalCipDisposable : cipDisposable;
+        let disposable = currentLanguage.id === '**' ? globalCipDisposable : cipDisposable;
         const registerCIPSnippets = () => disposable = vscode.languages.registerCompletionItemProvider(
             currentLanguage.id === '**' // use pattern filter for non-language snippets
-            ? [{ language: 'plaintext', scheme: 'file' }, { language: 'plaintext', scheme: 'untitled' }]
-            : [{ language: currentLanguage.id, scheme: 'file' }, { language: currentLanguage.id, scheme: 'untitled' }]
+                ? [{ language: 'plaintext', scheme: 'file' }, { language: 'plaintext', scheme: 'untitled' }]
+                : [{ language: currentLanguage.id, scheme: 'file' }, { language: currentLanguage.id, scheme: 'untitled' }]
             , {
                 provideCompletionItems(document, position) {
                     if (!vscode.workspace.getConfiguration(snippetsConfigKey).get("showSuggestions")) {
@@ -327,8 +400,8 @@ export function activate(context: vscode.ExtensionContext) {
                     }
                     let isTriggeredByChar: boolean = triggerCharacter === document.lineAt(position).text.charAt(position.character - 1);
                     let candidates = snippetService.getAllSnippets()
-                        .filter(s => (currentLanguage.id === '**' && (s.language === currentLanguage.extension || !s.language)) 
-                                        || s.language === currentLanguage.extension);
+                        .filter(s => (currentLanguage.id === '**' && (s.language === currentLanguage.extension || !s.language))
+                            || s.language === currentLanguage.extension);
                     // append workspace snippets if WS is available
                     if (workspaceSnippetsAvailable) {
                         // add suffix for all workspace items
@@ -340,20 +413,20 @@ export function activate(context: vscode.ExtensionContext) {
                                     elt.description = `${elt.description}__(ws)`;
                                     return elt;
                                 }
-                        ));
+                                ));
                     }
-                    
+
                     return candidates.map(element =>
                         <vscode.CompletionItem>{
                             // label = prefix or [globalPrefix]:snippetName
-                            label: element.prefix 
-                                    ? element.prefix 
-                                    : (globalPrefix ? `${globalPrefix}:` : '') 
-                                        + (camelize // camelize if it's set in preferences
-                                        ? element.label.replace(/-/g, ' ').replace(/(?:^\w|[A-Z]|\b\w)/g, function(word, index) {
-                                            return index === 0 ? word.toLowerCase() : word.toUpperCase();
-                                          }).replace(/\s+/g, '')
-                                        : element.label.replace(/\n/g, '').replace(/ /g, '-')),
+                            label: element.prefix
+                                ? element.prefix
+                                : (globalPrefix ? `${globalPrefix}:` : '')
+                                + (camelize // camelize if it's set in preferences
+                                    ? element.label.replace(/-/g, ' ').replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
+                                        return index === 0 ? word.toLowerCase() : word.toUpperCase();
+                                    }).replace(/\s+/g, '')
+                                    : element.label.replace(/\n/g, '').replace(/ /g, '-')),
                             insertText: new vscode.SnippetString(element.value),
                             detail: element.description?.replace("__(ws)", " (snippet from workspace)"),
                             kind: vscode.CompletionItemKind.Snippet,
@@ -457,18 +530,18 @@ export function activate(context: vscode.ExtensionContext) {
         );
 
         refreshWebUI(panel);
-        snippetsProvider.setUIFunction(()=>refreshWebUI(panel));
+        snippetsProvider.setUIFunction(() => refreshWebUI(panel));
     }
 
-    function refreshWebUI(panel: vscode.WebviewPanel){
+    function refreshWebUI(panel: vscode.WebviewPanel) {
         // Get all snippets
         const snippets = snippetService.getAllSnippets(); // Assumes `getAllSnippets` returns an array of snippets
         let snippetsHtml = '';
-    
+
         // Generate HTML list of snippets
         snippets.forEach((snippet, index) => {
             let code = snippet.value;
-            if(code !== undefined){
+            if (code !== undefined) {
                 code = code.split('<').join('&lt;').split('>').join('&gt;');
             }
             snippetsHtml += `
@@ -485,7 +558,7 @@ export function activate(context: vscode.ExtensionContext) {
 
         console.log(panel, "<- panel");
 
-        if (panel === undefined){
+        if (panel === undefined) {
             return;
         }
 
@@ -568,15 +641,15 @@ export function activate(context: vscode.ExtensionContext) {
             </html>
         `;
     }
-    
-    
+
+
 
     //** COMMAND : ADD SNIPPET **/
 
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.commonAddSnippet,
         async _ => handleCommand(() => commands.commonAddSnippet(allLanguages, snippetsProvider, wsSnippetsProvider, workspaceSnippetsAvailable))
     ));
-    
+
 
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.globalAddSnippet,
         async (node) => handleCommand(() => commands.addSnippet(allLanguages, snippetsExplorer, snippetsProvider, node))
@@ -591,7 +664,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.commonAddSnippetFromClipboard,
         async _ => handleCommand(() => commands.commonAddSnippetFromClipboard(snippetsProvider, wsSnippetsProvider, workspaceSnippetsAvailable))
     ));
-    
+
 
     //** COMMAND : ADD SNIPPET FOLDER **/
 
@@ -756,13 +829,13 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.wsFixSnippets,
         async _ => handleCommand(() => commands.fixSnippets(wsSnippetsProvider))
     ));
-    
+
     context.subscriptions.push(vscode.languages.registerDocumentDropEditProvider('*', {
-       async provideDocumentDropEdits(
-          _document: vscode.TextDocument,
-          position: vscode.Position,
-          dataTransfer: vscode.DataTransfer,
-          _token: vscode.CancellationToken
+        async provideDocumentDropEdits(
+            _document: vscode.TextDocument,
+            position: vscode.Position,
+            dataTransfer: vscode.DataTransfer,
+            _token: vscode.CancellationToken
         ): Promise<vscode.DocumentDropEdit | undefined> {
             const dataItem = dataTransfer.get('application/vnd.code.tree.snippetsProvider');
             if (!dataItem) {
@@ -797,13 +870,13 @@ export function activate(context: vscode.ExtensionContext) {
                 // throws error when parsing `dataItem?.value`, just skip
             }
         }
-      }));
+    }));
 
-      // Get Authentication Token
-      context.subscriptions.push(
+    // Get Authentication Token
+    context.subscriptions.push(
         vscode.commands.registerCommand('snippets.authenticateGitHub', async () => {
             try {
-                const session = await AuthService.getGitHubSession();                                
+                const session = await AuthService.getGitHubSession();
                 vscode.window.showInformationMessage(
                     `Signed in to GitHub as ${session.account.label}`
                 );
@@ -828,12 +901,12 @@ export function activate(context: vscode.ExtensionContext) {
     //         );
     //     }
     // }
-    
-      // Register the shareSnippetToGist command    
+
+    // Register the shareSnippetToGist command    
     //   context.subscriptions.push(
     //       vscode.commands.registerCommand('snippets.shareSnippetToGist', async (node: Snippet | undefined) => {
     //         await createSnippetOnGist(snippetsExplorer, node);
-              
+
     //       })
     //   );
 
