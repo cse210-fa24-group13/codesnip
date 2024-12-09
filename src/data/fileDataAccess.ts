@@ -7,7 +7,8 @@ export class FileDataAccess implements DataAccess {
     static dataFileExt = '.json';
     private static dataFileName = `data${FileDataAccess.dataFileExt}`;
 
-    private _encoding = 'utf8';
+    //private _encoding = 'utf8';
+    private _encoding: BufferEncoding = "utf-8"; // fs.readFileSync() takes BufferEncoding instead of string
     private _dataFile: string;
 
     constructor(dataFile: string) {

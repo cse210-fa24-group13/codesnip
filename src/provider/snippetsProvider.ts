@@ -106,7 +106,7 @@ export class SnippetsProvider implements vscode.TreeDataProvider<Snippet>, vscod
         if (this.fn) this.fn();
     }
 
-    addSnippet(name: string, snippet: string, parentId: number, languageExt?: string) {
+    addSnippet(name: string, snippet: string, parentId: number, description?: string, languageExt?: string, gistId?: string) {
         let lastId = this._snippetService.incrementLastId();
 
         let extStartPoint = name.lastIndexOf("\.");
@@ -126,10 +126,13 @@ export class SnippetsProvider implements vscode.TreeDataProvider<Snippet>, vscod
                 parentId: parentId,
                 label: name,
                 value: snippet,
+                description: description,
                 language: languageExt,
-                children: []
+                children: [],
+                gistid: gistId,
             }
         );
+        //console.log(gistId);
         this.sync();
     }
 
@@ -162,6 +165,7 @@ export class SnippetsProvider implements vscode.TreeDataProvider<Snippet>, vscod
 
     removeSnippet(snippet: Snippet) {
         this._snippetService.removeSnippet(snippet);
+        console.log("Here",snippet);
         this.sync();
     }
 
