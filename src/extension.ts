@@ -58,6 +58,7 @@ export function activate(context: vscode.ExtensionContext) {
     const dataAccess = new MementoDataAccess(context.globalState);
     const snippetService = new SnippetService(dataAccess);
     const snippetsProvider = new SnippetsProvider(snippetService, allLanguages);
+
     let cipDisposable: { dispose(): any } = {
         dispose: function () {
         }
@@ -146,6 +147,7 @@ export function activate(context: vscode.ExtensionContext) {
     // refresh windows whenever it gains focus
     // this will prevent de-sync between multiple open workspaces
     vscode.window.onDidChangeWindowState((event) => {
+        console.log('test2', event)
         if (event.focused) {
             refreshUI();
         }
@@ -154,6 +156,7 @@ export function activate(context: vscode.ExtensionContext) {
     // refresh UI when updating workspace setting
     vscode.workspace.onDidChangeConfiguration(event => {
         let affected = event.affectsConfiguration(`${snippetsConfigKey}.${useWorkspaceFolderKey}`);
+        console.log('test');
         if (affected) {
             if (vscode.workspace.getConfiguration(snippetsConfigKey).get(useWorkspaceFolderKey)) {
                 requestWSConfigSetup();
@@ -265,6 +268,7 @@ export function activate(context: vscode.ExtensionContext) {
             vscode.window.showErrorMessage(StringUtility.formatString(Labels.genericError, error.message));
             refreshUI();
         });
+        console.log('handler', callback)
     }
     //** common logic **//
 
@@ -433,11 +437,146 @@ export function activate(context: vscode.ExtensionContext) {
         async (snippet) => handleCommand(async () => vscode.env.clipboard.writeText(snippet.value))
     ));
 
+
+    context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.commonOpenPage,
+        async () => handleCommand(() => openPage(context))
+    ));
+
+    let panel: vscode.WebviewPanel;
+
+    function openPage(context: vscode.ExtensionContext) {
+
+        console.log("creating window");
+        panel = vscode.window.createWebviewPanel(
+            'webviewFirstPage', // Identifies the webview panel (type)
+            'Snippets Page', // Title
+            vscode.ViewColumn.One, // Where to show the webview (first editor group)
+            {
+                enableScripts: true, // Allow JavaScript in the webview
+            }
+        );
+
+        refreshWebUI(panel);
+        snippetsProvider.setUIFunction(()=>refreshWebUI(panel));
+    }
+
+    function refreshWebUI(panel: vscode.WebviewPanel){
+        // Get all snippets
+        const snippets = snippetService.getAllSnippets(); // Assumes `getAllSnippets` returns an array of snippets
+        let snippetsHtml = '';
+    
+        // Generate HTML list of snippets
+        snippets.forEach((snippet, index) => {
+            let code = snippet.value;
+            if(code !== undefined){
+                code = code.split('<').join('&lt;').split('>').join('&gt;');
+            }
+            snippetsHtml += `
+                <li class="card">
+                    <div class="top">
+                        <p><pre>${code}</pre></p>
+                    </div>
+                    <div class="bottom">
+                        <strong>${snippet.label}</strong><br/>
+                    </div>
+                </li>
+            `;
+        });
+
+        console.log(panel, "<- panel");
+
+        if (panel === undefined){
+            return;
+        }
+
+        // Set HTML content for the snippets page
+        panel.webview.html = `
+            <html>
+                <head>
+                    <style>
+                        body{
+                            --background-color: #B0CAF3;
+                            --primary-color: #657FF0;
+                            --secondary-color: #7FA3F7;
+                            --black: #1E1E1E;
+                        }
+                        body {
+                            font-family: Arial, sans-serif;
+                            color: var(--black);
+                            margin: 0;
+                            padding: 0;
+                            background-color: var(--background-color);
+                        }
+                        #nav{
+                            top: 0;
+                            width: 100%;
+                            height: 6em;
+                            display: flex;
+                            justify-content: space-between;
+                            list-style-type: none;
+                            margin: 0;
+                            padding: 0;
+                            background-color: var(--primary-color);
+                        }
+                        #nav li{
+                            margin: auto 2em;
+                            font-weight: 700;
+                            font-size: 1.2em;
+                        }
+                        #cards{
+                            margin: 0 auto;
+                            padding: 0;
+                            height: full;
+                            width: 62em;
+                            list-style-type: none;
+                            display: grid;
+                            grid-template-columns: 1fr 1fr;
+                        }
+                        .card {
+                            flex: 50%;
+                            height: 18em;
+                            width: 30em;
+                            /* display: flex; */
+                            margin: 1em 0.5em 0 0.5em;
+                            /* border: solid; */
+                            border-radius: 1em;
+                            overflow: hidden;
+                        }
+                        .top{
+                            background-color: var(--secondary-color);
+                            height: 60%;
+                            padding: 1em;
+                        }
+                        .bottom{
+                            padding: 1em;
+                            height: 100%;
+                            background-color: var(--primary-color);
+                        }
+                    </style>
+                </head>
+                <body>
+                    <ul id="nav">
+                        <li>Back</li>
+                        <li>New Room</li>
+                        <li>Join Room</li>
+                        <li>Search</li>
+                    </ul>
+                    <ul id="cards">
+                        ${snippetsHtml}
+                    </ul>
+                </body>
+            </html>
+        `;
+    }
+    
+    
+
     //** COMMAND : ADD SNIPPET **/
 
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.commonAddSnippet,
         async _ => handleCommand(() => commands.commonAddSnippet(allLanguages, snippetsProvider, wsSnippetsProvider, workspaceSnippetsAvailable))
     ));
+    
 
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.globalAddSnippet,
         async (node) => handleCommand(() => commands.addSnippet(allLanguages, snippetsExplorer, snippetsProvider, node))

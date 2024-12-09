@@ -12,6 +12,7 @@ import { AuthService } from '../service/authService';
 
 export const enum CommandsConsts {
 	miscRequestWSConfig = "miscCmd.requestWSConfig",
+	commonOpenPage = "extension.openPage",
 	// common commands across global & ws
 	commonOpenSnippet = "globalSnippetsCmd.openSnippet",
 	commonOpenSnippetInTerminal = "globalSnippetsCmd.openSnippetInTerminal",
@@ -269,36 +270,19 @@ export async function commonAddSnippet(allLanguages: any[], snippetsProvider: Sn
     }
 
 	// request where to save snippets if ws is available
-	let targetView = undefined;
-    if (workspaceSnippetsAvailable) {
-        targetView = await UIUtility.requestTargetSnippetsView();
-        // No value chosen
-        if (!targetView) {
-            vscode.window.showWarningMessage(Labels.noViewTypeSelected);
-            return;
-        }
-    }
-
-    try {
-        // Create the gist and get the gistId
-        let gistId = await createSnippet(name, text, description, visibility);
-
-        // Save snippet with the gistId
-        if (workspaceSnippetsAvailable) {
-            if (targetView === Labels.globalSnippets) {
-                snippetsProvider.addSnippet(name, text, Snippet.rootParentId, description, languageExt, gistId);
-            } else if (targetView === Labels.wsSnippets) {
-                wsSnippetsProvider.addSnippet(name, text, Snippet.rootParentId, description, languageExt, gistId);
-            }
-        } else {
-            snippetsProvider.addSnippet(name, text, Snippet.rootParentId, description, languageExt, gistId);
-        }
-
-        vscode.window.showInformationMessage(`Snippet saved successfully with Gist ID: ${gistId}`);
-    } catch (error) {
-        vscode.window.showErrorMessage(`Failed to save snippet`);
-    }
-
+	if (workspaceSnippetsAvailable) {
+		const targetView = await UIUtility.requestTargetSnippetsView();
+		// no value chosen
+		if (!targetView) {
+			vscode.window.showWarningMessage(Labels.noViewTypeSelected);
+		} else if (targetView === Labels.globalSnippets) {
+			snippetsProvider.addSnippet(name, text, Snippet.rootParentId, languageExt);		
+		} else if (targetView === Labels.wsSnippets) {
+			wsSnippetsProvider.addSnippet(name, text, Snippet.rootParentId, languageExt);
+		}
+	} else {
+		snippetsProvider.addSnippet(name, text, Snippet.rootParentId, languageExt);
+	}
 }
 
 export async function addSnippet(
