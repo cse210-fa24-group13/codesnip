@@ -570,13 +570,31 @@ export function activate(context: vscode.ExtensionContext) {
             }
             snippetsHtml += `
                 <li class="card">
-                    <div class="top">
-                        <p><pre>${code}</pre></p>
-                    </div>
-                    <div class="bottom">
-                        <strong>${snippet.label}</strong><br/>
-                    </div>
-                </li>
+            <div class="bottom">
+                <!-- <div style="border-radius: 0.3em;padding: 0.1em 1.4em; background-color: blue; width: max-content;display: flex; align-items: center;margin: 0;"> -->
+                <h4 class="heads">${snippet.label}</h4>
+
+                <div class="row">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="18" width="16.25"
+                        viewBox="0 0 448 512"><!--!Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                        <path fill="white"
+                            d="M280 64l40 0c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 128C0 92.7 28.7 64 64 64l40 0 9.6 0C121 27.5 153.3 0 192 0s71 27.5 78.4 64l9.6 0zM64 112c-8.8 0-16 7.2-16 16l0 320c0 8.8 7.2 16 16 16l256 0c8.8 0 16-7.2 16-16l0-320c0-8.8-7.2-16-16-16l-16 0 0 24c0 13.3-10.7 24-24 24l-88 0-88 0c-13.3 0-24-10.7-24-24l0-24-16 0zm128-8a24 24 0 1 0 0-48 24 24 0 1 0 0 48z" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="18" width="16.25"
+                        viewBox="0 0 496 512"><!--!Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                        <path fill="white"
+                            d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3 .3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5 .3-6.2 2.3zm44.2-1.7c-2.9 .7-4.9 2.6-4.6 4.9 .3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3 .7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3 .3 2.9 2.3 3.9 1.6 1 3.6 .7 4.3-.7 .7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3 .7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3 .7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z" />
+                    </svg>
+                </div>
+                <!-- <br/> -->
+                <!-- </div> -->
+            </div>
+            <div class="top">
+                <pre>
+                ${code}
+            </pre>
+            </div>
+        </li>
             `;
         });
 
@@ -587,149 +605,328 @@ export function activate(context: vscode.ExtensionContext) {
         // Set HTML content for the snippets page
         panel.webview.html = `
             <html>
-                <head>
-                    <style>
-                        body{
-                            --background-color: #B0CAF3;
-                            --primary-color: #657FF0;
-                            --secondary-color: #7FA3F7;
-                            --black: #1E1E1E;
-                        }
-                        body {
-                            font-family: Arial, sans-serif;
-                            color: var(--black);
-                            margin: 0;
-                            padding: 0;
-                            background-color: var(--background-color);
-                        }
-                        #nav{
-                            top: 0;
-                            width: 100%;
-                            height: 6em;
-                            display: flex;
-                            justify-content: space-between;
-                            list-style-type: none;
-                            margin: 0;
-                            padding: 0;
-                            background-color: var(--primary-color);
-                        }
-                        #nav li{
-                            margin: auto 2em;
-                            font-weight: 700;
-                            font-size: 1.2em;
-                        }
-                        #cards{
-                            margin: 0 auto;
-                            padding: 0;
-                            height: full;
-                            width: 62em;
-                            list-style-type: none;
-                            display: grid;
-                            grid-template-columns: 1fr 1fr;
-                        }
-                        .card {
-                            flex: 50%;
-                            height: 18em;
-                            width: 30em;
-                            /* display: flex; */
-                            margin: 1em 0.5em 0 0.5em;
-                            /* border: solid; */
-                            border-radius: 1em;
-                            overflow: hidden;
-                        }
-                        .modal {
-                        display: none;
-                        position: fixed;
-                        top: 50%;
-                        left: 50%;
-                        transform: translate(-50%, -50%);
-                        width: 30em;
-                        background-color: white;
-                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-                        border-radius: 8px;
-                        padding: 2em;
-                        z-index: 1000;
-                        }
-                        .modal.show {
-                            display: block;
-                        }
-                        
-                        .modal-header {
-                        font-weight: bold;
-                        margin-bottom: 1em;
-                        text-align: center;
-                        }
-                        .modal-footer {
-                            text-align: center;
-                            margin-top: 1em;
-                        }
-                        #overlay {
-                            display: none;
-                            position: fixed;
-                            top: 0;
-                            left: 0;
-                            width: 100%;
-                            height: 100%;
-                            background: rgba(0, 0, 0, 0.5);
-                            z-index: 999;
-                        }
-                        #input-box {
-                            width: 100%;
-                            padding: 0.5em;
-                            margin-bottom: 1em;
-                            font-size: 1em;
-                            border: 1px solid var(--primary-color);
-                            border-radius: 0.5em;
-                        }
-                        #submit-button, #close-button {
-                            padding: 0.5em 1em;
-                            font-size: 1em;
-                            background-color: var(--primary-color);
-                            color: white;
-                            border: none;
-                            border-radius: 0.5em;
-                            cursor: pointer;
-                            margin: 0.5em;
-                        }
-                            #submit-button:hover, #close-button:hover {
-                            background-color: var(--secondary-color);
-                        }
 
-                        .top{
-                            background-color: var(--secondary-color);
-                            height: 60%;
-                            padding: 1em;
-                        }
-                        .bottom{
-                            padding: 1em;
-                            height: 100%;
-                            background-color: var(--primary-color);
-                        }
-                    </style>
-                </head>
-                <body>
-                    <ul id="nav">
-                        <li>Back</li>
-                        <li>New Room</li>
-                        <li id="join-room">Enter Gist ID to add the snippet</li>
-                        <li>Search</li>
-                    </ul>
-                    <ul id="cards">
-                        ${snippetsHtml}
-                    </ul>
+<head>
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Quicksand&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&family=Victor+Mono:ital,wght@0,100..700;1,100..700&display=swap');
 
-                    <!-- Modal Popup -->
-                    <div id="overlay"></div>
-                    <div class="modal" id="popup-modal">
-                        <div class="modal-header">Join a Room</div>
-                        <input type="text" id="input-box" placeholder="Enter room code..." />
-                        <div class="modal-footer">
-                            <button id="submit-button">Submit</button>
-                            <button id="close-button">Close</button>
-                        </div>
-                        <div id="response-text"></div> <!-- This will display the submitted text -->
-                    </div>
-                    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        body {
+            --background-color: #091525;
+            --primary-color: #0a2851;
+            --secondary-color: #1E3E62;
+            --black: #1E1E1E;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            color: var(--black);
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+        }
+
+        #nav {
+            ul {
+                list-style-type: none;
+                display: flex;
+                flex-direction: row;
+            }
+
+            h3 {
+                margin: 0;
+            }
+
+            padding: 0.1em 1.5em;
+            top: 0;
+            width: calc(100% - 1.5em * 2);
+            height: 3.5em;
+            display: flex;
+            font-size: 16px;
+            flex-flow: row wrap;
+            justify-content: space-around;
+            /* list-style-type: none; */
+            align-items: center;
+            margin: 0;
+            /* padding: 0; */
+            /* border-bottom: solid 1px white; */
+            color: white;
+            font-family: Quicksand;
+            /* background-color: var(--primary-color); */
+        }
+
+        #nav li {
+            margin: auto 2em;
+            font-weight: 700;
+            font-size: 1.2em;
+        }
+
+        #cards {
+            margin: 0 auto;
+            padding: 0;
+            /* height: 100%; */
+            width: 68em;
+            list-style-type: none;
+            display: grid;
+            row-gap: 1em;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .card {
+            display: flex;
+            flex-direction: column;
+            flex: 50%;
+            height: 20em;
+            overflow: hidden;
+
+            position: relative;
+            width: 96%;
+            text-wrap: wrap;
+            white-space: break-spaces;
+
+            p {
+                position: relative;
+                width: 96%;
+                text-wrap: wrap;
+                white-space: break-spaces;
+            }
+
+            pre {
+                text-wrap: wrap;
+                width: 90%;
+            }
+
+            width: 34em;
+            /* padding: 1em; */
+            /* display: flex; */
+            margin: 1em 0.5em 0 0.5em;
+            /* border: solid; */
+            border-radius: 0.3em;
+            /* overflow: scroll; */
+        }
+
+        .heads {
+            font-weight: 600;
+            white-space: pre-wrap;
+            text-wrap: wrap;
+            margin: 0;
+            position: relative;
+            display: block;
+        }
+
+        .top {
+            background-color: var(--secondary-color);
+            height: calc(100% - 2em);
+            width: calc(100% - 2em);
+            color: white;
+            font-family: Victor Mono;
+            overflow: scroll;
+            display: flex;
+
+            pre {
+                font-size: 0.86em;
+                font-family: Victor Mono;
+                position: relative;
+                font-weight: 200;
+                margin: 0;
+                display: flex;
+                text-wrap: wrap;
+                width: 100%;
+
+            }
+
+            /* font-family: Victor Mono; */
+            padding: 1em;
+            text-wrap: wrap;
+            /* white-space: pre-wrap; */
+        }
+
+        .row {
+            display: flex;
+            gap: 0.5em;
+        }
+
+        .bottom {
+            padding: 0.3em 1em;
+            height: 14%;
+            width: calc(100% - 2em);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            /* font-family: Victor Mono; */
+            border-bottom: solid 1px #1e71e3;
+            display: flex;
+            /* font-weight: 200; */
+            font-family: Quicksand;
+            align-items: center;
+            background-color: var(--primary-color);
+        }
+
+        .arrow {
+            position: relative;
+            display: inline-block;
+            background: white;
+            width: 3px;
+            height: 17px;
+            transform: rotate(40deg) translate(-30%);
+        }
+
+        .arrow2 {
+            position: relative;
+            display: inline-block;
+            transform: rotate(-40deg) translate(60%);
+            /* transform: rotateY(60deg) ; */
+            background: white;
+            width: 3px;
+            height: 17px;
+        }
+
+        .arrowf {
+            /* padding-top: 30px; */
+            flex-grow: 0.2;
+            height: 100%;
+            /* width: 100%; */
+            position: relative;
+            /* align-self: flex-start; */
+            justify-content: flex-start;
+            display: inline-block;
+            left: 0;
+            transform: rotate(-90deg) translateX(47%);
+            /* padding: 20px; */
+            /* padding-left: 20px; */
+        }
+
+        .side-links {
+            flex-grow: 5;
+            display: flex;
+            gap: 1.5em;
+            align-items: center;
+
+            h3 {
+                font-weight: 600;
+            }
+
+            /* align-self: flex-end; */
+            justify-content: flex-end;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 30em;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 2em;
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: block;
+        }
+
+        .modal-header {
+            font-weight: bold;
+            margin-bottom: 1em;
+            text-align: center;
+        }
+
+        .modal-footer {
+            text-align: center;
+            margin-top: 1em;
+        }
+
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        #input-box {
+            width: 100%;
+            padding: 0.5em;
+            margin-bottom: 1em;
+            font-size: 1em;
+            border: 1px solid var(--primary - color);
+            border-radius: 0.5em;
+        }
+
+        #submit-button,
+        #close-button {
+            padding: 0.5em 1em;
+            font-size: 1em;
+            background-color: var(--primary - color);
+            color: white;
+            border: none;
+            border-radius: 0.5em;
+            cursor: pointer;
+            margin: 0.5em;
+        }
+
+        #submit-button:hover,
+        #close-button:hover {
+            background-color: var(--secondary - color);
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav id="nav">
+        <!-- <ul> -->
+        <div class="arrowf">
+            <span class="arrow"></span>
+            <span class="arrow2"></span>
+        </div>
+
+        <!-- <div style="flex-grow: 2;display: flex;justify-content: center; align-items: center;height: 100%;">
+        <h2 style="margin-right: 1.2em; text-align: center;">CodeSnip</h2>
+        <div style="text-align: center;padding-left: 0.7em;padding-bottom: 0.1em;display: flex;align-items: center;position: relative;width: calc(100% - 2em);height: 55%; background-color: white; border-radius: 2em; color: black;">
+            <h3>Search</h3>
+        </div>
+    </div> -->
+        <div class="side-links">
+            <h3>New Room</h3>
+            <h3>|</h3>
+            <div id="join-room">Join Room</div>
+            <div style="background-color:#278EA5; padding: 0.3em 0.6em; border-radius: 0.3em;">
+                <h3>
+                    Login to VSCode
+                </h3>
+            </div>
+            <!-- <div style="display: flex; align-items: center; justify-content: center; width: 2.3em; height: 2.3em; background-color: white; border-radius: 100%;"></div> -->
+        </div>
+        </ul>
+    </nav>
+
+
+
+    <ul id="cards">
+        ${snippetsHtml}
+    </ul>
+
+
+        <div id="overlay"> </div>
+        <div class="modal" id="popup-modal">
+            <div class="modal-header"> Join a Room </div>
+            <input type="text" id="input-box" placeholder="Enter room code..." />
+            <div class="modal-footer">
+                <button id="submit-button"> Submit </button>
+                <button id="close-button"> Close </button>
+            </div>
+            <div id="response-text">
+                </div> <!-- This will display the submitted text -->
+                </div>
+                <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js">
+                </script>
 
                     <script>
                         const vscode = acquireVsCodeApi();
@@ -782,37 +979,37 @@ export function activate(context: vscode.ExtensionContext) {
 
                                 let url = 'https://api.github.com/gists/' + roomCode;
 
-                                console.log("THE URL IS",url);
+                                console.log("THE URL IS", url);
                                 // let token = 'Bearer ' + session.accessToken
                                 let gistInfo = await axios.get(url, {
-                                        headers: { Authorization: 'Bearer' }
-                                    });
-                                    console.log(gistInfo.data);
-                                    // console.log(gistsList.length);
+                                    headers: { Authorization: 'Bearer' }
+                                });
+                                console.log(gistInfo.data);
+                                // console.log(gistsList.length);
                                 responseText.textContent = 'You have joined the room with code: ' + gistInfo.data.description;
 
                                 // createSnippet()
 
                                 for (const fileName in gistInfo.data.files) {
-                                //     console.log(fileName);
-                                        await vscode.postMessage({
-                                            command: 'createSnippet',
-                                            fileName: fileName,
-                                            content: gistInfo.data.files[fileName].content,
-                                            description: gistInfo.data.description,
-                                            visibility: 'Public',
-                                        });
-                                        setTimeout(() => {
-                                            vscode.postMessage({
+                                    //     console.log(fileName);
+                                    await vscode.postMessage({
+                                        command: 'createSnippet',
+                                        fileName: fileName,
+                                        content: gistInfo.data.files[fileName].content,
+                                        description: gistInfo.data.description,
+                                        visibility: 'Public',
+                                    });
+                                    setTimeout(() => {
+                                        vscode.postMessage({
                                             command: 'fetch'
-                                            });
-                                        }, 5000);
-                                        
-                                //     commands.createSnippet(fileName, gistInfo.data.files[fileName].content, gistInfo.data.description, 'public');
-                                //     console.log("Finished");
+                                        });
+                                    }, 5000);
+
+                                    //     commands.createSnippet(fileName, gistInfo.data.files[fileName].content, gistInfo.data.description, 'public');
+                                    //     console.log("Finished");
                                 }
 
-                                
+
 
 
                                 // Disable the input field after submission
@@ -833,8 +1030,9 @@ export function activate(context: vscode.ExtensionContext) {
                         });
                     </script>
 
-                </body>
-            </html>
+</body>
+
+</html>
         `;
     }
 
