@@ -100,13 +100,14 @@ export class SnippetsProvider implements vscode.TreeDataProvider<Snippet>, vscod
 
     // save state of snippets, then refresh
     sync(): void {
-        console.log("syncing", this.fn)
         this._snippetService.saveSnippets();
         this.refresh();
-        if (this.fn) this.fn();
+        if (this.fn) {
+            this.fn();
+        }
     }
 
-    addSnippet(name: string, snippet: string, parentId: number, languageExt?: string) {
+    addSnippet(name: string, snippet: string, parentId: number, description?: string, languageExt?: string, gistId?: string) {
         let lastId = this._snippetService.incrementLastId();
 
         let extStartPoint = name.lastIndexOf("\.");
@@ -126,10 +127,13 @@ export class SnippetsProvider implements vscode.TreeDataProvider<Snippet>, vscod
                 parentId: parentId,
                 label: name,
                 value: snippet,
+                description: description,
                 language: languageExt,
-                children: []
+                children: [],
+                gistid: gistId,
             }
         );
+        //console.log(gistId);
         this.sync();
     }
 
@@ -162,6 +166,7 @@ export class SnippetsProvider implements vscode.TreeDataProvider<Snippet>, vscod
 
     removeSnippet(snippet: Snippet) {
         this._snippetService.removeSnippet(snippet);
+        console.log("Here",snippet);
         this.sync();
     }
 
@@ -180,8 +185,7 @@ export class SnippetsProvider implements vscode.TreeDataProvider<Snippet>, vscod
         this.sync();
     }
 
-    sortAllSnippets() {
-        console.log("snip prov sort");
+    sortAllSnippets() {        
         this._snippetService.sortAllSnippets();
         this.sync();
     }

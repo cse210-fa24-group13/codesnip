@@ -1,6 +1,8 @@
+import { commands, extensions } from "vscode";
 import { DataAccess } from "../data/dataAccess";
 import { FileDataAccess } from "../data/fileDataAccess";
 import { Snippet } from "../interface/snippet";
+import { updateGist,deleteGist } from '../config/commands'
 
 export class SnippetService {
     private _rootSnippet: Snippet;
@@ -161,7 +163,7 @@ export class SnippetService {
 
     updateSnippet(snippet: Snippet): void {
         const parentElement = SnippetService.findParent(snippet.parentId ?? Snippet.rootParentId, this._rootSnippet);
-
+        let gid = snippet.gistid;
         if (parentElement) {
             const index = parentElement.children.findIndex((obj => obj.id === snippet.id));
 
@@ -172,13 +174,18 @@ export class SnippetService {
                         label: snippet.label,
                         // if its a folder, don't update content, use old value instead
                         // if its a snippet, update its content
-                        value: [snippet.folder ? obj.value : snippet.value]
+                        value: [snippet.folder ? obj.value : snippet.value],
+                        description: snippet.description
                     }
                         : obj
                 );
             }
         }
+        console.log(snippet.gistid);
+        updateGist(snippet.gistid,snippet.label,snippet.value,snippet.description);
     }
+
+    
 
     overrideSnippetId(snippet: Snippet): void {
         let lastId = this.incrementLastId();
@@ -197,6 +204,20 @@ export class SnippetService {
                 parentElement?.children.splice(index, 1);
             }
         }
+        deleteGist(snippet.gistid);
+    }
+
+    removeSnippetLocally(snippet: Snippet): void {
+        const parentElement = SnippetService.findParent(snippet.parentId ?? Snippet.rootParentId, this._rootSnippet);
+
+        if (parentElement) {
+            const index = parentElement.children.findIndex((obj => obj.id === snippet.id));
+
+            if (index > -1) {
+                parentElement?.children.splice(index, 1);
+            }
+        }
+        //deleteGist(snippet.gistid);
     }
 
     moveSnippet(snippet: Snippet, offset: number) {
@@ -218,7 +239,6 @@ export class SnippetService {
     }
 
     sortAllSnippets() {
-        console.log("snip serve sort")
         let snippet = this._rootSnippet;
         if (snippet.children.length > 0) {
             this._sortSnippetsAndChildren(snippet.children);

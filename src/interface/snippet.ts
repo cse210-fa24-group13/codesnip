@@ -13,6 +13,7 @@ export class Snippet {
   prefix?: string;
   language?: string;
   icon?: string;
+  gistid?: string;
 
   constructor(
     id: number,
@@ -20,7 +21,9 @@ export class Snippet {
     children: Array<Snippet>,
     folder?: boolean,
     parentId?: number,
-    value?: string
+    value?: string,
+    description?: string,
+    gistid?:string
   ) {
     this.id = id;
     this.label = label;
@@ -28,5 +31,7 @@ export class Snippet {
     this.children = children;
     this.parentId = parentId;
     this.value = value;
+    this.description = description;
+    this.gistid = gistid;
   }
 }
