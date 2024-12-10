@@ -100,10 +100,11 @@ export class SnippetsProvider implements vscode.TreeDataProvider<Snippet>, vscod
 
     // save state of snippets, then refresh
     sync(): void {
-        console.log("syncing", this.fn)
         this._snippetService.saveSnippets();
         this.refresh();
-        if (this.fn) this.fn();
+        if (this.fn) {
+            this.fn();
+        }
     }
 
     addSnippet(name: string, snippet: string, parentId: number, languageExt?: string) {
