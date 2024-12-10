@@ -615,6 +615,64 @@ export function activate(context: vscode.ExtensionContext) {
                             border-radius: 1em;
                             overflow: hidden;
                         }
+                        .modal {
+                        display: none;
+                        position: fixed;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        width: 30em;
+                        background-color: white;
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                        border-radius: 8px;
+                        padding: 2em;
+                        z-index: 1000;
+                        }
+                        .modal.show {
+                            display: block;
+                        }
+                        
+                        .modal-header {
+                        font-weight: bold;
+                        margin-bottom: 1em;
+                        text-align: center;
+                        }
+                        .modal-footer {
+                            text-align: center;
+                            margin-top: 1em;
+                        }
+                        #overlay {
+                            display: none;
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                            background: rgba(0, 0, 0, 0.5);
+                            z-index: 999;
+                        }
+                        #input-box {
+                            width: 100%;
+                            padding: 0.5em;
+                            margin-bottom: 1em;
+                            font-size: 1em;
+                            border: 1px solid var(--primary-color);
+                            border-radius: 0.5em;
+                        }
+                        #submit-button, #close-button {
+                            padding: 0.5em 1em;
+                            font-size: 1em;
+                            background-color: var(--primary-color);
+                            color: white;
+                            border: none;
+                            border-radius: 0.5em;
+                            cursor: pointer;
+                            margin: 0.5em;
+                        }
+                            #submit-button:hover, #close-button:hover {
+                            background-color: var(--secondary-color);
+                        }
+
                         .top{
                             background-color: var(--secondary-color);
                             height: 60%;
@@ -631,12 +689,115 @@ export function activate(context: vscode.ExtensionContext) {
                     <ul id="nav">
                         <li>Back</li>
                         <li>New Room</li>
-                        <li>Join Room</li>
+                        <li id="join-room">Enter Gist ID to add the snippet</li>
                         <li>Search</li>
                     </ul>
                     <ul id="cards">
                         ${snippetsHtml}
                     </ul>
+
+                    <!-- Modal Popup -->
+                    <div id="overlay"></div>
+                    <div class="modal" id="popup-modal">
+                        <div class="modal-header">Join a Room</div>
+                        <input type="text" id="input-box" placeholder="Enter room code..." />
+                        <div class="modal-footer">
+                            <button id="submit-button">Submit</button>
+                            <button id="close-button">Close</button>
+                        </div>
+                        <div id="response-text"></div> <!-- This will display the submitted text -->
+                    </div>
+                    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+                    <script>
+                        const vscode = acquireVsCodeApi();
+                        // const axios = require('axios'); 
+
+                        // Elements
+                        const joinRoomButton = document.getElementById('join-room');
+                        const modal = document.getElementById('popup-modal');
+                        const overlay = document.getElementById('overlay');
+                        const submitButton = document.getElementById('submit-button');
+                        const closeButton = document.getElementById('close-button');
+                        const responseText = document.getElementById('response-text');
+                        const inputBox = document.getElementById('input-box');
+
+                        // Show modal
+                        joinRoomButton.addEventListener('click', () => {
+                            modal.classList.add('show');
+                            overlay.style.display = 'block';
+                            responseText.textContent = ''; // Clear any previous response text
+                            inputBox.disabled = false; // Ensure input box is enabled
+                            submitButton.style.display = 'inline-block'; // Show submit button
+                            closeButton.textContent = 'Close'; // Reset close button text
+                        });
+
+                        // Close modal
+                        closeButton.addEventListener('click', () => {
+                            modal.classList.remove('show');
+                            overlay.style.display = 'none';
+                            responseText.textContent = ''; // Clear text on close
+                        });
+
+                        overlay.addEventListener('click', () => {
+                            modal.classList.remove('show');
+                            overlay.style.display = 'none';
+                            responseText.textContent = ''; // Clear text on close
+                        });
+
+                        // Handle Submit
+                        submitButton.addEventListener('click', async () => {
+                            const roomCode = inputBox.value;
+                            // console.log('clicked');
+                            if (roomCode.trim()) {
+                                // Send the room code to the extension
+                                // vscode.postMessage({ command: 'join-room', roomCode });
+
+                                // Show the room code in the modal as a confirmation
+                                // responseText.textContent = 'You have joined the room with code: ' + roomCode;
+                                // let session = await vscode.authentication.getSession('github', ['gist'], { createIfNone: true });
+
+                                let url = 'https://api.github.com/gists/' + roomCode;
+
+                                console.log("THE URL IS",url);
+                                // let token = 'Bearer ' + session.accessToken
+                                let gistInfo = await axios.get(url, {
+                                        headers: { Authorization: 'Bearerr' }
+                                    });
+                                    console.log(gistInfo.data);
+                                    // console.log(gistsList.length);
+                                responseText.textContent = 'You have joined the room with code: ' + gistInfo.data.description;
+                            
+                                // Now you can safely use forEach on gistsList after waiting for fetchDataResponse to finish
+                                // console.log("GISTS LIST returned is", gistsList);
+                                // gistsList.forEach((gist: any) => {
+                                //     console.log("Start", gist.files);
+                                //     for (const fileName in gist.files) {
+                                //     // for (let [fileName, value] of gist.files) {
+                                //         console.log(fileName);
+                                //         snippetsProvider.addSnippet(fileName, gist.files[fileName].content, Snippet.rootParentId, gist.description, undefined, gist.id);
+                                //         console.log("Finished");
+                                //     }
+                                // });
+
+                                // Disable the input field after submission
+                                inputBox.disabled = true;
+
+                                // Hide the submit button and change the close button text
+                                submitButton.style.display = 'none';
+                                closeButton.textContent = 'Close';
+
+                                // Optionally, you could wait a bit before closing the modal.
+                                setTimeout(() => {
+                                    modal.classList.remove('show');
+                                    overlay.style.display = 'none';
+                                }, 3000); // Close after 3 seconds
+                            } else {
+                                responseText.textContent = 'Please enter a valid room code.';
+                            }
+                        });
+                    </script>
+
                 </body>
             </html>
         `;

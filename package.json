@@ -59,29 +59,29 @@
 			}
 		],
 		"commands": [
-		{
-      "command": "snippets.testGitHubAuth",
-      "title": "Snippets: Test GitHub Auth",
-      "category": "Snippets"
-     },
-     {
-       "command": "snippets.authenticateGitHub",
-       "title": "Sign in to GitHub",
-       "category": "Snippets"
-      },
-	  {
-		"command": "snippets.fecthFromGithub",
-		"title": "Fetch from github",
-		"category": "Snippets"
-	   },
-      {
-        "command": "snippets.shareSnippetToGist",
-        "title": "Share Snippet"
-      },
+			{
+				"command": "snippets.testGitHubAuth",
+				"title": "Snippets: Test GitHub Auth",
+				"category": "Snippets"
+			},
+			{
+				"command": "snippets.authenticateGitHub",
+				"title": "Sign in to GitHub",
+				"category": "Snippets"
+			},
+			{
+				"command": "snippets.fecthFromGithub",
+				"title": "Fetch from github",
+				"category": "Snippets"
+			},
+			{
+				"command": "snippets.shareSnippetToGist",
+				"title": "Share Snippet"
+			},
 			{
 				"command": "extension.openPage",
 				"title": "Open First Webview Page"
-			  },
+			},
 			{
 				"command": "miscCmd.requestWSConfig",
 				"title": "Init WS Config"
@@ -395,15 +395,15 @@
 			],
 			"view/title": [
 				{
-                    "command": "snippets.authenticateGitHub",
-                    "when": "view == snippetsExplorer",
-                    "group": "other@5"
-                },
+					"command": "snippets.authenticateGitHub",
+					"when": "view == snippetsExplorer",
+					"group": "other@5"
+				},
 				{
-                    "command": "snippets.fecthFromGithub",
-                    "when": "view == snippetsExplorer",
-                    "group": "other@6"
-                },
+					"command": "snippets.fecthFromGithub",
+					"when": "view == snippetsExplorer",
+					"group": "other@6"
+				},
 				{
 					"command": "globalSnippetsCmd.addSnippet",
 					"when": "view == snippetsExplorer",
@@ -725,12 +725,11 @@
 		"docs": "npx typedoc --entryPointStrategy expand --entryPoints --out docs src "
 	},
 	"devDependencies": {
-		"@types/vscode": "^1.75.0",
-        "typescript": "^4.0.2",
 		"@eslint/js": "^9.15.0",
 		"@types/glob": "^8.1.0",
 		"@types/mocha": "^10.0.10",
 		"@types/node": "^22.9.1",
+		"@types/vscode": "^1.75.0",
 		"@typescript-eslint/eslint-plugin": "^8.15.0",
 		"@typescript-eslint/parser": "^8.15.0",
 		"@vscode/test-electron": "^2.4.1",
@@ -739,18 +738,19 @@
 		"glob": "^11.0.0",
 		"mocha": "^10.8.2",
 		"ts-loader": "9.5.1",
+		"typescript": "^4.0.2",
 		"typescript-eslint": "^8.15.0",
 		"vscode-test": "^1.6.1",
-		"webpack": "^5.96.1",
+		"webpack": "^5.97.1",
 		"webpack-cli": "^5.1.4",
 		"y18n": ">=5.0.8"
 	},
 	"dependencies": {
 		"@types/mustache": "^4.2.5",
+		"axios": "^0.21.1",
 		"mustache": "^4.2.0",
-		"typedocs": "^0.6.7",
-		"axios":"^0.21.1",
-    "ts-node": "^10.9.2",
-		"ts-node-dev": "^2.0.0"
+		"ts-node": "^10.9.2",
+		"ts-node-dev": "^2.0.0",
+		"typedocs": "^0.6.7"
 	}
 }
