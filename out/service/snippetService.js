@@ -1,30 +1,26 @@
-import { DataAccess } from "../data/dataAccess";
-import { FileDataAccess } from "../data/fileDataAccess";
-import { Snippet } from "../interface/snippet";
-
-export class SnippetService {
-    private _rootSnippet: Snippet;
-
-    constructor(private _dataAccess: DataAccess) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.SnippetService = void 0;
+const fileDataAccess_1 = require("../data/fileDataAccess");
+const snippet_1 = require("../interface/snippet");
+class SnippetService {
+    constructor(_dataAccess) {
+        this._dataAccess = _dataAccess;
         this._rootSnippet = this.loadSnippets();
     }
-
     // static utility methods
-
-    static findParent(parentId: number, currentElt: Snippet): Snippet | undefined {
+    static findParent(parentId, currentElt) {
         var i, currentChild, result;
-
         if (parentId === currentElt.id) {
             return currentElt;
-        } else {
+        }
+        else {
             // Use a for loop instead of forEach to avoid nested functions
             // Otherwise "return" will not work properly
             for (i = 0; i < currentElt.children.length; i++) {
                 currentChild = currentElt.children[i];
-
                 // Search in the current child
                 result = this.findParent(parentId, currentChild);
-
                 // Return the result if the node has been found
                 if (result !== undefined) {
                     return result;
@@ -34,52 +30,48 @@ export class SnippetService {
             return undefined;
         }
     }
-
-   /**
-   * to be used like the following:
-   * let result: any[] = [];
-   * Snippet.flatten(snippetsProvider.snippets.children, result);
-   * @param arr array of element
-   * @param result final result
-   */
-    private static flatten(arr: any, result: any[] = []) {
+    /**
+    * to be used like the following:
+    * let result: any[] = [];
+    * Snippet.flatten(snippetsProvider.snippets.children, result);
+    * @param arr array of element
+    * @param result final result
+    */
+    static flatten(arr, result = []) {
         for (let i = 0, length = arr.length; i < length; i++) {
             const value = arr[i];
             if (value.folder === true) {
                 SnippetService.flatten(value.children, result);
-            } else {
+            }
+            else {
                 result.push(value);
             }
         }
         return result;
     }
-    
-    public static flattenAndKeepFolders(arr: any, result: any[] = []) {
+    static flattenAndKeepFolders(arr, result = []) {
         for (let i = 0, length = arr.length; i < length; i++) {
             const value = arr[i];
             if (value.folder === true) {
                 result.push(value);
                 SnippetService.flattenAndKeepFolders(value.children, result);
-            } else {
+            }
+            else {
                 result.push(value);
             }
         }
         return result;
     }
-
     // private methods
-
-    private _reorderArray(arr: Snippet[], oldIndex: number, newIndex: number) {
+    _reorderArray(arr, oldIndex, newIndex) {
         if (newIndex < arr.length) {
             arr.splice(newIndex, 0, arr.splice(oldIndex, 1)[0]);
         }
     }
-
-    private _sortArray(arr: Snippet[]) {
+    _sortArray(arr) {
         arr.sort((a, b) => a.label.localeCompare(b.label));
     }
-
-    private _sortSnippetsAndChildren(snippets: Snippet[]) {
+    _sortSnippetsAndChildren(snippets) {
         this._sortArray(snippets);
         snippets.forEach((s) => {
             if (s.folder && s.children.length > 0) {
@@ -87,84 +79,69 @@ export class SnippetService {
             }
         });
     }
-
-    private _updateLastId(newId: number): void {
+    _updateLastId(newId) {
         this._rootSnippet.lastId = newId;
     }
-    
     // public service methods
-
-    refresh(): void {
+    refresh() {
         this._rootSnippet = this.loadSnippets();
     }
-
-    loadSnippets(): Snippet {
+    loadSnippets() {
         return this._dataAccess.load();
     }
-    
-    saveSnippets(): void {
+    saveSnippets() {
         this._dataAccess.save(this._rootSnippet);
     }
-
-    fixLastId(): void{
-        let snippetIds = this.getAllSnippetsAndFolders().map(s=>s.id);
+    fixLastId() {
+        let snippetIds = this.getAllSnippetsAndFolders().map(s => s.id);
         const maxId = Math.max.apply(Math, snippetIds);
         if (this._rootSnippet.lastId && this._rootSnippet.lastId < maxId) {
             this._updateLastId(maxId);
         }
     }
-
-    getRootChildren(): Snippet[] {
+    getRootChildren() {
         return this._rootSnippet.children;
     }
-
-    getAllSnippets(): Snippet[] {
+    getAllSnippets() {
         // sync snippets
         this._rootSnippet = this.loadSnippets();
-        let snippets: Snippet[] = [];
+        let snippets = [];
         SnippetService.flatten(this._rootSnippet.children, snippets);
         return snippets;
     }
-
-    getAllSnippetsAndFolders(): Snippet[] {
+    getAllSnippetsAndFolders() {
         // sync snippets
         this._rootSnippet = this.loadSnippets();
-        let snippets: Snippet[] = [];
+        let snippets = [];
         SnippetService.flattenAndKeepFolders(this._rootSnippet.children, snippets);
         return snippets;
     }
-
-    incrementLastId(): number {
-        return (this._rootSnippet.lastId ?? 0) + 1;
+    incrementLastId() {
+        var _a;
+        return ((_a = this._rootSnippet.lastId) !== null && _a !== void 0 ? _a : 0) + 1;
     }
-
-    getParent(parentId: number | undefined): Snippet | undefined {
-        return SnippetService.findParent(parentId ?? Snippet.rootParentId, this._rootSnippet);
+    getParent(parentId) {
+        return SnippetService.findParent(parentId !== null && parentId !== void 0 ? parentId : snippet_1.Snippet.rootParentId, this._rootSnippet);
     }
-
-    compact(): string {
+    compact() {
         return JSON.stringify(this._rootSnippet);
     }
-
     // snippet management services
-
-    addSnippet(newSnippet: Snippet): void {
+    addSnippet(newSnippet) {
         this.addExistingSnippet(newSnippet);
         this._updateLastId(newSnippet.id);
     }
-
-    addExistingSnippet(newSnippet: Snippet): void {
-        newSnippet.parentId === Snippet.rootParentId
+    addExistingSnippet(newSnippet) {
+        var _a, _b;
+        newSnippet.parentId === snippet_1.Snippet.rootParentId
             ? this._rootSnippet.children.push(newSnippet)
-            : SnippetService.findParent(newSnippet.parentId ?? Snippet.rootParentId, this._rootSnippet)?.children.push(newSnippet);
+            : (_b = SnippetService.findParent((_a = newSnippet.parentId) !== null && _a !== void 0 ? _a : snippet_1.Snippet.rootParentId, this._rootSnippet)) === null || _b === void 0 ? void 0 : _b.children.push(newSnippet);
     }
-
-    updateSnippet(snippet: Snippet): void {
-        const parentElement = SnippetService.findParent(snippet.parentId ?? Snippet.rootParentId, this._rootSnippet);
-
+    updateSnippet(snippet) {
+        var _a;
+        const parentElement = SnippetService.findParent((_a = snippet.parentId) !== null && _a !== void 0 ? _a : snippet_1.Snippet.rootParentId, this._rootSnippet);
         if (parentElement) {
             const index = parentElement.children.findIndex((obj => obj.id === snippet.id));
-
             if (index > -1) {
                 /*
                 parentElement.children.map(obj =>
@@ -178,78 +155,65 @@ export class SnippetService {
                         : obj
                 );*/
                 // Update the specific child object in the array
-                parentElement.children[index] = {
-                ...parentElement.children[index],
-                label: snippet.label,
-                value: snippet.folder 
-                    ? parentElement.children[index].value // Keep old value for folders
-                    : snippet.value, // Update value for snippets
-                }
-            };
+                parentElement.children[index] = Object.assign(Object.assign({}, parentElement.children[index]), { label: snippet.label, value: snippet.folder
+                        ? parentElement.children[index].value // Keep old value for folders
+                        : snippet.value });
+            }
+            ;
         }
     }
-
-    overrideSnippetId(snippet: Snippet): void {
+    overrideSnippetId(snippet) {
         let lastId = this.incrementLastId();
         snippet.id = lastId;
         this.updateSnippet(snippet);
         this._updateLastId(snippet.id);
     }
-
-    removeSnippet(snippet: Snippet): void {
-        const parentElement = SnippetService.findParent(snippet.parentId ?? Snippet.rootParentId, this._rootSnippet);
-
+    removeSnippet(snippet) {
+        var _a;
+        const parentElement = SnippetService.findParent((_a = snippet.parentId) !== null && _a !== void 0 ? _a : snippet_1.Snippet.rootParentId, this._rootSnippet);
         if (parentElement) {
             const index = parentElement.children.findIndex((obj => obj.id === snippet.id));
-
             if (index > -1) {
-                parentElement?.children.splice(index, 1);
+                parentElement === null || parentElement === void 0 ? void 0 : parentElement.children.splice(index, 1);
             }
         }
     }
-
-    moveSnippet(snippet: Snippet, offset: number) {
-        const parentElement = SnippetService.findParent(snippet.parentId ?? Snippet.rootParentId, this._rootSnippet);
-
+    moveSnippet(snippet, offset) {
+        var _a;
+        const parentElement = SnippetService.findParent((_a = snippet.parentId) !== null && _a !== void 0 ? _a : snippet_1.Snippet.rootParentId, this._rootSnippet);
         if (parentElement) {
             const index = parentElement.children.findIndex((obj => obj.id === snippet.id));
-
             if (index > -1 && parentElement.children) {
                 this._reorderArray(parentElement.children, index, index + offset);
             }
         }
     }
-
-    sortSnippets(snippet: Snippet) {
+    sortSnippets(snippet) {
         if (snippet.folder && snippet.children.length > 0) {
             this._sortArray(snippet.children);
         }
     }
-
     sortAllSnippets() {
-        console.log("snip serve sort")
+        console.log("snip serve sort");
         let snippet = this._rootSnippet;
         if (snippet.children.length > 0) {
             this._sortSnippetsAndChildren(snippet.children);
         }
     }
-
-    exportSnippets(destinationPath: string, parentId: number) {
-        const parentElement = SnippetService.findParent(parentId ?? Snippet.rootParentId, this._rootSnippet);
+    exportSnippets(destinationPath, parentId) {
+        const parentElement = SnippetService.findParent(parentId !== null && parentId !== void 0 ? parentId : snippet_1.Snippet.rootParentId, this._rootSnippet);
         if (parentElement) {
             // save file using destroyable instance of FileDataAccess
-            new FileDataAccess(destinationPath).save(parentElement);
+            new fileDataAccess_1.FileDataAccess(destinationPath).save(parentElement);
         }
     }
-
-    importSnippets(destinationPath: string) {
+    importSnippets(destinationPath) {
         // save a backup version of current snippets next to the file to import
-        this.exportSnippets(
-            destinationPath.replace(FileDataAccess.dataFileExt, `_pre-import-bak${FileDataAccess.dataFileExt}`),
-            Snippet.rootParentId
-        );
-        let newSnippets: Snippet = new FileDataAccess(destinationPath).load();
+        this.exportSnippets(destinationPath.replace(fileDataAccess_1.FileDataAccess.dataFileExt, `_pre-import-bak${fileDataAccess_1.FileDataAccess.dataFileExt}`), snippet_1.Snippet.rootParentId);
+        let newSnippets = new fileDataAccess_1.FileDataAccess(destinationPath).load();
         this._rootSnippet.children = newSnippets.children;
         this._rootSnippet.lastId = newSnippets.lastId;
     }
 }
+exports.SnippetService = SnippetService;
+//# sourceMappingURL=snippetService.js.map
