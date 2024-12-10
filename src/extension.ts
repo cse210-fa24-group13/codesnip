@@ -197,7 +197,6 @@ export function activate(context: vscode.ExtensionContext) {
     // refresh windows whenever it gains focus
     // this will prevent de-sync between multiple open workspaces
     vscode.window.onDidChangeWindowState((event) => {
-        console.log('test2', event)
         if (event.focused) {
             refreshUI();
         }
@@ -206,7 +205,6 @@ export function activate(context: vscode.ExtensionContext) {
     // refresh UI when updating workspace setting
     vscode.workspace.onDidChangeConfiguration(event => {
         let affected = event.affectsConfiguration(`${snippetsConfigKey}.${useWorkspaceFolderKey}`);
-        console.log('test');
         if (affected) {
             if (vscode.workspace.getConfiguration(snippetsConfigKey).get(useWorkspaceFolderKey)) {
                 requestWSConfigSetup();
@@ -318,7 +316,6 @@ export function activate(context: vscode.ExtensionContext) {
             vscode.window.showErrorMessage(StringUtility.formatString(Labels.genericError, error.message));
             refreshUI();
         });
-        console.log('handler', callback)
     }
     //** common logic **//
 
@@ -519,8 +516,6 @@ export function activate(context: vscode.ExtensionContext) {
     let panel: vscode.WebviewPanel;
 
     function openPage(context: vscode.ExtensionContext) {
-
-        console.log("creating window");
         panel = vscode.window.createWebviewPanel(
             'webviewFirstPage', // Identifies the webview panel (type)
             'Snippets Page', // Title
@@ -583,8 +578,6 @@ export function activate(context: vscode.ExtensionContext) {
                 </li>
             `;
         });
-
-        console.log(panel, "<- panel");
 
         if (panel === undefined) {
             return;
