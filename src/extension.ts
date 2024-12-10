@@ -530,6 +530,7 @@ export function activate(context: vscode.ExtensionContext) {
             }
         );
 
+        refreshWebUI(panel);
         panel.webview.onDidReceiveMessage(async (message) => {
             if (message.command === 'createSnippet') {
                 try {
