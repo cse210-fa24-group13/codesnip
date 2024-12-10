@@ -142,6 +142,54 @@ export function activate(context: vscode.ExtensionContext) {
                 });
         }
     }
+    context.subscriptions.push(
+        vscode.commands.registerCommand('snippets.fetchFromGithub', async () => {
+            let candidates = snippetService.getAllSnippets();
+            for (const candidate of candidates) {
+                snippetService.removeSnippetLocally(candidate);
+            }
+
+
+            // await fetchData();
+            //pseudo
+            // open a session
+            // get all gists
+            //for each gist
+            //  create a new snippet(name,description,visibility,gistid)
+            //refresh
+            const session = await vscode.authentication.getSession('github', ['gist'], { createIfNone: true });
+
+            if (session) {
+                let gistsList: any = [];
+                let fetchDataResponse = await fetchData(session.accessToken);
+                console.log("FETCH DATA response", fetchDataResponse);
+                
+                // Use for...of to handle asynchronous operations sequentially
+                for (const gist of fetchDataResponse) {
+                    let gistInfo = await axios.get(`https://api.github.com/gists/${gist.id}`, {
+                        headers: { Authorization: `Bearer ${session.accessToken}` }
+                    });
+                    gistsList.push(gistInfo.data);
+                    console.log(gistsList.length);
+                }
+            
+                // Now you can safely use forEach on gistsList after waiting for fetchDataResponse to finish
+                console.log("GISTS LIST returned is", gistsList);
+                gistsList.forEach((gist: any) => {
+                    console.log("Start", gist.files);
+                    for (const fileName in gist.files) {
+                    // for (let [fileName, value] of gist.files) {
+                        console.log(fileName);
+                        snippetsProvider.addSnippet(fileName, gist.files[fileName].content, Snippet.rootParentId, gist.description, undefined, gist.id);
+                        console.log("Finished");
+                    }
+                });
+                refreshUI();
+            } else {
+                vscode.window.showErrorMessage('GitHub session could not be opened.');
+            }
+        })                
+    );
     //** upgrade from 1.x to 2.x **//
     //** pre-initialization **//
 
@@ -327,55 +375,7 @@ export function activate(context: vscode.ExtensionContext) {
             }
         })
     );
-    context.subscriptions.push(
-        vscode.commands.registerCommand('snippets.fecthFromGithub', async () => {
-            let candidates = snippetService.getAllSnippets();
-            for (const candidate of candidates) {
-                snippetService.removeSnippetLocally(candidate);
-            }
-
-
-
-            // await fetchData();
-            //pseudo
-            // open a session
-            // get all gists
-            //for each gist
-            //  create a new snippet(name,description,visibility,gistid)
-            //refresh
-            const session = await vscode.authentication.getSession('github', ['gist'], { createIfNone: true });
-
-            if (session) {
-                let gistsList: any = [];
-                let fetchDataResponse = await fetchData(session.accessToken);
-                console.log("FETCH DATA response", fetchDataResponse);
-                
-                // Use for...of to handle asynchronous operations sequentially
-                for (const gist of fetchDataResponse) {
-                    let gistInfo = await axios.get(`https://api.github.com/gists/${gist.id}`, {
-                        headers: { Authorization: `Bearer ${session.accessToken}` }
-                    });
-                    gistsList.push(gistInfo.data);
-                    console.log(gistsList.length);
-                }
-            
-                // Now you can safely use forEach on gistsList after waiting for fetchDataResponse to finish
-                console.log("GISTS LIST returned is", gistsList);
-                gistsList.forEach((gist: any) => {
-                    console.log("Start", gist.files);
-                    for (const fileName in gist.files) {
-                    // for (let [fileName, value] of gist.files) {
-                        console.log(fileName);
-                        snippetsProvider.addSnippet(fileName, gist.files[fileName].content, Snippet.rootParentId, gist.description, undefined, gist.id);
-                        console.log("Finished");
-                    }
-                });
-                refreshUI();
-            } else {
-                vscode.window.showErrorMessage('GitHub session could not be opened.');
-            }
-        })                
-    );
+    
     //** COMMAND : INITIALIZE GENERIC COMPLETION ITEM PROVIDER **/*
 
     let triggerCharacter: any = vscode.workspace.getConfiguration(snippetsConfigKey).get("triggerKey");
@@ -549,12 +549,11 @@ export function activate(context: vscode.ExtensionContext) {
         panel.webview.onDidReceiveMessage(async (message) => {
             if (message.command === 'fetch') {
                 try {
-                    const session = await vscode.authentication.getSession('github', ['gist'], { createIfNone: true });
-                    await fetchData(session.accessToken)
+                    await vscode.commands.executeCommand('snippets.fetchFromGithub');
                     vscode.window.showInformationMessage(`Data fetched!`);
                     refreshWebUI(panel);
                 } catch (error:any) {
-                    vscode.window.showErrorMessage(`Failed to fetch data!`);
+                    vscode.window.showErrorMessage(error.message);
                 }
             }
         });
@@ -590,7 +589,7 @@ export function activate(context: vscode.ExtensionContext) {
         if (panel === undefined) {
             return;
         }
-
+        
         // Set HTML content for the snippets page
         panel.webview.html = `
             <html>
