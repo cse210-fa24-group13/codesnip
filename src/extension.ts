@@ -14,6 +14,7 @@ import { StringUtility } from './utility/stringUtility';
 import { Labels } from './config/labels';
 import { FileDataAccess } from './data/fileDataAccess';
 import axios from 'axios';
+import { Session } from 'node:inspector/promises';
 /**
  * Activate extension by initializing views for snippets and feature commands.
  * @param context 
@@ -530,6 +531,33 @@ export function activate(context: vscode.ExtensionContext) {
         );
 
         refreshWebUI(panel);
+        panel.webview.onDidReceiveMessage(async (message) => {
+            if (message.command === 'createSnippet') {
+                try {
+                    await commands.createSnippet(
+                        message.fileName,
+                        message.content,
+                        message.description,
+                        message.visibility
+                    );
+                    vscode.window.showInformationMessage(`Snippet created for ${message.fileName}`);
+                } catch (error:any) {
+                    vscode.window.showErrorMessage(`Failed to create snippet: ${error.message}`);
+                }
+            }
+        });
+
+        panel.webview.onDidReceiveMessage(async (message) => {
+            if (message.command === 'fetch') {
+                try {
+                    const session = await vscode.authentication.getSession('github', ['gist'], { createIfNone: true });
+                    await fetchData(session.accessToken)
+                    vscode.window.showInformationMessage(`Data fetched!`);
+                } catch (error:any) {
+                    vscode.window.showErrorMessage(`Failed to fetch data!`);
+                }
+            }
+        });
         snippetsProvider.setUIFunction(() => refreshWebUI(panel));
     }
 
@@ -712,6 +740,7 @@ export function activate(context: vscode.ExtensionContext) {
                     <script>
                         const vscode = acquireVsCodeApi();
                         // const axios = require('axios'); 
+                        // import * as commands from './config/commands';
 
                         // Elements
                         const joinRoomButton = document.getElementById('join-room');
@@ -762,23 +791,35 @@ export function activate(context: vscode.ExtensionContext) {
                                 console.log("THE URL IS",url);
                                 // let token = 'Bearer ' + session.accessToken
                                 let gistInfo = await axios.get(url, {
-                                        headers: { Authorization: 'Bearerr' }
+                                        headers: { Authorization: 'Bearer' }
                                     });
                                     console.log(gistInfo.data);
                                     // console.log(gistsList.length);
                                 responseText.textContent = 'You have joined the room with code: ' + gistInfo.data.description;
-                            
-                                // Now you can safely use forEach on gistsList after waiting for fetchDataResponse to finish
-                                // console.log("GISTS LIST returned is", gistsList);
-                                // gistsList.forEach((gist: any) => {
-                                //     console.log("Start", gist.files);
-                                //     for (const fileName in gist.files) {
-                                //     // for (let [fileName, value] of gist.files) {
-                                //         console.log(fileName);
-                                //         snippetsProvider.addSnippet(fileName, gist.files[fileName].content, Snippet.rootParentId, gist.description, undefined, gist.id);
-                                //         console.log("Finished");
-                                //     }
-                                // });
+
+                                // createSnippet()
+
+                                for (const fileName in gistInfo.data.files) {
+                                //     console.log(fileName);
+                                        await vscode.postMessage({
+                                            command: 'createSnippet',
+                                            fileName: fileName,
+                                            content: gistInfo.data.files[fileName].content,
+                                            description: gistInfo.data.description,
+                                            visibility: 'Public',
+                                        });
+                                        setTimeout(() => {
+                                            vscode.postMessage({
+                                            command: 'fetch'
+                                            });
+                                        }, 5000);
+                                        
+                                //     commands.createSnippet(fileName, gistInfo.data.files[fileName].content, gistInfo.data.description, 'public');
+                                //     console.log("Finished");
+                                }
+
+                                
+
 
                                 // Disable the input field after submission
                                 inputBox.disabled = true;
