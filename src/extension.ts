@@ -530,7 +530,6 @@ export function activate(context: vscode.ExtensionContext) {
             }
         );
 
-        refreshWebUI(panel);
         panel.webview.onDidReceiveMessage(async (message) => {
             if (message.command === 'createSnippet') {
                 try {
@@ -553,11 +552,13 @@ export function activate(context: vscode.ExtensionContext) {
                     const session = await vscode.authentication.getSession('github', ['gist'], { createIfNone: true });
                     await fetchData(session.accessToken)
                     vscode.window.showInformationMessage(`Data fetched!`);
+                    refreshWebUI(panel);
                 } catch (error:any) {
                     vscode.window.showErrorMessage(`Failed to fetch data!`);
                 }
             }
         });
+        
         snippetsProvider.setUIFunction(() => refreshWebUI(panel));
     }
 
