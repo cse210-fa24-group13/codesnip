@@ -70,7 +70,7 @@
 				"category": "Snippets"
 			},
 			{
-				"command": "snippets.fecthFromGithub",
+				"command": "snippets.fetchFromGithub",
 				"title": "Fetch from github",
 				"category": "Snippets"
 			},
@@ -400,7 +400,7 @@
 					"group": "other@5"
 				},
 				{
-					"command": "snippets.fecthFromGithub",
+					"command": "snippets.fetchFromGithub",
 					"when": "view == snippetsExplorer",
 					"group": "other@6"
 				},
