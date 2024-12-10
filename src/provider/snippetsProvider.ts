@@ -181,8 +181,7 @@ export class SnippetsProvider implements vscode.TreeDataProvider<Snippet>, vscod
         this.sync();
     }
 
-    sortAllSnippets() {
-        console.log("snip prov sort");
+    sortAllSnippets() {        
         this._snippetService.sortAllSnippets();
         this.sync();
     }
