@@ -2,6 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const assert = require("assert");
 const snippetService_1 = require("../../service/snippetService");
+const fs = require("fs");
+const path = require("path");
 suite('SnippetService Tests', () => {
     // Mock the DataAccess and Memento objects for testing
     class MockDataAccess {
@@ -237,6 +239,85 @@ suite('SnippetService Tests', () => {
         const allSnippets = snippetService.getAllSnippets();
         assert.strictEqual(allSnippets[0].id, 2);
         assert.strictEqual(allSnippets[1].id, 3);
+    });
+    test('Sort Snippet\'s children based on their labels', () => {
+        const newSnippet = {
+            id: 2,
+            label: 'Parent Snippet',
+            folder: true,
+            children: [{ id: 3, label: 'C', children: [] },
+                { id: 4, label: 'A', children: [] },
+                { id: 5, label: 'B', children: [] }
+            ],
+        };
+        snippetService.addSnippet(newSnippet);
+        snippetService.sortSnippets(newSnippet);
+        assert.strictEqual(newSnippet.children[0].label, 'A');
+        assert.strictEqual(newSnippet.children[1].label, 'B');
+        assert.strictEqual(newSnippet.children[2].label, 'C');
+    });
+    test('Sort all snippets and their childern based on their labels', () => {
+        const parentA = {
+            id: 2,
+            label: 'Parent A',
+            folder: true,
+            parentId: 1,
+            children: [{ id: 3, label: 'C', children: [] },
+                { id: 4, label: 'A', children: [] },
+                { id: 5, label: 'B', children: [] }
+            ],
+        };
+        const parentB = {
+            id: 6,
+            label: 'Parent B',
+            folder: true,
+            parentId: 1,
+            children: [{ id: 7, label: 'E', children: [] },
+                { id: 8, label: 'D', children: [] },
+                { id: 9, label: 'F', children: [] }
+            ],
+        };
+        const parentC = {
+            id: 10,
+            label: 'Parent C',
+            folder: true,
+            parentId: 1,
+            children: []
+        };
+        snippetService.addSnippet(parentA);
+        snippetService.addSnippet(parentC);
+        snippetService.addSnippet(parentB);
+        snippetService.sortAllSnippets();
+        let rootChildern = snippetService.getRootChildren();
+        assert.strictEqual(rootChildern[0].label, 'Parent A');
+        assert.strictEqual(rootChildern[1].label, 'Parent B');
+        assert.strictEqual(rootChildern[2].label, 'Parent C');
+        assert.strictEqual(parentA.children[0].label, 'A');
+        assert.strictEqual(parentA.children[1].label, 'B');
+        assert.strictEqual(parentA.children[2].label, 'C');
+        assert.strictEqual(parentB.children[0].label, 'D');
+        assert.strictEqual(parentB.children[1].label, 'E');
+        assert.strictEqual(parentB.children[2].label, 'F');
+    });
+    test('export snippets', () => {
+        // Create a temporary test data file for testing
+        const testDataFile = path.join(__dirname, "testData.json");
+        const parentA = {
+            id: 2,
+            label: 'Parent A',
+            folder: true,
+            children: [{ id: 3, label: 'C', children: [] },
+                { id: 4, label: 'A', children: [] },
+                { id: 5, label: 'B', children: [] }
+            ],
+        };
+        snippetService.addSnippet(parentA);
+        snippetService.exportSnippets(testDataFile, parentA.id);
+        assert.strictEqual(fs.existsSync(testDataFile), true);
+        // Clean up the temporary test data file after each test
+        if (fs.existsSync(testDataFile)) {
+            fs.unlinkSync(testDataFile);
+        }
     });
 });
 //# sourceMappingURL=snippetService.test.js.map
