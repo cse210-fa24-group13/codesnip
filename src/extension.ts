@@ -513,29 +513,39 @@ export function activate(context: vscode.ExtensionContext) {
 
         refreshWebUI(panel);
         panel.webview.onDidReceiveMessage(async (message) => {
-            if (message.command === 'createSnippet') {
+            if (message.command === 'createSnippets') {
                 try {
-                    await commands.createSnippet(
-                        message.fileName,
-                        message.content,
-                        message.description,
-                        message.visibility
-                    );
-                    vscode.window.showInformationMessage(`Snippet created for ${message.fileName}`);
+                    const session = await AuthService.getGitHubSession();
+                    if (session) {
+                        let gistInfo = await axios.get(message.apiUrl, {
+                            headers: { Authorization: `Bearer ${session.accessToken}` }
+                        });
+                        console.log(gistInfo.data);
+                        const tasks = Object.keys(gistInfo.data.files).map(async (fileName) => {
+                            // console.log("FIKLENAME IS",fileName)
+                            await commands.createSnippet(
+                                fileName,
+                                gistInfo.data.files[fileName].content,
+                                gistInfo.data.description,
+                                'Public'
+                            );
+                            vscode.window.showInformationMessage(`Snippet created for ${fileName}`);
+                        });
+                        await Promise.all(tasks);
+                        await vscode.commands.executeCommand('snippets.fetchFromGithub');
+                        vscode.window.showInformationMessage(`Data fetched!`);
+                        refreshWebUI(panel);
+                        panel.webview.postMessage({ command: 'operationComplete' });
+                    }
+                    else {
+                        vscode.window.showErrorMessage('GitHub session could not be opened.');
+                    }
                 } catch (error:any) {
                     vscode.window.showErrorMessage(`Failed to create snippet: ${error.message}`);
-                }
-            }
-        });
-
-        panel.webview.onDidReceiveMessage(async (message) => {
-            if (message.command === 'fetch') {
-                try {
-                    await vscode.commands.executeCommand('snippets.fetchFromGithub');
-                    vscode.window.showInformationMessage(`Data fetched!`);
-                    refreshWebUI(panel);
-                } catch (error:any) {
-                    vscode.window.showErrorMessage(error.message);
+                    panel.webview.postMessage({
+                        command: 'operationError',
+                        error: error.message,
+                    });
                 }
             }
         });

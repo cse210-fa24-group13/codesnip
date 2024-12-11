@@ -270,6 +270,32 @@
         #close-button:hover {
             background-color: var(--secondary - color);
         }
+         /* Loader styling */
+        /* Spinner styles */
+        #spinner {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(0, 0, 0, 0.1);
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            z-index: 1000;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
     </style>
 </head>
 
@@ -306,11 +332,15 @@
         <!-- Snippets will be dynamically inserted here -->
     </ul>
 
+    <div id="spinner"></div>
 
     <div id="overlay"> </div>
     <div class="modal" id="popup-modal">
         <div class="modal-header"> Join a Room </div>
         <input type="text" id="input-box" placeholder="Enter room code..." />
+        <!-- <div id="loader" class="hidden"></div> Loader -->
+        <div id="loader" style="display: none;">Loading...</div>
+
         <div class="modal-footer">
             <button id="submit-button"> Submit </button>
             <button id="close-button"> Close </button>
@@ -323,8 +353,6 @@
 
     <script>
         const vscode = acquireVsCodeApi();
-        // const axios = require('axios'); 
-        // import * as commands from './config/commands';
 
         // Elements
         const joinRoomButton = document.getElementById('join-room');
@@ -334,6 +362,8 @@
         const closeButton = document.getElementById('close-button');
         const responseText = document.getElementById('response-text');
         const inputBox = document.getElementById('input-box');
+        const loader = document.getElementById('spinner');
+
 
         // Show modal
         joinRoomButton.addEventListener('click', () => {
@@ -343,6 +373,8 @@
             inputBox.disabled = false; // Ensure input box is enabled
             submitButton.style.display = 'inline-block'; // Show submit button
             closeButton.textContent = 'Close'; // Reset close button text
+            loader.style.display = 'none'; // Ensure spinner is hidden initially
+
         });
 
         // Close modal
@@ -360,49 +392,21 @@
 
         // Handle Submit
         submitButton.addEventListener('click', async () => {
-            const roomCode = inputBox.value;
+            const gistID = inputBox.value;
             // console.log('clicked');
-            if (roomCode.trim()) {
-                // Send the room code to the extension
-                // vscode.postMessage({ command: 'join-room', roomCode });
+            if (gistID.trim()) {
+                let apiUrl = 'https://api.github.com/gists/' + gistID;
 
-                // Show the room code in the modal as a confirmation
-                // responseText.textContent = 'You have joined the room with code: ' + roomCode;
-                // let session = await vscode.authentication.getSession('github', ['gist'], { createIfNone: true });
+                loader.style.display = 'block'; // Show spinner
+                modal.classList.remove('show');
+                overlay.style.display = 'none';
 
-                let url = 'https://api.github.com/gists/' + roomCode;
-
-                console.log("THE URL IS", url);
-                // let token = 'Bearer ' + session.accessToken
-                let gistInfo = await axios.get(url, {
-                    headers: { Authorization: 'Bearer' }
+                await vscode.postMessage({
+                            command: 'createSnippets',
+                            apiUrl
                 });
-                console.log(gistInfo.data);
-                // console.log(gistsList.length);
-                responseText.textContent = 'You have joined the room with code: ' + gistInfo.data.description;
 
-                // createSnippet()
-
-                for (const fileName in gistInfo.data.files) {
-                    //     console.log(fileName);
-                    await vscode.postMessage({
-                        command: 'createSnippet',
-                        fileName: fileName,
-                        content: gistInfo.data.files[fileName].content,
-                        description: gistInfo.data.description,
-                        visibility: 'Public',
-                    });
-                    setTimeout(() => {
-                        vscode.postMessage({
-                            command: 'fetch'
-                        });
-                    }, 5000);
-
-                    //     commands.createSnippet(fileName, gistInfo.data.files[fileName].content, gistInfo.data.description, 'public');
-                    //     console.log("Finished");
-                }
-
-
+                loader.classList.add('hidden');
 
 
                 // Disable the input field after submission
@@ -412,13 +416,27 @@
                 submitButton.style.display = 'none';
                 closeButton.textContent = 'Close';
 
-                // Optionally, you could wait a bit before closing the modal.
-                setTimeout(() => {
-                    modal.classList.remove('show');
-                    overlay.style.display = 'none';
-                }, 3000); // Close after 3 seconds
+                // // Optionally, you could wait a bit before closing the modal.
+                // setTimeout(() => {
+                    
+                // }, 3000); // Close after 3 seconds
             } else {
-                responseText.textContent = 'Please enter a valid room code.';
+                responseText.textContent = 'Please enter a valid gist ID';
+            }
+        });
+
+
+        // Handle messages from backend
+        window.addEventListener('message', (event) => {
+            const message = event.data;
+            if (message.command === 'operationComplete') {
+                loader.style.display = 'none'; // Hide spinner
+                modal.style.display = 'none';
+                overlay.style.display = 'none';
+                alert('Operation completed successfully!');
+            } else if (message.command === 'operationError') {
+                loader.style.display = 'none'; // Hide spinner on error
+                responseText.textContent = `Error: ${message.error}`;
             }
         });
     </script>
