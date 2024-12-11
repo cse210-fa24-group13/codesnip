@@ -2,7 +2,7 @@ import { commands, extensions } from "vscode";
 import { DataAccess } from "../data/dataAccess";
 import { FileDataAccess } from "../data/fileDataAccess";
 import { Snippet } from "../interface/snippet";
-import { updateGist,deleteGist } from '../config/commands'
+import { updateGist,deleteGist } from '../config/commands';
 
 export class SnippetService {
     private _rootSnippet: Snippet;
@@ -184,8 +184,8 @@ export class SnippetService {
                 label: snippet.label,
                 value: snippet.folder 
                     ? parentElement.children[index].value // Keep old value for folders
-                    : snippet.value, // Update value for snippets
-                }
+                    : snippet.value // Update value for snippets
+                };
             };
         }
     }

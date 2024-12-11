@@ -321,7 +321,6 @@ export function activate(context: vscode.ExtensionContext) {
 
     async function fetchData(token:any) {
         try {
-            console.log("HERE")
             const response = await axios.get('https://api.github.com/gists',
                 {
                     headers: {
@@ -569,7 +568,6 @@ export function activate(context: vscode.ExtensionContext) {
             }
     
             let htmlContent = fs.readFileSync(htmlPath.fsPath, 'utf8');
-            console.log(htmlContent, panel)
             // Get all snippets
             const snippets = snippetService.getAllSnippets();
         

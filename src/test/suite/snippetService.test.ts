@@ -102,7 +102,7 @@ suite('SnippetService Tests', () => {
      value: 'Folder Value',
      folder: true,
      children: []
-   }
+   };
  
    const updatedSnippetfile: Snippet = {
      id: 2,
@@ -184,7 +184,7 @@ suite('SnippetService Tests', () => {
    snippetService.addSnippet(newSnippet2);
 
    // Act
-   snippetService.overrideSnippetId(newSnippet2)
+   snippetService.overrideSnippetId(newSnippet2);
 
    // Assert
    const allSnippets = snippetService.getAllSnippets();
@@ -212,7 +212,7 @@ suite('SnippetService Tests', () => {
    snippetService.addSnippet(newSnippet2);
 
    // Act
-   snippetService.moveSnippet(newSnippet1,1)
+   snippetService.moveSnippet(newSnippet1,1);
 
    // Assert
    const allSnippets = snippetService.getAllSnippets();
@@ -241,7 +241,7 @@ suite('SnippetService Tests', () => {
    snippetService.addSnippet(newSnippet2);
 
    // Act
-   snippetService.moveSnippet(newSnippet2,-1)
+   snippetService.moveSnippet(newSnippet2,-1);
 
    // Assert
    const allSnippets = snippetService.getAllSnippets();
@@ -270,7 +270,7 @@ suite('SnippetService Tests', () => {
    snippetService.addSnippet(newSnippet2);
 
    // Act
-   snippetService.moveSnippet(newSnippet1,5)
+   snippetService.moveSnippet(newSnippet1,5);
 
    // Assert
    const allSnippets = snippetService.getAllSnippets();
