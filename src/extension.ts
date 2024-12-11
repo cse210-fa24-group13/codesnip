@@ -544,29 +544,32 @@ export function activate(context: vscode.ExtensionContext) {
     }
 
     function refreshWebUI(panel: vscode.WebviewPanel) {
-        // Get all snippets
         try {
             const htmlPath = vscode.Uri.file(
                 path.join(context.extensionPath, 'src', 'views', 'snippetsPage.html')
             );
-            
-            if (!fs.existsSync(htmlPath.fsPath)) {
-                throw new Error(`HTML template not found at ${htmlPath.fsPath}`);
-            }
+            const stylePath = vscode.Uri.file(
+                path.join(context.extensionPath, 'src', 'views', 'styles.css')
+            );
+            const scriptPath = vscode.Uri.file(
+                path.join(context.extensionPath, 'src', 'views', 'script.js')
+            );
     
+            const styleUri = panel.webview.asWebviewUri(stylePath);
+            const scriptUri = panel.webview.asWebviewUri(scriptPath);
+            
             let htmlContent = fs.readFileSync(htmlPath.fsPath, 'utf8');
-            const snippets = snippetService.getAllSnippets(); // Assumes `getAllSnippets` returns an array of snippets
+            
+            htmlContent = htmlContent
+                .replace(/\${webview\.cspSource}/g, panel.webview.cspSource)
+                .replace(/\${styleUri}/g, styleUri.toString())
+                .replace(/\${scriptUri}/g, scriptUri.toString());
+    
+            const snippets = snippetService.getAllSnippets();
             let snippetsHtml = '';
-
-            // Generate HTML list of snippets
-            snippets.forEach((snippet, index) => {
-                let code = snippet.value;
-                if (code !== undefined) {
-                    code = code.split('<').join('&lt;').split('>').join('&gt;');
-                }
-
+            snippets.forEach((snippet) => {
                 snippetsHtml += `
-                    <li class="card" data-description="${snippet.description || ''}">
+                    <li class="card">
                         <div class="bottom">
                             <h4 class="heads">${snippet.label}</h4>
                             <div class="row">
@@ -582,25 +585,14 @@ export function activate(context: vscode.ExtensionContext) {
                             <pre>${snippet.description || 'No description available'}</pre>
                         </div>
                     </li>`;
-
-
-
             });
-
-            // Replace placeholder with actual content
-            htmlContent = htmlContent
-                .replace('${webview.cspSource}', panel.webview.cspSource)
-                .replace('<!-- Snippets will be dynamically inserted here -->', snippetsHtml);
-            
-            // Set webview content
+    
+            htmlContent = htmlContent.replace('<!-- Snippets will be dynamically inserted here -->', snippetsHtml);
             panel.webview.html = htmlContent;
-            
         } catch (error) {
-            console.error('Error loading template:', error);
             vscode.window.showErrorMessage('Failed to load snippet template');
         }
     }
-
 
 
     //** COMMAND : ADD SNIPPET **/
