@@ -184,7 +184,7 @@ export class SnippetService {
                 label: snippet.label,
                 value: snippet.folder 
                     ? parentElement.children[index].value // Keep old value for folders
-                    : snippet.value // Update value for snippets
+                    : snippet.value, // Update value for snippets
                 };
             };
         }

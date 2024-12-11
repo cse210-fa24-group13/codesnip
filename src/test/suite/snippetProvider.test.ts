@@ -242,7 +242,6 @@ suite('SnippetsProvider Tests', () => {
 
   // Act
   snippetsProvider.moveSnippetDown(newSnippet2);
-
   // Assert
   const allSnippets = await snippetsProvider.getChildren();
   assert.strictEqual(allSnippets[0].id, 1);
