@@ -162,7 +162,6 @@ export function activate(context: vscode.ExtensionContext) {
             if (session) {
                 let gistsList: any = [];
                 let fetchDataResponse = await fetchData(session.accessToken);
-                console.log("FETCH DATA response", fetchDataResponse);
                 
                 // Use for...of to handle asynchronous operations sequentially
                 for (const gist of fetchDataResponse) {
@@ -170,18 +169,13 @@ export function activate(context: vscode.ExtensionContext) {
                         headers: { Authorization: `Bearer ${session.accessToken}` }
                     });
                     gistsList.push(gistInfo.data);
-                    console.log(gistsList.length);
                 }
             
                 // Now you can safely use forEach on gistsList after waiting for fetchDataResponse to finish
-                console.log("GISTS LIST returned is", gistsList);
                 gistsList.forEach((gist: any) => {
-                    console.log("Start", gist.files);
                     for (const fileName in gist.files) {
                     // for (let [fileName, value] of gist.files) {
-                        console.log(fileName);
                         snippetsProvider.addSnippet(fileName, gist.files[fileName].content, Snippet.rootParentId, gist.description, undefined, gist.id);
-                        console.log("Finished");
                     }
                 });
                 refreshUI();
@@ -321,7 +315,6 @@ export function activate(context: vscode.ExtensionContext) {
 
     async function fetchData(token:any) {
         try {
-            console.log("HERE")
             const response = await axios.get('https://api.github.com/gists',
                 {
                     headers: {
@@ -329,12 +322,10 @@ export function activate(context: vscode.ExtensionContext) {
                             }
                 }
             );
-            // console.log("RESPONSE IS",response)
   
             const data = response.data;
 
-            // Do something with the data
-            console.log("DATA IS: ",data);
+
 
             return data; // Optionally return the data
         } catch (error) {
@@ -359,11 +350,6 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand('snippets.testGitHubAuth', async () => {
             try {
                 const session = await AuthService.getGitHubSession();
-                console.log('GitHub Session:', {
-                    id: session.id,
-                    account: session.account,
-                    scopes: session.scopes
-                });
                 vscode.window.showInformationMessage(
                     `Authenticated as ${session.account.label}`
                 );
