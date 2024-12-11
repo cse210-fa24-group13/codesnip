@@ -150,7 +150,7 @@ suite('SnippetsProvider Tests', () => {
 
   // Act
   snippetsProvider.editSnippet(updatedSnippetfile);
-  snippetsProvider.editSnippetFolder(updatedSnippetfolder)
+  snippetsProvider.editSnippetFolder(updatedSnippetfolder);
 
   // Assert
   const allSnippets = await snippetsProvider.getChildren();
@@ -183,7 +183,7 @@ suite('SnippetsProvider Tests', () => {
    snippetsProvider.addSnippet("Second Snippet","Second Content",1);
 
    // Act
-   snippetsProvider.moveSnippetDown(newSnippet1)
+   snippetsProvider.moveSnippetDown(newSnippet1);
 
    // Assert
    const allSnippets = await snippetsProvider.getChildren();
@@ -212,7 +212,7 @@ suite('SnippetsProvider Tests', () => {
    snippetsProvider.addSnippet("Second Snippet","Second Content",1);
 
    // Act
-   snippetsProvider.moveSnippetUp(newSnippet2)
+   snippetsProvider.moveSnippetUp(newSnippet2);
 
    // Assert
    const allSnippets = await snippetsProvider.getChildren();
@@ -241,15 +241,14 @@ suite('SnippetsProvider Tests', () => {
   snippetsProvider.addSnippet("Second Snippet","Second Content",1);
 
   // Act
-  snippetsProvider.moveSnippetDown(newSnippet2)
-
+  snippetsProvider.moveSnippetDown(newSnippet2);
   // Assert
   const allSnippets = await snippetsProvider.getChildren();
   assert.strictEqual(allSnippets[0].id, 1);
   assert.strictEqual(allSnippets[1].id, 2);
 
   // Act
-  snippetsProvider.moveSnippetUp(newSnippet1)
+  snippetsProvider.moveSnippetUp(newSnippet1);
 
   // Assert
   const allSnippets1 = await snippetsProvider.getChildren();
