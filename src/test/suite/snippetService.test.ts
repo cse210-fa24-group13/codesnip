@@ -5,6 +5,7 @@ import { SnippetService } from '../../service/snippetService';
 import { DataAccess } from '../../data/dataAccess';
 import * as fs from 'fs';
 import * as path from 'path';
+import { connected } from 'process';
 
 suite('SnippetService Tests', () => {
   // Mock the DataAccess and Memento objects for testing
@@ -346,7 +347,7 @@ suite('SnippetService Tests', () => {
     assert.strictEqual(parentB.children[2].label, 'F');
   });
 
-  test('export snippets', () => {
+  test('Export and Import snippets', () => {
     // Create a temporary test data file for testing
     const testDataFile = path.join(__dirname, "testData.json");
     const parentA: Snippet = {
@@ -362,6 +363,12 @@ suite('SnippetService Tests', () => {
     snippetService.addSnippet(parentA);
     snippetService.exportSnippets(testDataFile, parentA.id);
     assert.strictEqual(fs.existsSync(testDataFile), true);
+
+    snippetService.importSnippets(testDataFile);
+    let importChildren = snippetService.getRootChildren();
+    console.log(importChildren);
+    console.log(parentA.children);
+    assert.deepStrictEqual(importChildren, parentA.children);
 
     // Clean up the temporary test data file after each test
     if (fs.existsSync(testDataFile)) {

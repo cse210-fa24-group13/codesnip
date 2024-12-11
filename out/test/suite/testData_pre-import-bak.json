@@ -1,0 +1,1 @@
+{"id":1,"label":"Root","children":[{"id":2,"label":"Parent A","folder":true,"children":[{"id":3,"label":"C","children":[]},{"id":4,"label":"A","children":[]},{"id":5,"label":"B","children":[]}]}],"lastId":2}
