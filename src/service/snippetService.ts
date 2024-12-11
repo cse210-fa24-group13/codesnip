@@ -163,26 +163,31 @@ export class SnippetService {
 
     updateSnippet(snippet: Snippet): void {
         const parentElement = SnippetService.findParent(snippet.parentId ?? Snippet.rootParentId, this._rootSnippet);
-        let gid = snippet.gistid;
         if (parentElement) {
             const index = parentElement.children.findIndex((obj => obj.id === snippet.id));
 
             if (index > -1) {
+                /*
                 parentElement.children.map(obj =>
                     obj.id === snippet.id ? {
                         ...obj,
                         label: snippet.label,
                         // if its a folder, don't update content, use old value instead
                         // if its a snippet, update its content
-                        value: [snippet.folder ? obj.value : snippet.value],
-                        description: snippet.description
+                        value: [snippet.folder ? obj.value : snippet.value]
                     }
                         : obj
-                );
-            }
+                );*/
+                // Update the specific child object in the array
+                parentElement.children[index] = {
+                ...parentElement.children[index],
+                label: snippet.label,
+                value: snippet.folder 
+                    ? parentElement.children[index].value // Keep old value for folders
+                    : snippet.value, // Update value for snippets
+                }
+            };
         }
-        console.log(snippet.gistid);
-        updateGist(snippet.gistid,snippet.label,snippet.value,snippet.description);
     }
 
     
