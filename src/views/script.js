@@ -19,96 +19,84 @@ window.addEventListener('load', () => {
 });
  
 
-// Modal functionality
-function initializeModal() {
-    const joinRoomButton = document.getElementById('join-room');
-    const modal = document.getElementById('popup-modal');
-    const overlay = document.getElementById('overlay');
-    const submitButton = document.getElementById('submit-button');
-    const closeButton = document.getElementById('close-button');
-    const responseText = document.getElementById('response-text');
-    const inputBox = document.getElementById('input-box');
-    const loader = document.getElementById('spinner');
+const enterIDButton = document.getElementById('enterId');
+const modal = document.getElementById('popup-modal');
+const overlay = document.getElementById('overlay');
+const submitButton = document.getElementById('submit-button');
+const closeButton = document.getElementById('close-button');
+const responseText = document.getElementById('response-text');
+const inputBox = document.getElementById('input-box');
+const loader = document.getElementById('spinner');
 
-    if (!joinRoomButton || !modal || !overlay || !submitButton || 
-        !closeButton || !responseText || !inputBox) {
-        return;
-    }
 
-    joinRoomButton.addEventListener('click', () => {
-        modal.classList.add('show');
-        overlay.style.display = 'block';
-        responseText.textContent = '';
-        inputBox.disabled = false;
-        submitButton.style.display = 'inline-block';
-        closeButton.textContent = 'Close';
-        loader.style.display = 'none'; // Ensure spinner is hidden initially
-    });
+enterIDButton.addEventListener('click', () => {
+    modal.classList.add('show');
+    overlay.style.display = 'block';
+    responseText.textContent = '';
+    inputBox.disabled = false;
+    submitButton.style.display = 'inline-block';
+    closeButton.textContent = 'Close';
+    loader.style.display = 'none'; // Ensure spinner is hidden initially
+});
 
-    closeButton.addEventListener('click', () => {
-        modal.classList.remove('show');
-        overlay.style.display = 'none';
-        responseText.textContent = '';
-    });
+closeButton.addEventListener('click', () => {
+    modal.classList.remove('show');
+    overlay.style.display = 'none';
+    responseText.textContent = '';
+});
 
-    overlay.addEventListener('click', () => {
-        modal.classList.remove('show');
-        overlay.style.display = 'none';
-        responseText.textContent = '';
-    });
+overlay.addEventListener('click', () => {
+    modal.classList.remove('show');
+    overlay.style.display = 'none';
+    responseText.textContent = '';
+});
 
-    submitButton.addEventListener('click', async () => { 
-        try {
-            
-            const gistID = inputBox.value;
-            // console.log('clicked');
-            if (gistID.trim()) {
-                let apiUrl = 'https://api.github.com/gists/' + gistID;
-    
-                loader.style.display = 'block'; // Show spinner
-                modal.classList.remove('show');
-                overlay.style.display = 'none';
-    
-                await vscode.postMessage({
-                            command: 'createSnippets',
-                            apiUrl
-                });
-    
-                // Disable the input field after submission
-                inputBox.disabled = true;
-    
-                // Hide the submit button and change the close button text
-                submitButton.style.display = 'none';
-                closeButton.textContent = 'Close';
-    
-            } 
-            else {
-                responseText.textContent = 'Please enter a valid gist ID.';
-            }
-            
-        } catch (error) {
-            responseText.textContent = 'Error : ' + (error.message || 'Unknown error');
+submitButton.addEventListener('click', async () => { 
+    try {
+        
+        const gistID = inputBox.value;
+        // console.log('clicked');
+        if (gistID.trim()) {
+            let apiUrl = 'https://api.github.com/gists/' + gistID;
+
+            loader.style.display = 'block'; // Show spinner
+            modal.classList.remove('show');
+            overlay.style.display = 'none';
+
+            await vscode.postMessage({
+                        command: 'createSnippets',
+                        apiUrl
+            });
+
+            // Disable the input field after submission
+            inputBox.disabled = true;
+
+            // Hide the submit button and change the close button text
+            submitButton.style.display = 'none';
+            closeButton.textContent = 'Close';
+
+        } 
+        else {
+            responseText.textContent = 'Please enter a valid gist ID.';
         }
         
-    });
-
-    // Handle messages from backend
-    window.addEventListener('message', (event) => {
-        const message = event.data;
-        if (message.command === 'operationComplete') {
-            loader.style.display = 'none'; // Hide spinner
-            modal.style.display = 'none';
-            overlay.style.display = 'none';
-            alert('Operation completed successfully!');
-        } else if (message.command === 'operationError') {
-            loader.style.display = 'none'; // Hide spinner on error
-            responseText.textContent = `Error: ${message.error}`;
-        }
-    });
-}
-
-// Initialize when DOM is ready
-window.addEventListener('load', () => {
-    initializeSearch();
-    initializeModal();
+    } catch (error) {
+        responseText.textContent = 'Error : ' + (error.message || 'Unknown error');
+    }
+    
 });
+
+// Handle messages from backend
+window.addEventListener('message', (event) => {
+    const message = event.data;
+    if (message.command === 'operationComplete') {
+        loader.style.display = 'none'; // Hide spinner
+        modal.style.display = 'none';
+        overlay.style.display = 'none';
+        alert('Operation completed successfully!');
+    } else if (message.command === 'operationError') {
+        loader.style.display = 'none'; // Hide spinner on error
+        responseText.textContent = `Error: ${message.error}`;
+    }
+});
+
