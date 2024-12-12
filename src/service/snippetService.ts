@@ -2,7 +2,7 @@ import { commands, extensions } from "vscode";
 import { DataAccess } from "../data/dataAccess";
 import { FileDataAccess } from "../data/fileDataAccess";
 import { Snippet } from "../interface/snippet";
-import { updateGist,deleteGist } from '../config/commands';
+import { updateGist,deleteGist,createSnippet } from '../config/commands';
 
 export class SnippetService {
     private _rootSnippet: Snippet;
@@ -161,7 +161,7 @@ export class SnippetService {
             : SnippetService.findParent(newSnippet.parentId ?? Snippet.rootParentId, this._rootSnippet)?.children.push(newSnippet);
     }
 
-    updateSnippet(snippet: Snippet): void {
+    async updateSnippet(snippet: Snippet): Promise<void> {
         const parentElement = SnippetService.findParent(snippet.parentId ?? Snippet.rootParentId, this._rootSnippet);
         if (parentElement) {
             const index = parentElement.children.findIndex((obj => obj.id === snippet.id));
@@ -178,8 +178,6 @@ export class SnippetService {
                     }
                         : obj
                 );*/
-                let oldLabel = parentElement.children[index].label
-                console.log("OLD LABEL IS",oldLabel)
                 // Update the specific child object in the array
                 parentElement.children[index] = {
                 ...parentElement.children[index],
@@ -188,8 +186,8 @@ export class SnippetService {
                     ? parentElement.children[index].value // Keep old value for folders
                     : snippet.value, // Update value for snippets
                 };
-                updateGist(snippet.gistid,snippet.label,oldLabel,snippet.value,snippet.description);
-                // fet
+                await deleteGist(snippet.gistid,true);
+                await createSnippet(snippet.label,snippet.value==undefined ? "": snippet.value,snippet.description==undefined ? "": snippet.description,"Public",true);
             };
         }
     }
