@@ -19,7 +19,7 @@ window.addEventListener('load', () => {
 });
  
 
-const enterIDButton = document.getElementById('enterId');
+const enterIDButton = document.getElementById('join-room');
 const modal = document.getElementById('popup-modal');
 const overlay = document.getElementById('overlay');
 const submitButton = document.getElementById('submit-button');
@@ -53,17 +53,17 @@ overlay.addEventListener('click', () => {
 
 function copyToClipboard(text, index, mode){
     let id = '';
-    let copymsg = '';
+    let copymsg = '';    
     if(mode === "code"){
         copymsg = "Copied Code Snippet to Clipboard!";
     }else{
-        copymsg = "Copied Github GistId to Clipboard!"
+        copymsg = "Copied Snippet Id to Clipboard!"
     }
     if(text){
         navigator.clipboard.writeText(text);
         if(document.getElementById(`tooltip-${index}`).style.visibility === '' || document.getElementById(`tooltip-${index}`).style.visibility === 'hidden'){
             document.getElementById(`tooltip-${index}`).innerText = copymsg;
-            document.getElementById(`tooltip-${index}`).style.visibility = 'visible';
+            document.getElementById(`tooltip-${index}`).style.visibility = 'visible';            
             setTimeout(() => document.getElementById(`tooltip-${index}`).style.visibility = 'hidden', 1000);
         }
     }
@@ -95,7 +95,7 @@ submitButton.addEventListener('click', async () => {
 
         } 
         else {
-            responseText.textContent = 'Please enter a valid gist ID.';
+            responseText.textContent = 'Please enter a valid snippet ID.';
         }
         
     } catch (error) {
