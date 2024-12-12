@@ -60,6 +60,29 @@
 		],
 		"commands": [
 			{
+				"command": "snippets.testGitHubAuth",
+				"title": "Snippets: Test GitHub Auth",
+				"category": "Snippets"
+			},
+			{
+				"command": "snippets.authenticateGitHub",
+				"title": "Sign in to GitHub",
+				"category": "Snippets"
+			},
+			{
+				"command": "snippets.fetchFromGithub",
+				"title": "Fetch from github",
+				"category": "Snippets"
+			},
+			{
+				"command": "snippets.shareSnippetToGist",
+				"title": "Share Snippet"
+			},
+			{
+				"command": "extension.openPage",
+				"title": "Open First Webview Page"
+			},
+			{
 				"command": "miscCmd.requestWSConfig",
 				"title": "Init WS Config"
 			},
@@ -68,6 +91,12 @@
 				"title": "Refresh Snippets",
 				"category": "Snippets",
 				"icon": "$(refresh)"
+			},
+			{
+				"command": "extension.openPage",
+				"title": "See all snippet",
+				"category": "Snippets",
+				"icon": "$(file-code)"
 			},
 			{
 				"command": "globalSnippetsCmd.openSnippet",
@@ -366,6 +395,16 @@
 			],
 			"view/title": [
 				{
+					"command": "snippets.authenticateGitHub",
+					"when": "view == snippetsExplorer",
+					"group": "other@5"
+				},
+				{
+					"command": "snippets.fetchFromGithub",
+					"when": "view == snippetsExplorer",
+					"group": "other@6"
+				},
+				{
 					"command": "globalSnippetsCmd.addSnippet",
 					"when": "view == snippetsExplorer",
 					"group": "navigation@1"
@@ -394,6 +433,11 @@
 					"command": "globalSnippetsCmd.sortAllSnippets",
 					"when": "view == snippetsExplorer",
 					"group": "navigation@4"
+				},
+				{
+					"command": "extension.openPage",
+					"when": "view == snippetsExplorer",
+					"group": "navigation@5"
 				},
 				{
 					"command": "globalSnippetsCmd.addSnippetFromClipboard",
@@ -437,6 +481,16 @@
 				}
 			],
 			"view/item/context": [
+				{
+					"command": "snippets.shareSnippetToGist",
+					"when": "view == snippetsExplorer",
+					"group": "3_sharing@1"
+				},
+				{
+					"command": "snippets.shareSnippetToGist",
+					"when": "view == wsSnippetsExplorer",
+					"group": "3_sharing@1"
+				},
 				{
 					"command": "globalSnippetsCmd.openSnippet",
 					"when": "view == snippetsExplorer && viewItem =~ /^snippet(:\\S+)?$/",
@@ -675,7 +729,7 @@
 		"@types/glob": "^8.1.0",
 		"@types/mocha": "^10.0.10",
 		"@types/node": "^22.9.1",
-		"@types/vscode": "^1.95.0",
+		"@types/vscode": "^1.75.0",
 		"@typescript-eslint/eslint-plugin": "^8.15.0",
 		"@typescript-eslint/parser": "^8.15.0",
 		"@vscode/test-electron": "^2.4.1",
@@ -684,16 +738,19 @@
 		"glob": "^11.0.0",
 		"mocha": "^10.8.2",
 		"ts-loader": "9.5.1",
-		"typescript": "^5.6.3",
+		"typescript": "^4.0.2",
 		"typescript-eslint": "^8.15.0",
 		"vscode-test": "^1.6.1",
-		"webpack": "^5.96.1",
+		"webpack": "^5.97.1",
 		"webpack-cli": "^5.1.4",
 		"y18n": ">=5.0.8"
 	},
 	"dependencies": {
 		"@types/mustache": "^4.2.5",
+		"axios": "^0.21.1",
 		"mustache": "^4.2.0",
+		"ts-node": "^10.9.2",
+		"ts-node-dev": "^2.0.0",
 		"typedocs": "^0.6.7"
 	}
 }

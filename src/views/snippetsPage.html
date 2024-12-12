@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="Content-Security-Policy" content="
+        default-src 'none';
+        style-src ${webview.cspSource} 'unsafe-inline' https://fonts.googleapis.com/;
+        font-src 'self' https://fonts.gstatic.com/;
+        script-src ${webview.cspSource} https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js 'unsafe-eval' 'unsafe-inline';
+    ">
+    
+        <link rel="stylesheet" href="${styleUri}">
+        <title>Snippets Page</title>
+    </head>
+<body>
+    <div class="nav">
+        <div class="snippet-tool">            
+                <h2 style="text-align: center;">CodeSnip</h2>            
+        </div>
+
+        <div class="search-input">
+            <input type="text" id="searchInput" placeholder="Filter snippet by name, description, code..." class="search-box" />            
+        </div>
+
+        <div class="side-links">
+            <button class="button-19" role="button" id="join-room">Get-A-Snip</button>
+        </div>
+    </div>
+
+    <ul id="cards">
+        <!-- Snippets will be dynamically inserted here -->
+    </ul>
+
+    <div id="spinner"></div>
+
+    <div id="overlay"> </div>
+    <div class="modal" id="popup-modal">
+        <div class="modal-header">Get-A-Snip</div>
+        <input type="text" id="input-box" placeholder="Enter Snippet Id..." />
+        <div id="loader" style="display: none;">Loading...</div>
+
+        <div class="modal-footer">
+            <button id="submit-button">Submit</button>
+            <button id="close-button">Close</button>
+        </div>
+        <div id="response-text"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="${scriptUri}"></script>
+</body>
+</html>

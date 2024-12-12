@@ -3,6 +3,12 @@ import { Labels } from '../config/labels';
 import { Snippet } from '../interface/snippet';
 
 export class UIUtility {
+    /**
+     * Prompts the user to select a snippet from a list of saved snippets.
+     * 
+     * @param {Snippet[]} savedSnippets - The list of saved snippets to choose from.
+     * @returns {Promise<Snippet | undefined>} - A Promise that resolves to the selected snippet, or undefined if no selection is made.
+     */
     static async requestSnippetFromUser(savedSnippets: Snippet[]): Promise<Snippet | undefined> {
         interface CustomQuickPickItem extends vscode.QuickPickItem {
             label: string;
@@ -32,6 +38,11 @@ export class UIUtility {
         return selection.value;
     }
 
+    /**
+     * Prompts the user to enter the value for a snippet.
+     * 
+     * @returns {Promise<string | undefined>} - A Promise that resolves to the entered snippet value, or undefined if canceled.
+     */
     static async requestSnippetValue(): Promise<string | undefined> {
         return await vscode.window.showInputBox({
             prompt: Labels.snippetValuePrompt,
@@ -42,6 +53,11 @@ export class UIUtility {
         });
     }
 
+    /**
+     * Prompts the user to enter the name for a snippet.
+     * 
+     * @returns {Promise<string | undefined>} - A Promise that resolves to the entered snippet name, or undefined if canceled.
+     */
     static async requestSnippetName(): Promise<string | undefined> {
         return await vscode.window.showInputBox({
             prompt: Labels.snippetNamePrompt,
@@ -52,6 +68,23 @@ export class UIUtility {
         });
     }
 
+    /**
+     * Prompts the user to enter a description for a snippet.
+     * 
+     * @returns {Promise<string | undefined>} - A Promise that resolves to the entered description, or undefined if canceled.
+     */
+    static async requestDescription(): Promise<string | undefined> {
+        return await vscode.window.showInputBox({
+            prompt: Labels.snippetDescriptionPrompt,
+            placeHolder: Labels.snippetDescriptionPlaceholder,            
+        });
+    }
+
+    /**
+     * Prompts the user to enter the name for a snippet folder.
+     * 
+     * @returns {Promise<string | undefined>} - A Promise that resolves to the entered folder name, or undefined if canceled.
+     */
     static async requestSnippetFolderName(): Promise<string | undefined> {
         return await vscode.window.showInputBox({
             prompt: Labels.snippetNameFolderPrompt,
@@ -62,7 +95,12 @@ export class UIUtility {
         });
     }
 
-	static async requestTargetSnippetsView(): Promise<string | undefined> {
+    /**
+     * Prompts the user to select the target snippets view (global or workspace).
+     * 
+     * @returns {Promise<string | undefined>} - A Promise that resolves to the selected view type, or undefined if canceled.
+     */
+    static async requestTargetSnippetsView(): Promise<string | undefined> {
         const selection = await vscode.window.showQuickPick([Labels.globalSnippets, Labels.wsSnippets], {
             placeHolder: Labels.viewType,
             matchOnDetail: true
@@ -76,6 +114,11 @@ export class UIUtility {
         return selection;
 	}
 
+    /**
+     * Retrieves a list of language names along with their associated extensions.
+     * 
+     * @returns {Array<{id: string, alias: string, extension: string}>} - A list of objects containing language ID, alias, and extension.
+     */
     static getLanguageNamesWithExtensions = () => vscode.extensions.all
             .map(i => <any[]>(i.packageJSON as any)?.contributes?.languages)
             .filter(i => i)

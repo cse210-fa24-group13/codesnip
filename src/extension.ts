@@ -1,3 +1,4 @@
+import { AuthService } from './service/authService';
 import fs = require('fs');
 import * as vscode from 'vscode';
 import * as path from 'path';
@@ -12,11 +13,13 @@ import { UIUtility } from './utility/uiUtility';
 import { StringUtility } from './utility/stringUtility';
 import { Labels } from './config/labels';
 import { FileDataAccess } from './data/fileDataAccess';
+import axios from 'axios';
 
 /**
  * Activate extension by initializing views for snippets and feature commands.
  * @param context 
  */
+
 export function activate(context: vscode.ExtensionContext) {
     // exact version for which show Changelog panel
     const changelogVersion = '3.1.0';
@@ -57,6 +60,7 @@ export function activate(context: vscode.ExtensionContext) {
     const dataAccess = new MementoDataAccess(context.globalState);
     const snippetService = new SnippetService(dataAccess);
     const snippetsProvider = new SnippetsProvider(snippetService, allLanguages);
+
     let cipDisposable: { dispose(): any } = {
         dispose: function () {
         }
@@ -67,7 +71,7 @@ export function activate(context: vscode.ExtensionContext) {
         }
     };
     let registerGlobalCIPSnippets: (() => vscode.Disposable) | undefined = undefined;
-    
+
 
     // make sure lastId is accurate
     snippetService.fixLastId();
@@ -81,7 +85,6 @@ export function activate(context: vscode.ExtensionContext) {
         new NewRelease(context);
         context.globalState.update(releaseChangelogId, true);
     }
-
     //** upgrade from 1.x to 2.x **//
     let oldSnippetsPath: string = vscode.workspace.getConfiguration('snippets').get('snippetsLocation')
         || path.join(context.globalStorageUri.fsPath, "data.json");
@@ -139,6 +142,50 @@ export function activate(context: vscode.ExtensionContext) {
                 });
         }
     }
+
+    // Function that fetches all the gists associated with user from github
+    context.subscriptions.push(
+        vscode.commands.registerCommand('snippets.fetchFromGithub', async () => {
+            let candidates = snippetService.getAllSnippets();
+            for (const candidate of candidates) {
+                snippetService.removeSnippetLocally(candidate);
+            }
+
+            const session = await vscode.authentication.getSession('github', ['gist'], { createIfNone: true });
+
+            if (session) {
+                let gistsList: any = [];
+                try {
+                    const response = await axios.get('https://api.github.com/gists', {
+                            headers: { Authorization: `Bearer ${session.accessToken}`}                             
+                        }
+                    );
+                    let fetchDataResponse = response.data;
+                    
+                    for (const gist of fetchDataResponse) {
+                        let gistInfo = await axios.get(`https://api.github.com/gists/${gist.id}`, {
+                            headers: { Authorization: `Bearer ${session.accessToken}` }
+                        });
+                        gistsList.push(gistInfo.data);
+                    }
+                
+                    gistsList.forEach((gist: any) => {
+                        for (const fileName in gist.files) {
+                            snippetsProvider.addSnippet(fileName, gist.files[fileName].content, Snippet.rootParentId, gist.description, undefined, gist.id);
+                        }
+                    });
+                    refreshUI();
+                    
+                } catch (error) {
+                    // Handle errors
+                    vscode.window.showErrorMessage('Error fetching the gists');
+                    console.error(error);
+                }
+            } else {
+                vscode.window.showErrorMessage('GitHub session could not be opened.');
+            }
+        })                
+    );
     //** upgrade from 1.x to 2.x **//
     //** pre-initialization **//
 
@@ -279,7 +326,7 @@ export function activate(context: vscode.ExtensionContext) {
             requestWSConfigSetup();
         }
     }));
-
+    
     //** COMMAND : INITIALIZE GENERIC COMPLETION ITEM PROVIDER **/*
 
     let triggerCharacter: any = vscode.workspace.getConfiguration(snippetsConfigKey).get("triggerKey");
@@ -293,11 +340,11 @@ export function activate(context: vscode.ExtensionContext) {
     const registerCIPSnippetsList: (() => vscode.Disposable)[] = [];
 
     for (const currentLanguage of allLanguages) {
-        let disposable =  currentLanguage.id === '**' ? globalCipDisposable : cipDisposable;
+        let disposable = currentLanguage.id === '**' ? globalCipDisposable : cipDisposable;
         const registerCIPSnippets = () => disposable = vscode.languages.registerCompletionItemProvider(
             currentLanguage.id === '**' // use pattern filter for non-language snippets
-            ? [{ language: 'plaintext', scheme: 'file' }, { language: 'plaintext', scheme: 'untitled' }]
-            : [{ language: currentLanguage.id, scheme: 'file' }, { language: currentLanguage.id, scheme: 'untitled' }]
+                ? [{ language: 'plaintext', scheme: 'file' }, { language: 'plaintext', scheme: 'untitled' }]
+                : [{ language: currentLanguage.id, scheme: 'file' }, { language: currentLanguage.id, scheme: 'untitled' }]
             , {
                 provideCompletionItems(document, position) {
                     if (!vscode.workspace.getConfiguration(snippetsConfigKey).get("showSuggestions")) {
@@ -305,8 +352,8 @@ export function activate(context: vscode.ExtensionContext) {
                     }
                     let isTriggeredByChar: boolean = triggerCharacter === document.lineAt(position).text.charAt(position.character - 1);
                     let candidates = snippetService.getAllSnippets()
-                        .filter(s => (currentLanguage.id === '**' && (s.language === currentLanguage.extension || !s.language)) 
-                                        || s.language === currentLanguage.extension);
+                        .filter(s => (currentLanguage.id === '**' && (s.language === currentLanguage.extension || !s.language))
+                            || s.language === currentLanguage.extension);
                     // append workspace snippets if WS is available
                     if (workspaceSnippetsAvailable) {
                         // add suffix for all workspace items
@@ -318,20 +365,20 @@ export function activate(context: vscode.ExtensionContext) {
                                     elt.description = `${elt.description}__(ws)`;
                                     return elt;
                                 }
-                        ));
+                                ));
                     }
-                    
+
                     return candidates.map(element =>
                         <vscode.CompletionItem>{
                             // label = prefix or [globalPrefix]:snippetName
-                            label: element.prefix 
-                                    ? element.prefix 
-                                    : (globalPrefix ? `${globalPrefix}:` : '') 
-                                        + (camelize // camelize if it's set in preferences
-                                        ? element.label.replace(/-/g, ' ').replace(/(?:^\w|[A-Z]|\b\w)/g, function(word, index) {
-                                            return index === 0 ? word.toLowerCase() : word.toUpperCase();
-                                          }).replace(/\s+/g, '')
-                                        : element.label.replace(/\n/g, '').replace(/ /g, '-')),
+                            label: element.prefix
+                                ? element.prefix
+                                : (globalPrefix ? `${globalPrefix}:` : '')
+                                + (camelize // camelize if it's set in preferences
+                                    ? element.label.replace(/-/g, ' ').replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
+                                        return index === 0 ? word.toLowerCase() : word.toUpperCase();
+                                    }).replace(/\s+/g, '')
+                                    : element.label.replace(/\n/g, '').replace(/ /g, '-')),
                             insertText: new vscode.SnippetString(element.value),
                             detail: element.description?.replace("__(ws)", " (snippet from workspace)"),
                             kind: vscode.CompletionItemKind.Snippet,
@@ -415,11 +462,150 @@ export function activate(context: vscode.ExtensionContext) {
         async (snippet) => handleCommand(async () => vscode.env.clipboard.writeText(snippet.value))
     ));
 
+
+    context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.commonOpenPage,
+        async () => handleCommand(() => openPage(context))
+    ));
+
+    let panel: vscode.WebviewPanel;
+
+    function openPage(context: vscode.ExtensionContext) {
+        panel = vscode.window.createWebviewPanel(
+            'webviewFirstPage', // Identifies the webview panel (type)
+            'Snippets HomePage', 
+            vscode.ViewColumn.One, // Where to show the webview (first editor group)
+            {
+                enableScripts: true, // Allow JavaScript in the webview
+            }
+        );
+
+        refreshWebUI(panel);
+        //function that responds to communication from webview
+        panel.webview.onDidReceiveMessage(async (message) => {
+            if (message.command === 'createSnippets') {
+                try {
+                    const session = await AuthService.getGitHubSession();
+                    if (session) {
+                        let gistInfo = await axios.get(message.apiUrl, {
+                            headers: { Authorization: `Bearer ${session.accessToken}` }
+                        });
+                        const tasks = Object.keys(gistInfo.data.files).map(async (fileName) => {
+                            await commands.createSnippet(
+                                fileName,
+                                gistInfo.data.files[fileName].content,
+                                gistInfo.data.description,
+                                'Public'
+                            );
+                            vscode.window.showInformationMessage(`Snippet created for ${fileName}`);
+                        });
+                        await Promise.all(tasks);
+                        await vscode.commands.executeCommand('snippets.fetchFromGithub');
+                        vscode.window.showInformationMessage(`Data fetched!`);
+                        refreshWebUI(panel);
+                        //Send message confirming that all operations have been completed
+                        panel.webview.postMessage({ command: 'operationComplete' });
+                    }
+                    else {
+                        vscode.window.showErrorMessage('GitHub session could not be opened.');
+                    }
+                } catch (error:any) {
+                    vscode.window.showErrorMessage(`Failed to create snippet: ${error.message}`);
+                    panel.webview.postMessage({
+                        command: 'operationError',
+                        error: error.message,
+                    });
+                }
+            }
+        });
+        
+        snippetsProvider.setUIFunction(() => refreshWebUI(panel));
+    }
+
+    function refreshWebUI(panel: vscode.WebviewPanel) {
+        try {
+            const htmlPath = vscode.Uri.file(
+                path.join(context.extensionPath, 'src', 'views', 'snippetsPage.html')
+            );
+            const stylePath = vscode.Uri.file(
+                path.join(context.extensionPath, 'src', 'views', 'styles.css')
+            );
+            const scriptPath = vscode.Uri.file(
+                path.join(context.extensionPath, 'src', 'views', 'script.js')
+            );
+    
+            const styleUri = panel.webview.asWebviewUri(stylePath);
+            const scriptUri = panel.webview.asWebviewUri(scriptPath);
+            
+            let htmlContent = fs.readFileSync(htmlPath.fsPath, 'utf8');
+            
+            htmlContent = htmlContent
+                .replace(/\${webview\.cspSource}/g, panel.webview.cspSource)
+                .replace(/\${styleUri}/g, styleUri.toString())
+                .replace(/\${scriptUri}/g, scriptUri.toString());
+    
+            const snippets = snippetService.getAllSnippets();
+            let snippetsHtml = '';
+            snippets.forEach((snippet, index) => {
+                if (snippet.value !== undefined) {
+                  const code = snippet.value
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/'/g, "&#39;")
+                    .replace(/"/g, "&quot;");  
+                snippetsHtml += `
+            <li class="card">
+                <div class="bottom">
+                    <!-- <div style="border-radius: 0.3em;padding: 0.1em 1.4em; background-color: blue; width: max-content;display: flex; align-items: center;margin: 0;"> -->
+                    <h4 class="heads">${snippet.label}</h4>
+
+                    <div class="row">
+                        <label class="switch" title="Toggle Description and Code">
+                            <input onchange="toggleDescription(\`${snippet.description}\`, \`${code}\`, \`${index}\`)" type="checkbox" id="toggleButton">
+                            <span class="slider">
+                                <span class="descText prevent-select" id="text2-${index}" style="visibility:hidden">Desc.</span>
+                                <span class="codeText prevent-select" id="text1-${index}">Code</span>
+                            </span>
+                        </label>
+                        <button class="clipboard" title="Copy Code Snippet" onclick="copyToClipboard(\`${code}\`, \`${index}\`, 'code')">
+                            <span class="tooltiptext" id="tooltip-${index}"></span>
+                            <svg xmlns="http://www.w3.org/2000/svg" height="18" width="16.25"
+                                viewBox="0 0 448 512"><!--!Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                                <path fill="white"
+                                    d="M280 64l40 0c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 128C0 92.7 28.7 64 64 64l40 0 9.6 0C121 27.5 153.3 0 192 0s71 27.5 78.4 64l9.6 0zM64 112c-8.8 0-16 7.2-16 16l0 320c0 8.8 7.2 16 16 16l256 0c8.8 0 16-7.2 16-16l0-320c0-8.8-7.2-16-16-16l-16 0 0 24c0 13.3-10.7 24-24 24l-88 0-88 0c-13.3 0-24-10.7-24-24l0-24-16 0zm128-8a24 24 0 1 0 0-48 24 24 0 1 0 0 48z" />
+                            </svg>
+                        </button>
+                        <button class="clipboard" title="Copy Snippet ID" onclick="copyToClipboard(\`${snippet.gistid}\`, \`${index}\`, 'gist')">
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" height="18" width="16.25"
+                                viewBox="0 0 496 512"><!--!Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                                <path fill="white"
+                                    d="M352 224c53 0 96-43 96-96s-43-96-96-96s-96 43-96 96c0 4 .2 8 .7 11.9l-94.1 47C145.4 170.2 121.9 160 96 160c-53 0-96 43-96 96s43 96 96 96c25.9 0 49.4-10.2 66.6-26.9l94.1 47c-.5 3.9-.7 7.8-.7 11.9c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-25.9 0-49.4 10.2-66.6 26.9l-94.1-47c.5-3.9 .7-7.8 .7-11.9s-.2-8-.7-11.9l94.1-47C302.6 213.8 326.1 224 352 224z" />
+                            </svg>
+                        </button>
+                    </div>
+                    <!-- <br/> -->
+                    <!-- </div> -->
+                </div>
+                <div class="top">
+                    <pre id="code-${index}">${code}</pre>
+                </div>
+            </li>`;
+            }});
+    
+            htmlContent = htmlContent.replace('<!-- Snippets will be dynamically inserted here -->', snippetsHtml);
+            panel.webview.html = htmlContent;
+        } catch (error) {
+            vscode.window.showErrorMessage('Failed to load snippet template');
+        }
+    }
+
+
     //** COMMAND : ADD SNIPPET **/
 
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.commonAddSnippet,
         async _ => handleCommand(() => commands.commonAddSnippet(allLanguages, snippetsProvider, wsSnippetsProvider, workspaceSnippetsAvailable))
     ));
+
 
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.globalAddSnippet,
         async (node) => handleCommand(() => commands.addSnippet(allLanguages, snippetsExplorer, snippetsProvider, node))
@@ -435,13 +621,6 @@ export function activate(context: vscode.ExtensionContext) {
         async _ => handleCommand(() => commands.commonAddSnippetFromClipboard(snippetsProvider, wsSnippetsProvider, workspaceSnippetsAvailable))
     ));
 
-    context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.globalAddSnippetFromClipboard,
-        async (node) => handleCommand(() => commands.addSnippetFromClipboard(snippetsExplorer, snippetsProvider, node))
-    ));
-
-    context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.wsAddSnippetFromClipboard,
-        async (node) => handleCommand(() => commands.addSnippetFromClipboard(wsSnippetsExplorer, wsSnippetsProvider, node)
-        )));
 
     //** COMMAND : ADD SNIPPET FOLDER **/
 
@@ -606,13 +785,13 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.wsFixSnippets,
         async _ => handleCommand(() => commands.fixSnippets(wsSnippetsProvider))
     ));
-    
+
     context.subscriptions.push(vscode.languages.registerDocumentDropEditProvider('*', {
-       async provideDocumentDropEdits(
-          _document: vscode.TextDocument,
-          position: vscode.Position,
-          dataTransfer: vscode.DataTransfer,
-          _token: vscode.CancellationToken
+        async provideDocumentDropEdits(
+            _document: vscode.TextDocument,
+            position: vscode.Position,
+            dataTransfer: vscode.DataTransfer,
+            _token: vscode.CancellationToken
         ): Promise<vscode.DocumentDropEdit | undefined> {
             const dataItem = dataTransfer.get('application/vnd.code.tree.snippetsProvider');
             if (!dataItem) {
@@ -647,7 +826,32 @@ export function activate(context: vscode.ExtensionContext) {
                 // throws error when parsing `dataItem?.value`, just skip
             }
         }
-      }));
+    }));
+
+    // Get Authentication Token
+    context.subscriptions.push(
+        vscode.commands.registerCommand('snippets.authenticateGitHub', async () => {
+            try {
+                const session = await AuthService.getGitHubSession();
+                vscode.window.showInformationMessage(
+                    `Signed in to GitHub as ${session.account.label}`
+                );
+            } catch (err) {
+                vscode.window.showErrorMessage(
+                    'Failed to authenticate with GitHub'
+                );
+            }
+        })
+    );
+
+    // Register the tree data providers
+    vscode.window.registerTreeDataProvider('snippetsExplorer', snippetsProvider);
+    vscode.window.registerTreeDataProvider('wsSnippetsExplorer', snippetsProvider);
 }
 
+
+/**
+ * Called when the extension is deactivated.
+ * This function is triggered when the VSCode extension is deactivated and can be used to clean up resources.
+ */
 export function deactivate() { }
