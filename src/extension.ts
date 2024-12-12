@@ -14,7 +14,7 @@ import { StringUtility } from './utility/stringUtility';
 import { Labels } from './config/labels';
 import { FileDataAccess } from './data/fileDataAccess';
 import axios from 'axios';
-import { Session } from 'node:inspector/promises';
+
 /**
  * Activate extension by initializing views for snippets and feature commands.
  * @param context 
@@ -142,6 +142,8 @@ export function activate(context: vscode.ExtensionContext) {
                 });
         }
     }
+
+    // Function that fetches all the gists associated with user from github
     context.subscriptions.push(
         vscode.commands.registerCommand('snippets.fetchFromGithub', async () => {
             let candidates = snippetService.getAllSnippets();
@@ -149,36 +151,36 @@ export function activate(context: vscode.ExtensionContext) {
                 snippetService.removeSnippetLocally(candidate);
             }
 
-
-            // await fetchData();
-            //pseudo
-            // open a session
-            // get all gists
-            //for each gist
-            //  create a new snippet(name,description,visibility,gistid)
-            //refresh
             const session = await vscode.authentication.getSession('github', ['gist'], { createIfNone: true });
 
             if (session) {
                 let gistsList: any = [];
-                let fetchDataResponse = await fetchData(session.accessToken);
-                
-                // Use for...of to handle asynchronous operations sequentially
-                for (const gist of fetchDataResponse) {
-                    let gistInfo = await axios.get(`https://api.github.com/gists/${gist.id}`, {
-                        headers: { Authorization: `Bearer ${session.accessToken}` }
-                    });
-                    gistsList.push(gistInfo.data);
-                }
-            
-                // Now you can safely use forEach on gistsList after waiting for fetchDataResponse to finish
-                gistsList.forEach((gist: any) => {
-                    for (const fileName in gist.files) {
-                    // for (let [fileName, value] of gist.files) {
-                        snippetsProvider.addSnippet(fileName, gist.files[fileName].content, Snippet.rootParentId, gist.description, undefined, gist.id);
+                try {
+                    const response = await axios.get('https://api.github.com/gists', {
+                            headers: { Authorization: `Bearer ${session.accessToken}`}                             
+                        }
+                    );
+                    let fetchDataResponse = response.data
+                    
+                    for (const gist of fetchDataResponse) {
+                        let gistInfo = await axios.get(`https://api.github.com/gists/${gist.id}`, {
+                            headers: { Authorization: `Bearer ${session.accessToken}` }
+                        });
+                        gistsList.push(gistInfo.data);
                     }
-                });
-                refreshUI();
+                
+                    gistsList.forEach((gist: any) => {
+                        for (const fileName in gist.files) {
+                            snippetsProvider.addSnippet(fileName, gist.files[fileName].content, Snippet.rootParentId, gist.description, undefined, gist.id);
+                        }
+                    });
+                    refreshUI();
+                    
+                } catch (error) {
+                    // Handle errors
+                    vscode.window.showErrorMessage('Error fetching the gists');
+                    console.error(error);
+                }
             } else {
                 vscode.window.showErrorMessage('GitHub session could not be opened.');
             }
@@ -208,7 +210,7 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     let snippetsExplorer = vscode.window.createTreeView('snippetsExplorer', {
-        treeDataProvider: snippetsProvider,
+        treeDataProvdataider: snippetsProvider,
         showCollapseAll: true,
         // Drag and Drop API binding
         // This check is for older versions of VS Code that don't have the most up-to-date tree drag and drop API
@@ -313,27 +315,6 @@ export function activate(context: vscode.ExtensionContext) {
     }
     //** common logic **//
 
-    async function fetchData(token:any) {
-        try {
-            const response = await axios.get('https://api.github.com/gists',
-                {
-                    headers: {
-                                Authorization: `Bearer ${token}`,
-                            }
-                }
-            );
-  
-            const data = response.data;
-
-
-
-            return data; // Optionally return the data
-        } catch (error) {
-            // Handle errors
-            console.error(error);
-        }
-    }
-
     //** common commands **//
     //** COMMAND : INITIALIZE WS CONFIG **/*
     context.subscriptions.push(vscode.commands.registerCommand(commands.CommandsConsts.miscRequestWSConfig, async _ => {
@@ -345,19 +326,6 @@ export function activate(context: vscode.ExtensionContext) {
             requestWSConfigSetup();
         }
     }));
-
-    context.subscriptions.push(
-        vscode.commands.registerCommand('snippets.testGitHubAuth', async () => {
-            try {
-                const session = await AuthService.getGitHubSession();
-                vscode.window.showInformationMessage(
-                    `Authenticated as ${session.account.label}`
-                );
-            } catch (error) {
-                console.error('Authentication Error:', error);
-            }
-        })
-    );
     
     //** COMMAND : INITIALIZE GENERIC COMPLETION ITEM PROVIDER **/*
 
@@ -504,7 +472,7 @@ export function activate(context: vscode.ExtensionContext) {
     function openPage(context: vscode.ExtensionContext) {
         panel = vscode.window.createWebviewPanel(
             'webviewFirstPage', // Identifies the webview panel (type)
-            'Snippets Page', // Title
+            'Snippets HomePage', 
             vscode.ViewColumn.One, // Where to show the webview (first editor group)
             {
                 enableScripts: true, // Allow JavaScript in the webview
@@ -512,6 +480,7 @@ export function activate(context: vscode.ExtensionContext) {
         );
 
         refreshWebUI(panel);
+        //function that responds to communication from webview
         panel.webview.onDidReceiveMessage(async (message) => {
             if (message.command === 'createSnippets') {
                 try {
@@ -520,9 +489,7 @@ export function activate(context: vscode.ExtensionContext) {
                         let gistInfo = await axios.get(message.apiUrl, {
                             headers: { Authorization: `Bearer ${session.accessToken}` }
                         });
-                        console.log(gistInfo.data);
                         const tasks = Object.keys(gistInfo.data.files).map(async (fileName) => {
-                            // console.log("FIKLENAME IS",fileName)
                             await commands.createSnippet(
                                 fileName,
                                 gistInfo.data.files[fileName].content,
@@ -535,6 +502,7 @@ export function activate(context: vscode.ExtensionContext) {
                         await vscode.commands.executeCommand('snippets.fetchFromGithub');
                         vscode.window.showInformationMessage(`Data fetched!`);
                         refreshWebUI(panel);
+                        //Send message confirming that all operations have been completed
                         panel.webview.postMessage({ command: 'operationComplete' });
                     }
                     else {
@@ -848,28 +816,6 @@ export function activate(context: vscode.ExtensionContext) {
             }
         })
     );
-
-    // async function createSnippetOnGist(
-    //     snippetsExplorer: vscode.TreeView<Snippet>,    
-    //     node: Snippet | undefined
-    // ) {
-    //     const session = await AuthService.getGitHubSession();
-    //     if (session != null) {
-    //         shareSnippetToGist(snippetsExplorer, node);
-    //     } else {
-    //         vscode.window.showErrorMessage(
-    //             'Please make sure you are signed-in to Github'
-    //         );
-    //     }
-    // }
-
-    // Register the shareSnippetToGist command    
-    //   context.subscriptions.push(
-    //       vscode.commands.registerCommand('snippets.shareSnippetToGist', async (node: Snippet | undefined) => {
-    //         await createSnippetOnGist(snippetsExplorer, node);
-
-    //       })
-    //   );
 
     // Register the tree data providers
     vscode.window.registerTreeDataProvider('snippetsExplorer', snippetsProvider);

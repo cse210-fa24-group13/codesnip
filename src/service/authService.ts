@@ -1,4 +1,6 @@
 import * as vscode from 'vscode';
+
+// Service to authenicate users, get session access token
 export class AuthService {
     private static readonly authType = 'github';
     private static readonly scopes = ['gist'];
@@ -10,9 +12,6 @@ export class AuthService {
                 this.scopes,
                 { createIfNone: true }
             );
-            
-            // Detailed session logging        
-            
             return session;
         } catch (err) {
             console.error('GitHub Authentication Error:', err);
