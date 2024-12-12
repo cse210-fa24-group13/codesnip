@@ -49,6 +49,16 @@ export const enum CommandsConsts {
 	wsSortAllSnippets = "wsSnippetsCmd.sortAllSnippets",
 }
 
+/**
+ * Creates or updates a GitHub Gist with the provided snippet details.
+ * If the `update` parameter is provided and true, the snippet is updated; otherwise, a new snippet is created.
+ * @param name - The name of the snippet.
+ * @param text - The content of the snippet.
+ * @param description - The description for the snippet.
+ * @param visibility - The visibility of the snippet, either "Public" or "Private".
+ * @param update - Optional flag indicating whether to update an existing snippet (default is undefined).
+ * @returns The Gist ID of the created or updated snippet.
+ */
 //Code to create Gists on GitHub
 export async function createSnippet(
     name: string,
@@ -94,6 +104,15 @@ export async function createSnippet(
     }
 }
 
+/**
+ * Updates an existing GitHub Gist with new content and details.
+ * @param gistId - The ID of the Gist to be updated.
+ * @param name - The new name for the snippet file.
+ * @param oldName - The old name of the snippet file that will be replaced.
+ * @param text - The new content of the snippet.
+ * @param description - The new description of the Gist.
+ * @returns The updated Gist data.
+ */
 //Code to update Gists on GitHub
 export async function updateGist(
     gistId: string| undefined,
@@ -138,6 +157,12 @@ export async function updateGist(
     }
 }
 
+/**
+ * Deletes an existing GitHub Gist.
+ * @param gistId - The ID of the Gist to be deleted.
+ * @param update - A flag to determine whether the deletion is part of an update. If not, a success message is shown.
+ * @returns A promise that resolves when the deletion is complete.
+ */
 //Code to delete Gists on GitHub
 export async function deleteGist(gistId: string|undefined, update?: boolean|undefined): Promise<void> {
     const session = await AuthService.getGitHubSession(); 
@@ -158,7 +183,13 @@ export async function deleteGist(gistId: string|undefined, update?: boolean|unde
         );
     }
 }
-
+/**
+ * A function to add a snippet, allowing users to input snippet details and choose where to save it.
+ * @param allLanguages - An array of available programming languages.
+ * @param snippetsProvider - Provider for managing global snippets.
+ * @param wsSnippetsProvider - Provider for managing workspace-specific snippets.
+ * @param workspaceSnippetsAvailable - A flag indicating whether workspace-specific snippets are available.
+ */
 export async function commonAddSnippet(allLanguages: any[], snippetsProvider: SnippetsProvider, 
 	wsSnippetsProvider: SnippetsProvider, workspaceSnippetsAvailable: boolean) {
 	var text: string | undefined;
@@ -229,6 +260,15 @@ export async function commonAddSnippet(allLanguages: any[], snippetsProvider: Sn
 	}
 }
 
+/**
+ * A function to add a new snippet based on user input, including snippet details and language.
+ * The snippet is then created as a Gist on GitHub and added to the snippets provider.
+ * 
+ * @param allLanguages - An array of available programming languages.
+ * @param snippetsExplorer - The TreeView that displays snippets.
+ * @param snippetsProvider - The provider responsible for managing snippets.
+ * @param node - The currently selected node (if any), used when the command is invoked via the context menu.
+ */
 export async function addSnippet(
     allLanguages: any[],
     snippetsExplorer: vscode.TreeView<Snippet>,
@@ -317,7 +357,14 @@ export async function addSnippet(
     }
 }
 
-
+/**
+ * A function to add a new snippet from the clipboard content. It prompts the user for the snippet name,
+ * description, and visibility, then creates the snippet as a Gist on GitHub and adds it to the snippets provider.
+ * 
+ * @param snippetsProvider - The provider responsible for managing global snippets.
+ * @param wsSnippetsProvider - The provider responsible for managing workspace-specific snippets.
+ * @param workspaceSnippetsAvailable - A boolean flag indicating whether workspace snippets are available.
+ */
 export async function commonAddSnippetFromClipboard(
     snippetsProvider: SnippetsProvider,
     wsSnippetsProvider: SnippetsProvider,
@@ -380,7 +427,14 @@ export async function commonAddSnippetFromClipboard(
     }
 }
 
-
+/**
+ * A function to add a new snippet folder. It prompts the user for the folder name, 
+ * then determines where to save the folder (global or workspace snippets) if workspace snippets are available.
+ * 
+ * @param snippetsProvider - The provider responsible for managing global snippet folders.
+ * @param wsSnippetsProvider - The provider responsible for managing workspace-specific snippet folders.
+ * @param workspaceSnippetsAvailable - A boolean flag indicating whether workspace snippets are available.
+ */
 export async function commonAddSnippetFolder(snippetsProvider: SnippetsProvider, wsSnippetsProvider: SnippetsProvider, workspaceSnippetsAvailable: boolean) {
 	// get snippet name
 	const name = await UIUtility.requestSnippetFolderName();
@@ -405,6 +459,15 @@ export async function commonAddSnippetFolder(snippetsProvider: SnippetsProvider,
 	}
 }
 
+/**
+ * A function to add a new snippet folder. It prompts the user for the folder name, 
+ * and depending on the context (whether invoked via right-click or the menu), 
+ * it determines where the folder should be added.
+ * 
+ * @param snippetsExplorer - The explorer responsible for displaying the snippet folders.
+ * @param snippetsProvider - The provider responsible for managing snippet folders.
+ * @param node - The selected node, which can be a folder or a snippet item.
+ */
 export async function addSnippetFolder(snippetsExplorer: vscode.TreeView<Snippet>, snippetsProvider: SnippetsProvider, node: any) {
 	// get snippet name
 	const name = await UIUtility.requestSnippetFolderName();
@@ -426,6 +489,15 @@ export async function addSnippetFolder(snippetsExplorer: vscode.TreeView<Snippet
 	}
 }
 
+/**
+ * Function to edit an existing snippet. It checks if the snippet has a property for syntax resolution, 
+ * and if not, it sets the default value to `false`. After that, it creates and shows a webview 
+ * for editing the snippet.
+ * 
+ * @param context - The extension context, used for managing the lifecycle of the webview.
+ * @param snippet - The snippet object to be edited.
+ * @param snippetsProvider - The provider responsible for managing the snippets.
+ */
 export function editSnippet(context: vscode.ExtensionContext, snippet: Snippet, snippetsProvider: SnippetsProvider) {	
 	if (snippet.resolveSyntax === undefined) {
 		// 3.1 update: disable syntax resolving by default if property is not yet defined in JSON
@@ -435,6 +507,12 @@ export function editSnippet(context: vscode.ExtensionContext, snippet: Snippet, 
 	new EditSnippet(context, snippet, snippetsProvider);
 }
 
+/**
+ * Function to export snippets to a specified file. It prompts the user with a file save dialog, 
+ * and upon selecting a destination, it uses the `snippetsProvider` to export the snippets to the selected file.
+ * 
+ * @param snippetsProvider - The provider responsible for managing and exporting snippets.
+ */
 export async function exportSnippets(snippetsProvider: SnippetsProvider) {
 	// get snippet destination
 	vscode.window.showSaveDialog(
@@ -453,6 +531,13 @@ export async function exportSnippets(snippetsProvider: SnippetsProvider) {
 	});
 }
 
+/**
+ * Function to import snippets from a selected JSON file. 
+ * It shows an open file dialog, and upon selecting a file, 
+ * it prompts the user for confirmation before importing the snippets.
+ * 
+ * @param snippetsProvider - The provider responsible for managing and importing snippets.
+ */
 export async function importSnippets(snippetsProvider: SnippetsProvider) {
 	// get snippets destination
 	vscode.window.showOpenDialog({
@@ -487,6 +572,12 @@ export async function importSnippets(snippetsProvider: SnippetsProvider) {
 	});
 }
 
+/**
+ * Function to troubleshoot and fix snippet issues, such as duplicates and corrupted snippets.
+ * Displays a progress indicator and a confirmation dialog to the user.
+ * 
+ * @param snippetsProvider - The provider responsible for managing snippets.
+ */
 export async function fixSnippets(snippetsProvider: SnippetsProvider) {
 	vscode.window.withProgress({
 		location: vscode.ProgressLocation.Window,
