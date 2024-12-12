@@ -117,6 +117,10 @@ body {
     margin: 0;
     position: relative;
     display: block;
+    
+    text-wrap: nowrap !important;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .top {
@@ -155,7 +159,6 @@ body {
     justify-content: space-between;
     /* font-family: Victor Mono; */
     border-bottom: solid 1px #1e71e3;
-    display: flex;
     /* font-weight: 200; */
     font-family: Quicksand;
     align-items: center;
@@ -340,10 +343,11 @@ body {
     color: #FFFFFF;
     cursor: pointer;
     display: inline-block;
-    font-family: din-round,sans-serif;
+    font-family: Quicksand;
     font-size: 16px;  
     letter-spacing: .8px;  
     margin: 0;
+    margin-left: 1em;
     outline: none;
     overflow: visible;
     padding: 8px 16px;
@@ -395,9 +399,10 @@ body {
   .switch {
     position: relative;
     display: inline-block;
+    margin-left: 5px;
     margin-right: 7px;
     margin-top: 2px;
-    width: 42px;
+    width: 58px;
     height: 18px;
 }
 
@@ -416,7 +421,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #ccc;
+    background-color: white;
     transition: 0.4s;
     border-radius: 34px;
 }
@@ -431,6 +436,7 @@ body {
     bottom: 3.8px;
     background-color: var(--primary-color);
     transition: 0.4s;
+    z-index: 100;
 }
 
 input:checked + .slider {
@@ -438,5 +444,27 @@ input:checked + .slider {
 }
 
 input:checked + .slider:before {
-    transform: translateX(23.5px);
+    transform: translateX(39px);
+}
+
+.codeText{
+    font-weight: 1000;
+    color: var(--primary-color);
+    width: 2em;
+    position: absolute;
+    right: 0.9em;
+}
+
+.descText{ 
+    font-weight: 1000;
+    color: white;
+    width: 2em;
+    position: absolute;
+    left: 0.5em;
+}
+
+.prevent-select {
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
 }

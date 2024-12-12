@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src ${webview.cspSource} https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js 'unsafe-eval' 'unsafe-inline'">
-    <link rel="stylesheet" href="${styleUri}">
-    <title>Snippets Page</title>
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="Content-Security-Policy" content="
+        default-src 'none';
+        style-src ${webview.cspSource} 'unsafe-inline' https://fonts.googleapis.com/;
+        font-src 'self' https://fonts.gstatic.com/;
+        script-src ${webview.cspSource} https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js 'unsafe-eval' 'unsafe-inline';
+    ">
+    
+        <link rel="stylesheet" href="${styleUri}">
+        <title>Snippets Page</title>
+    </head>
 <body>
     <div class="nav">
         <div class="snippet-tool">            

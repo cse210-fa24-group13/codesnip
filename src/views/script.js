@@ -70,8 +70,12 @@ function copyToClipboard(text, index, mode){
 
 function toggleDescription(text, code, index){
     if(document.getElementById(`code-${index}`).innerText === text){
-        document.getElementById(`code-${index}`).innerText = code
+        document.getElementById(`text2-${index}`).style.visibility = 'hidden';
+        document.getElementById(`text1-${index}`).style.visibility = 'visible';
+        document.getElementById(`code-${index}`).innerText = code;
     }else{
+        document.getElementById(`text2-${index}`).style.visibility = 'visible';
+        document.getElementById(`text1-${index}`).style.visibility = 'hidden';        
         document.getElementById(`code-${index}`).innerText = text;
     }
 }

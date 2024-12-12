@@ -561,7 +561,10 @@ export function activate(context: vscode.ExtensionContext) {
                     <div class="row">
                         <label class="switch" title="Toggle Description and Code">
                             <input onchange="toggleDescription(\`${snippet.description}\`, \`${code}\`, \`${index}\`)" type="checkbox" id="toggleButton">
-                            <span class="slider"></span>
+                            <span class="slider">
+                                <span class="descText prevent-select" id="text2-${index}" style="visibility:hidden">Desc.</span>
+                                <span class="codeText prevent-select" id="text1-${index}">Code</span>
+                            </span>
                         </label>
                         <button class="clipboard" title="Copy Code Snippet" onclick="copyToClipboard(\`${code}\`, \`${index}\`, 'code')">
                             <span class="tooltiptext" id="tooltip-${index}"></span>
