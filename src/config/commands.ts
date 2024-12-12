@@ -90,14 +90,16 @@ export async function createSnippet(
 export async function updateGist(
     gistId: string| undefined,
     name: string,
+    oldName: string,
     text: string| undefined,
     description: string| undefined,
 ) {
     const gistPayload = {
         description,
         files: {
-            [name]: {
-                content: text,
+            oldName: {
+                "filename": name,
+                "content": text,
             },
         },
     };

@@ -178,6 +178,8 @@ export class SnippetService {
                     }
                         : obj
                 );*/
+                let oldLabel = parentElement.children[index].label
+                console.log("OLD LABEL IS",oldLabel)
                 // Update the specific child object in the array
                 parentElement.children[index] = {
                 ...parentElement.children[index],
@@ -186,6 +188,8 @@ export class SnippetService {
                     ? parentElement.children[index].value // Keep old value for folders
                     : snippet.value, // Update value for snippets
                 };
+                updateGist(snippet.gistid,snippet.label,oldLabel,snippet.value,snippet.description);
+                // fet
             };
         }
     }
