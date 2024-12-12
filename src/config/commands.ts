@@ -54,7 +54,8 @@ export async function createSnippet(
     name: string,
     text: string,
     description: string,
-    visibility: string
+    visibility: string,
+    update?: boolean | undefined
 ) {
     const gistPayload = {
         description,
@@ -77,7 +78,14 @@ export async function createSnippet(
 
         // Extracting the gist ID from the response
         const gistId = response.data.id;
-        vscode.window.showInformationMessage(`Snippet created successfully! Gist ID: ${gistId}`);
+        if(update==true)
+        {
+            vscode.window.showInformationMessage(`Snippet updated successfully! Gist ID: ${gistId}`);
+        }
+        else
+        {
+            vscode.window.showInformationMessage(`Snippet created successfully! Gist ID: ${gistId}`);
+        }
         return gistId;
     } catch (error: any) {
         vscode.window.showErrorMessage(
@@ -90,14 +98,16 @@ export async function createSnippet(
 export async function updateGist(
     gistId: string| undefined,
     name: string,
+    oldName: string,
     text: string| undefined,
     description: string| undefined,
 ) {
     const gistPayload = {
         description,
         files: {
-            [name]: {
-                content: text,
+            [oldName] : {
+                "filename": name,
+                "content": text,
             },
         },
     };
@@ -129,7 +139,7 @@ export async function updateGist(
 }
 
 //Code to delete Gists on GitHub
-export async function deleteGist(gistId: string|undefined): Promise<void> {
+export async function deleteGist(gistId: string|undefined, update?: boolean|undefined): Promise<void> {
     const session = await AuthService.getGitHubSession(); 
     try {
         await axios.delete(`https://api.github.com/gists/${gistId}`, {
@@ -138,7 +148,10 @@ export async function deleteGist(gistId: string|undefined): Promise<void> {
                 "Content-Type": "application/json",
             },
         });
-        vscode.window.showInformationMessage(`Gist ${gistId} deleted successfully.`);
+        if(update!=true)
+        {
+            vscode.window.showInformationMessage(`Snippet deleted successfully! Gist ID: ${gistId}`);
+        }
     } catch (error: any) {
         vscode.window.showErrorMessage(
             `Error deleting gist: ${error?.response?.data?.message || error.message || "Unknown error"}`

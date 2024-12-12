@@ -165,7 +165,6 @@ export class SnippetsProvider implements vscode.TreeDataProvider<Snippet>, vscod
 
     removeSnippet(snippet: Snippet) {
         this._snippetService.removeSnippet(snippet);
-        console.log("Here",snippet);
         this.sync();
     }
 
