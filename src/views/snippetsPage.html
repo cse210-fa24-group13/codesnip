@@ -8,20 +8,19 @@
     <title>Snippets Page</title>
 </head>
 <body>
-    <nav id="nav">
-        <div style="flex-grow: 2;display: flex;justify-content: center; align-items: center;height: 100%;">
-            <h2 style="margin-right: 1.2em; text-align: center;">CodeSnip</h2>
-            <input type="text" id="searchInput" placeholder="Search snippets..." 
-                style="width: calc(100% - 2em); height: 55%; border: 2px solid #278EA5; border-radius: 2em; background: white; font-family: Quicksand; padding: 0 1em;">
+    <div class="nav">
+        <div class="snippet-tool">            
+                <h2 style="text-align: center;">CodeSnip</h2>            
         </div>
-        
+
+        <div class="search-input">
+            <input type="text" id="searchInput" placeholder="Filter snippet by name, description, code..." class="search-box" />            
+        </div>
+
         <div class="side-links">
-            <button id="enterId">Enter Gist ID</button>
-            <button id="login">
-                <h3>Login to VSCode</h3>
-            </button>
+            <button class="button-19" role="button" id="join-room">Get-A-Snip</button>
         </div>
-    </nav>
+    </div>
 
     <ul id="cards">
         <!-- Snippets will be dynamically inserted here -->
@@ -31,8 +30,8 @@
 
     <div id="overlay"> </div>
     <div class="modal" id="popup-modal">
-        <div class="modal-header">Join a Room</div>
-        <input type="text" id="input-box" placeholder="Enter gist ID..." />
+        <div class="modal-header">Get-A-Snip</div>
+        <input type="text" id="input-box" placeholder="Enter Snippet Id..." />
         <div id="loader" style="display: none;">Loading...</div>
 
         <div class="modal-footer">
