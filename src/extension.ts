@@ -551,8 +551,7 @@ export function activate(context: vscode.ExtensionContext) {
                     .replace(/</g, "&lt;")
                     .replace(/>/g, "&gt;")
                     .replace(/'/g, "&#39;")
-                    .replace(/"/g, "&quot;");                                    
-                    
+                    .replace(/"/g, "&quot;");  
                 snippetsHtml += `
             <li class="card">
                 <div class="bottom">
@@ -560,6 +559,10 @@ export function activate(context: vscode.ExtensionContext) {
                     <h4 class="heads">${snippet.label}</h4>
 
                     <div class="row">
+                        <label class="switch" title="Toggle Description and Code">
+                            <input onchange="toggleDescription(\`${snippet.description}\`, \`${code}\`, \`${index}\`)" type="checkbox" id="toggleButton">
+                            <span class="slider"></span>
+                        </label>
                         <button class="clipboard" title="Copy Code Snippet" onclick="copyToClipboard(\`${code}\`, \`${index}\`, 'code')">
                             <span class="tooltiptext" id="tooltip-${index}"></span>
                             <svg xmlns="http://www.w3.org/2000/svg" height="18" width="16.25"
@@ -581,9 +584,7 @@ export function activate(context: vscode.ExtensionContext) {
                     <!-- </div> -->
                 </div>
                 <div class="top">
-                    <pre>
-                    ${code}
-                </pre>
+                    <pre id="code-${index}">${code}</pre>
                 </div>
             </li>`;
             }});

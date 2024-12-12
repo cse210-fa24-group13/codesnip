@@ -52,7 +52,6 @@ overlay.addEventListener('click', () => {
 });
 
 function copyToClipboard(text, index, mode){
-    let id = '';
     let copymsg = '';    
     if(mode === "code"){
         copymsg = "Copied Code Snippet to Clipboard!";
@@ -66,6 +65,14 @@ function copyToClipboard(text, index, mode){
             document.getElementById(`tooltip-${index}`).style.visibility = 'visible';            
             setTimeout(() => document.getElementById(`tooltip-${index}`).style.visibility = 'hidden', 1000);
         }
+    }
+}
+
+function toggleDescription(text, code, index){
+    if(document.getElementById(`code-${index}`).innerText === text){
+        document.getElementById(`code-${index}`).innerText = code
+    }else{
+        document.getElementById(`code-${index}`).innerText = text;
     }
 }
 
@@ -109,7 +116,7 @@ window.addEventListener('message', (event) => {
     const message = event.data;
     if (message.command === 'operationComplete') {
         loader.style.display = 'none'; // Hide spinner
-        modal.style.display = 'none';
+        modal.classList.remove('show');
         overlay.style.display = 'none';
         alert('Operation completed successfully!');
     } else if (message.command === 'operationError') {
