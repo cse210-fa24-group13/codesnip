@@ -210,7 +210,7 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     let snippetsExplorer = vscode.window.createTreeView('snippetsExplorer', {
-        treeDataProvider: snippetsProvider,
+        treeDataProvdataider: snippetsProvider,
         showCollapseAll: true,
         // Drag and Drop API binding
         // This check is for older versions of VS Code that don't have the most up-to-date tree drag and drop API

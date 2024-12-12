@@ -6,7 +6,6 @@ import { EditSnippet } from '../views/editSnippet';
 import { Labels } from "./labels";
 import { StringUtility } from '../utility/stringUtility';
 import axios from 'axios';
-import * as path from 'path';
 import { AuthService } from '../service/authService';
 
 
@@ -50,6 +49,7 @@ export const enum CommandsConsts {
 	wsSortAllSnippets = "wsSnippetsCmd.sortAllSnippets",
 }
 
+//Code to create Gists on GitHub
 export async function createSnippet(
     name: string,
     text: string,
@@ -86,6 +86,7 @@ export async function createSnippet(
     }
 }
 
+//Code to update Gists on GitHub
 export async function updateGist(
     gistId: string| undefined,
     name: string,
@@ -127,7 +128,7 @@ export async function updateGist(
     }
 }
 
-
+//Code to delete Gists on GitHub
 export async function deleteGist(gistId: string|undefined): Promise<void> {
     const session = await AuthService.getGitHubSession(); 
     try {
@@ -144,76 +145,6 @@ export async function deleteGist(gistId: string|undefined): Promise<void> {
         );
     }
 }
-
-
-
-// export async function shareSnippetToGist(
-//     snippetsExplorer: vscode.TreeView<Snippet>,     
-//     node: Snippet | undefined	
-// ) {
-//     let snippetToShare: Snippet | undefined;
-// 	const session = await AuthService.getGitHubSession();
-
-//     if (snippetsExplorer.selection.length === 0 && !node) {
-//         vscode.window.showWarningMessage("No snippet selected to share.");
-//         return;
-//     } else {
-//         snippetToShare = node ? node : snippetsExplorer.selection[0];
-//     }
-
-//     if (!snippetToShare.value || snippetToShare.value.trim() === "") {
-//         vscode.window.showWarningMessage("Selected snippet has no content to share.");
-//         return;
-//     }
-
-//     const description = await vscode.window.showInputBox({
-//         prompt: "Enter a description for the Gist",
-//         placeHolder: "Snippet shared via VSCode Snippet Manager"
-//     });
-
-//     if (!description) {
-//         vscode.window.showWarningMessage("No description provided. Sharing canceled.");
-//         return;
-//     }
-
-//     const isPublic = await vscode.window.showQuickPick(["Public", "Private"], {
-//         canPickMany: false,
-//         placeHolder: "Should the Gist be public or private?"
-//     });
-
-//     if (!isPublic) {
-//         vscode.window.showWarningMessage("No visibility option selected. Sharing canceled.");
-//         return;
-//     }
-
-//     const gistPayload = {
-//         description,
-//         public: isPublic === "Public",
-//         files: {
-//             [snippetToShare.label]: {
-//                 content: snippetToShare.value
-//             }
-//         }
-//     };
-
-//     try {
-        
-//         const response = await axios.post("https://api.github.com/gists", gistPayload, {
-//             headers: {
-//                 Authorization: `Bearer ${session.accessToken}`,
-//                 "Content-Type": "application/json"
-//             }
-//         });
-
-//         if (response.data && response.data.html_url) {
-//             vscode.window.showInformationMessage(`Snippet shared successfully! View it at ${response.data.html_url}`);
-//         } else {
-//             vscode.window.showErrorMessage("Failed to share snippet: Unexpected response format.");
-//         }
-//     } catch (error: any) {
-//         vscode.window.showErrorMessage(`Error sharing snippet: ${error?.response?.data?.message || error.message || "Unknown error"}`);
-//     }
-// }
 
 export async function commonAddSnippet(allLanguages: any[], snippetsProvider: SnippetsProvider, 
 	wsSnippetsProvider: SnippetsProvider, workspaceSnippetsAvailable: boolean) {
