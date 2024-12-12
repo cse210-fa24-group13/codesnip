@@ -365,8 +365,6 @@ suite('SnippetService Tests', () => {
 
    snippetService.importSnippets(testDataFile);
    let importChildren = snippetService.getRootChildren();
-   console.log(importChildren);
-   console.log(parentA.children);
    assert.deepStrictEqual(importChildren, parentA.children);
 
    // Clean up the temporary test data file after each test

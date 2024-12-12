@@ -160,7 +160,7 @@ export function activate(context: vscode.ExtensionContext) {
                             headers: { Authorization: `Bearer ${session.accessToken}`}                             
                         }
                     );
-                    let fetchDataResponse = response.data
+                    let fetchDataResponse = response.data;
                     
                     for (const gist of fetchDataResponse) {
                         let gistInfo = await axios.get(`https://api.github.com/gists/${gist.id}`, {

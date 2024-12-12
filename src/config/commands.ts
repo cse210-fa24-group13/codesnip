@@ -88,7 +88,7 @@ export async function createSnippet(
 
         // Extracting the gist ID from the response
         const gistId = response.data.id;
-        if(update==true)
+        if(update === true)
         {
             vscode.window.showInformationMessage(`Snippet updated successfully! Gist ID: ${gistId}`);
         }
@@ -173,7 +173,7 @@ export async function deleteGist(gistId: string|undefined, update?: boolean|unde
                 "Content-Type": "application/json",
             },
         });
-        if(update!=true)
+        if(update !== true)
         {
             vscode.window.showInformationMessage(`Snippet deleted successfully! Gist ID: ${gistId}`);
         }

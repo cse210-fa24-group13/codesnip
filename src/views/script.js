@@ -84,7 +84,6 @@ submitButton.addEventListener('click', async () => {
     try {
         
         const gistID = inputBox.value;
-        // console.log('clicked');
         if (gistID.trim()) {
             let apiUrl = 'https://api.github.com/gists/' + gistID;
 

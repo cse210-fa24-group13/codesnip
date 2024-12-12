@@ -232,7 +232,6 @@ export class SnippetsProvider implements vscode.TreeDataProvider<Snippet>, vscod
                 gistid: gistId,
             }
         );
-        //console.log(gistId);
         this.sync();
     }
 

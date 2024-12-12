@@ -276,7 +276,7 @@ export class SnippetService {
                     : snippet.value, // Update value for snippets
                 };
                 await deleteGist(snippet.gistid,true);
-                await createSnippet(snippet.label,snippet.value==undefined ? "": snippet.value,snippet.description==undefined ? "": snippet.description,"Public",true);
+                await createSnippet(snippet.label,snippet.value === undefined ? "": snippet.value,snippet.description === undefined ? "": snippet.description,"Public",true);
             };
         }
     }
