@@ -111,7 +111,6 @@ export class SnippetsProvider implements vscode.TreeDataProvider<Snippet>, vscod
         let lastId = this._snippetService.incrementLastId();
 
         let extStartPoint = name.lastIndexOf("\.");
-        
         if (extStartPoint > 0 && extStartPoint < (name.length-1)) {
             let extension = name.slice(extStartPoint);
             let language = this._languagesConfig.find(l => l.extension === extension);
