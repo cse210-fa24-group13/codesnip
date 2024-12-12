@@ -1,0 +1,334 @@
+@import url('https://fonts.googleapis.com/css?family=Quicksand&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&family=Victor+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+
+body {
+    --background-color: #091525;
+    --primary-color: #0a2851;
+    --secondary-color: #1E3E62;
+    --black: #1E1E1E;
+}
+
+body {
+    font-family: Quicksand;
+    color: var(--black);
+    margin: 0;
+    padding: 0;
+    background-color: var(--background-color);
+}
+
+#nav {
+    ul {
+        list-style-type: none;
+        display: flex;
+        flex-direction: row;
+    }
+
+    h3 {
+        margin: 0;
+    }
+
+    padding: 0.1em 1.5em;
+    top: 0;
+    width: calc(100% - 1.5em * 2);
+    height: 3.5em;
+    display: flex;
+    font-size: 16px;
+    flex-flow: row wrap;
+    justify-content: space-around;
+    /* list-style-type: none; */
+    align-items: center;
+    margin: 0;
+    /* padding: 0; */
+    /* border-bottom: solid 1px white; */
+    color: white;
+    font-family: Quicksand;
+    /* background-color: var(--primary-color); */
+}
+
+#nav li {
+    margin: auto 2em;
+    font-weight: 700;
+    font-size: 1.2em;
+}
+
+#cards {
+    margin: 0 auto;
+    padding: 0;
+    /* height: 100%; */
+    width: 68em;
+    list-style-type: none;
+    display: grid;
+    row-gap: 1em;
+    grid-template-columns: 1fr 1fr;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    flex: 50%;
+    height: 20em;
+    overflow: hidden;
+
+    position: relative;
+    text-wrap: wrap;
+    white-space: break-word;  
+    width: 34em;
+    margin: 1em 0.5em 0 0.5em;
+    border-radius: 0.3em;
+
+    p {
+        position: relative;
+        width: 96%;
+        text-wrap: wrap;
+        white-space: break-spaces;
+    }
+
+    pre {
+        text-wrap: wrap;
+        width: 90%;
+    }
+
+    width: 34em;
+    /* padding: 1em; */
+    /* display: flex; */
+    margin: 1em 0.5em 0 0.5em;
+    /* border: solid; */
+    border-radius: 0.3em;
+    /* overflow: scroll; */
+}
+
+.heads {
+    font-weight: 600;
+    white-space: pre-wrap;
+    text-wrap: wrap;
+    margin: 0;
+    position: relative;
+    display: block;
+}
+
+.top {
+    background-color: var(--secondary-color);
+    height: calc(100% - 2em);
+    width: calc(100% - 2em);
+    color: white;
+    font-family: Victor Mono;
+    display: flex;
+    padding: 1em;
+    text-wrap: wrap;
+    overflow: hidden;  
+    
+    pre {
+        font-size: 0.86em;
+        font-family: Victor Mono;
+        position: relative;
+        font-weight: 200;
+        margin: 0;
+        display: flex;
+        text-wrap: wrap;
+        width: 100%;
+        white-space: pre-wrap; 
+        overflow: hidden;  
+    }
+}
+
+.row {
+    display: flex;
+    gap: 0.5em;
+}
+
+.bottom {
+    padding: 0.3em 1em;
+    height: 14%;
+    width: calc(100% - 2em);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    /* font-family: Victor Mono; */
+    border-bottom: solid 1px #1e71e3;
+    display: flex;
+    /* font-weight: 200; */
+    font-family: Quicksand;
+    align-items: center;
+    background-color: var(--primary-color);
+}
+
+.arrow {
+    position: relative;
+    display: inline-block;
+    background: white;
+    width: 3px;
+    height: 17px;
+    transform: rotate(40deg) translate(-30%);
+}
+
+.arrow2 {
+    position: relative;
+    display: inline-block;
+    transform: rotate(-40deg) translate(60%);
+    /* transform: rotateY(60deg) ; */
+    background: white;
+    width: 3px;
+    height: 17px;
+}
+
+.arrowf {
+    /* padding-top: 30px; */
+    flex-grow: 0.2;
+    height: 100%;
+    /* width: 100%; */
+    position: relative;
+    /* align-self: flex-start; */
+    justify-content: flex-start;
+    display: inline-block;
+    left: 0;
+    transform: rotate(-90deg) translateX(47%);
+    /* padding: 20px; */
+    /* padding-left: 20px; */
+}
+
+.side-links {
+    flex-grow: 5;
+    display: flex;
+    gap: 1.5em;
+    align-items: center;
+
+    h3 {
+        font-weight: 600;
+    }
+
+    /* align-self: flex-end; */
+    justify-content: flex-end;
+}
+
+.clipboard{
+    cursor: pointer;
+    border: none;
+    display: flex;
+    background-color: var(--primary-color);
+}
+
+#enterId{
+    all: unset;
+    cursor: pointer;
+}
+
+#login{
+    all: unset;
+    cursor: pointer;
+    background-color:#278EA5; 
+    padding: 0.3em 0.6em; 
+    border-radius: 0.3em;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30em;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 2em;
+    z-index: 1000;
+}
+
+.modal.show {
+    display: block;
+}
+
+.modal-header {
+    font-weight: bold;
+    margin-bottom: 1em;
+    text-align: center;
+}
+
+.modal-footer {
+    text-align: center;
+    margin-top: 1em;
+}
+
+#overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+#input-box {
+    font-family: "Victor Mono";
+    width: 100%;
+    padding: 0.5em;
+    margin-bottom: 1em;
+    font-size: 1em;
+    border: 1px solid var(--primary - color);
+    border-radius: 0.5em;
+}
+
+#submit-button,
+#close-button {
+    font-family: Quicksand !important;
+    padding: 0.5em 1em;
+    font-size: 1em;
+    background-color: var(--primary - color);
+    border: none;
+    border-radius: 0.5em;
+    cursor: pointer;
+    margin: 0.5em;
+}
+
+#submit-button{
+    color: black;
+}
+
+#close-button{
+    background-color: red;
+    color: white;
+}
+
+#submit-button:hover,
+#close-button:hover {
+    background-color: var(--secondary - color);
+}
+
+.tooltiptext {
+    background-color: white;
+    top: 3em;
+    right: 1.5em;
+    padding: 0.5em;
+    font-family: Quicksand;
+    font-size: 1em;
+    border-radius: 0.18em;
+    position: absolute;
+    display: block;
+    visibility: hidden;
+}
+
+#spinner {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(0, 0, 0, 0.1);
+    border-top: 5px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    z-index: 1000;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
