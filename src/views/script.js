@@ -51,10 +51,18 @@ overlay.addEventListener('click', () => {
     responseText.textContent = '';
 });
 
-function copyToClipboard(text, index){
+function copyToClipboard(text, index, mode){
+    let id = '';
+    let copymsg = '';
+    if(mode === "code"){
+        copymsg = "Copied Code Snippet to Clipboard!";
+    }else{
+        copymsg = "Copied Github GistId to Clipboard!"
+    }
     if(text){
         navigator.clipboard.writeText(text);
         if(document.getElementById(`tooltip-${index}`).style.visibility === '' || document.getElementById(`tooltip-${index}`).style.visibility === 'hidden'){
+            document.getElementById(`tooltip-${index}`).innerText = copymsg;
             document.getElementById(`tooltip-${index}`).style.visibility = 'visible';
             setTimeout(() => document.getElementById(`tooltip-${index}`).style.visibility = 'hidden', 1000);
         }
