@@ -850,5 +850,8 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 
-
+/**
+ * Called when the extension is deactivated.
+ * This function is triggered when the VSCode extension is deactivated and can be used to clean up resources.
+ */
 export function deactivate() { }
