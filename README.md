@@ -1,8 +1,4 @@
-![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/tahabasri.snippets.svg?style=flat-square)
-![Visual Studio Marketplace Installs](https://img.shields.io/visual-studio-marketplace/i/tahabasri.snippets.svg?style=flat-square)
-![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/tahabasri.snippets.svg?style=flat-square)
 ![Visual Studio Marketplace Rating](https://img.shields.io/visual-studio-marketplace/r/tahabasri.snippets.svg?style=flat-square)
-![GitHub Repo stars](https://img.shields.io/github/stars/tahabasri/snippets)
 ![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/tahabasri/snippets/unit-tests.yml)
 ![The MIT License](https://img.shields.io/badge/license-MIT-orange.svg?style=flat-square)
 
@@ -12,14 +8,40 @@ Code snippets are valuable additions for anyone looking to save time during deve
 
 Visual Studio Code already provides robust support for snippets, including their appearance in IntelliSense, tab-completion, and a dedicated snippet picker `(Insert Snippet in the Command Palette)`. This extension takes snippets to another level by introducing new features that enhance code snippet management.
 
-## Getting Started
+### Build Instructions
 
-Install **Snippets** by one of the following options:
-- clicking `Install` on the banner above
-- searching for `Snippets` from the Extensions side bar in VS Code
-- typing `ext install tahabasri.snippets` from the Command Palette in VS Code
+#### Method 1: Using NPM and Debug Window
 
----
+1. Compile the extension using:
+
+    ```bash
+    npm run compile
+    ```
+
+2. Debug the extension by running it from the debug window in VS Code.
+
+![Running the extension](<specs/docs/run-debug.png>)
+
+#### Method 2: Using VSIX File
+
+1. Install VSCE globally:
+
+    ```bash
+    npm install -g vsce
+    ```
+
+2. Package the extension into a `.vsix` file:
+
+    ```bash
+    vsce package
+    ```
+
+3. Install the `.vsix` file in VS Code:
+    - Open the Extensions view (**Ctrl+Shift+X** or **Cmd+Shift+X** on macOS).
+    - Click on the menu (three dots in the top-right corner) and select **Install from VSIX...**.
+    - Choose the packaged `.vsix` file to install the extension.
+
+
 
 [Features](#features) | [FAQ](#faq) | [Known Issues](#known-issues) | [Release Notes](#release-notes) | [Feedback](#feedback) | [Credits](#credits)
 
@@ -34,6 +56,11 @@ Boost your productivity with a set of powerful features that enhance snippet man
 - [Customize](#customize) — Personalize your Snippets to match your style.
 - [Sync](#sync) — Various options for synchronizing your snippets across multiple devices and users.
 - [Boost](#boost) — Supercharge your snippets to make them more developer-friendly.
+- **Share**: Share snippets with your co-workers via our tool. All you need to do is share a Snippet ID with them!
+
+Code Documentation: https://cse210-fa24-group13.github.io/codesnip/<br/>
+Code Quality: https://codeclimate.com/github/cse210-fa24-group13/codesnip/
+
 
 ## Create
 
@@ -199,24 +226,19 @@ alt="Manually Bind Snippets to Languages">
 <img src="https://raw.githubusercontent.com/tahabasri/snippets/main/images/features/06-open-intelligent-snippet.gif" 
 alt="Open Snippet with Variables">
 
-## Code Documentation
-
-> Learn more about how the code works and the implementation details
-> 
-> Documentation for the code is auto-generated and hosted at https://cse210-fa24-group13.github.io/codesnip/
-
-![image](https://github.com/user-attachments/assets/2e176752-52f8-4cef-90e7-a233156d1f5d)
-
-## Code Quality
-
-> Learn more about the code quality of the project
-> 
-> To check it out, head over to: https://codeclimate.com/github/cse210-fa24-group13/codesnip/
-
-![image](https://github.com/user-attachments/assets/3711d010-192d-484f-b874-58f51eeb250a)
-
 
 **Enjoy!**
+
+## Share
+
+To share a snippet with other people, just go ahead and grab the Snippet Id by pressing the share button.
+
+![alt text](/images//share1.png)
+
+Ask the other user to grab this snippet Id and use the Get-A-Snip feature to add this snippet to his collection! That's 
+it!
+
+![alt text](/images/share2.png)
 
 ## FAQ
 
@@ -253,9 +275,11 @@ Check the [CHANGELOG](CHANGELOG.md) for full release notes.
 
 ## Feedback
 
-* [Request a feature](https://github.com/tahabasri/snippets/issues/new?labels=enhancement).
-* [File a bug](https://github.com/tahabasri/snippets/issues/new?labels=bug).
+* [Request a feature](https://github.com/cse210-fa24-group13/codesnip/issues/new?labels=enhancement).
+* [File a bug](https://github.com/cse210-fa24-group13/codesnip/issues/new?labels=bug).
 
-### Credits
+## Contributing
 
-- <span>GitHub Repo Social Preview Background Photo by <a href="https://unsplash.com/@jjying?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">JJ Ying</a> on <a href="https://unsplash.com/?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span>
+1. Fork the repository and create a new branch for your changes.
+2. Follow the guidelines for code structure and testing.
+3. Submit a pull request with a clear description of the updates.
